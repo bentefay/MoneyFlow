@@ -8,6 +8,7 @@ namespace Web
         [Fact]
         public void Test()
         {
+            Assert.Equal("abc", "a");
         }
     }
 }

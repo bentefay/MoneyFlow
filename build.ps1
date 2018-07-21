@@ -37,6 +37,9 @@ if(Test-Path -Path $buildDirectory) {
     & Remove-Item -Recurse -Force $buildDirectory
 }
 
+LogSection "Test"
+& dotnet test test/Web --configuration $configuration --output $buildDirectory/test --verbosity m
+
 LogSection "Restore"
 & dotnet restore src/Web --verbosity m
 
