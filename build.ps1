@@ -1,27 +1,46 @@
 
 # q[uiet], m[inimal], n[ormal], d[etailed], and diag[nostic]
 $configuration = "release"
+$directory = Get-Location
+function LogStart {
+    Write-Host
+    Write-Host $("+" * $args[0].Length)  -ForegroundColor DarkGray
+    Write-Host $args[0] -ForegroundColor DarkGray
+    Write-Host $("+" * $args[0].Length)  -ForegroundColor DarkGray
+    Write-Host
+}
 
-function Log {
+function LogSection {
     Write-Host
     Write-Host $("=" * $args[0].Length)  -ForegroundColor DarkCyan
     Write-Host $args[0] -ForegroundColor DarkCyan
     Write-Host $("=" * $args[0].Length)  -ForegroundColor DarkCyan
-}   
+    Write-Host
+}
+
+function Log {
+    Write-Host $args[0]
+}
+
+LogStart "Pipeline for MoneyFlow"
 
 Log "Building in configuration '$configuration'"
 
+Log "Working directory: $directory"
+
 Log "Dotnet SDK version: $(& dotnet --version)"
 
-Log "Restore"
-& dotnet restore --verbosity m
+LogSection "Clean"
+& Remove-Item -Recurse -Force $directory/artifacts
 
-Log "Build"
-& dotnet build --configuration $configuration --verbosity m
+LogSection "Restore"
+& dotnet restore src/Web --verbosity m
 
-Log "Publish"
-& dotnet publish --configuration $configuration --output publish --verbosity m
+LogSection "Build"
+& dotnet build src/Web --configuration $configuration --output $directory/artifacts/build --verbosity m
 
-Log "Zip"
-Compress-Archive -Force -Path publish -DestinationPath publish.zip
+LogSection "Publish"
+& dotnet publish src/Web --configuration $configuration --output $directory/artifacts/publish --verbosity m
 
+LogSection "Zip"
+Compress-Archive -Force -Path $directory/artifacts/publish -DestinationPath publish.zip
