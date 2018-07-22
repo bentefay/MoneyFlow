@@ -1,1 +1,1 @@
-powershell -file build.ps1
+dotnet run -p build 
