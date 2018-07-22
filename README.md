@@ -1,6 +1,7 @@
 # MoneyFlow
 
-A [web app](https://moneyflow.azurewebsites.net/) to help you understand how you're spending your money. 
+A [web app](https://moneyflow.azurewebsites.net/) to help you understand how you're spending your money.
+ 
 If you're like me, you have many banks and accounts, and your money flows in, around, and out of them
 in ways that are annoying to track. MoneyFlow simplifies this by showing you all your transactions in a single
 view, across many banks and accounts, and whether you have your own account, or 
