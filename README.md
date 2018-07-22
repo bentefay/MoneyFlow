@@ -27,7 +27,7 @@ as you normally would, then either:
 1. Copy and paste straight out of the web page. 
 2. Download CSV files of your transactions and upload them to MoneyFlow. 
 3. In the future, a desktop app will do this for you automatically 
-   (it will all be open source, so you can be sure nothing :fish: is going on)   
+   (it will all be open source, so you can be sure nothing :fish: is going on).
 
 ## Resources
 
