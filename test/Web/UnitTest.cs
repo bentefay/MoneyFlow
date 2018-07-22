@@ -1,14 +1,13 @@
-using System;
 using Xunit;
 
-namespace Web
+namespace WebTests
 {
     public class UnitTest1
     {
         [Fact]
         public void Test()
         {
-            Assert.Equal("abc", "a");
+            Assert.Equal("abc", "abc");
         }
     }
 }
