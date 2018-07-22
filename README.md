@@ -1,11 +1,33 @@
 # MoneyFlow
 
-A [web app](https://moneyflow.azurewebsites.net/) to help you understand how you're spending your money.
- 
-If you're like me, you have many banks and accounts, and your money flows in, around, and out of them
-in ways that are annoying to track. MoneyFlow simplifies this by showing you all your transactions in a single
-view, across many banks and accounts, and whether you have your own account, or 
-share it with someone you :heart:.
+[MoneyFlow](https://moneyflow.azurewebsites.net/) tracks how your money flows in, around, and out of your various banks and accounts. 
+
+## :page_facing_up: Single view of all your finances 
+
+View all your transactions in a single view, consolidating many banks and accounts. 
+Get the benefits of a modern, beautiful spend tracking without being tied to a particular bank. 
+Tag and filter to your hearts content. 
+
+## :couple: Manage shared finances 
+
+Track ownership of spending when you share your accounts with someone you :heart:
+
+## :ledger: Know what you're spending money on 
+
+Categorise and visualize your spending, and MoneyFlow will learn over time to do this for you automatically.
+
+## :lock: Safe and secure by design
+
+You own your data. Your data is encrypted, end-to-end, so nobody can access it but you. 
+
+## :inbox_tray: Simple data import
+
+Data import is designed to be painless without comprimising your security. Visit your bank's online banking website 
+as you normally would, then either:
+1. Copy and paste straight out of the web page. 
+2. Download CSV files of your transactions and upload them to MoneyFlow. 
+3. In the future, a desktop app will do this for you automatically 
+   (it will all be open source, so you can be sure nothing :fish: is going on)   
 
 ## Resources
 
