@@ -4,21 +4,21 @@
 
 ## :page_facing_up: Single view of all your finances 
 
-View all your transactions in a single view, consolidating many banks and accounts. 
-Get the benefits of a modern, beautiful spend tracking without being tied to a particular bank. 
+View all your transactions in a single view, consolidating many banks and accounts.
 Tag and filter to your hearts content. 
-
-## :couple: Manage shared finances 
-
-Track ownership of spending when you share your accounts with someone you :heart:
-
+Get the benefits of a modern, beautiful spend tracking app without being tied to a particular bank. 
+ 
 ## :ledger: Know what you're spending money on 
 
 Categorise and visualize your spending, and MoneyFlow will learn over time to do this for you automatically.
 
 ## :lock: Safe and secure by design
 
-You own your data. Your data is encrypted, end-to-end, so nobody can access it but you. 
+You own your data. Your data is encrypted, end-to-end, so nobody can access it but you.
+
+## :couple: Manage shared finances 
+
+Track ownership of spending if you share your accounts with someone you :heart: 
 
 ## :inbox_tray: Simple data import
 
