@@ -32,7 +32,7 @@ namespace Build
                     DeleteRecursive(buildDirectory)))
                 
                 .Bind(_ => Section("Test", () => 
-                    RunToSuccess($"dotnet test test/Web --configuration {configuration} --output {buildDirectory}/test --verbosity {verbosity}")))
+                    RunToSuccess($"dotnet test test/Web --configuration {configuration} --output {buildDirectory}/test --results-directory {buildDirectory}/test/results --verbosity {verbosity} --logger trx;logfilename=results.xml")))
                 
                 .Bind(_ => Section("Restore", () => 
                     RunToSuccess($"dotnet restore src/Web --verbosity {verbosity}")))
