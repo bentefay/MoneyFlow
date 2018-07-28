@@ -33,7 +33,7 @@ as you normally would, then either:
 
 - [Web App](https://moneyflow.azurewebsites.net/)
 - [Build Server](https://btefay.visualstudio.com/MoneyFlow/_build) 
-  [![Build status](https://btefay.visualstudio.com/28670295-ced6-4840-b33d-a9be632a8601/_apis/build/status/1?branch=master)](https://btefay.visualstudio.com/28670295-ced6-4840-b33d-a9be632a8601/_build/latest?definitionId=1&branch=master)
+  [![Build status](https://btefay.visualstudio.com/MoneyFlow/_apis/build/status/MoneyFlow)](https://btefay.visualstudio.com/MoneyFlow/_build/latest?definitionId=1)
 - [Project Management](https://github.com/bentefay/MoneyFlow/projects/1)
 - [Server Hosting](https://portal.azure.com)
 
