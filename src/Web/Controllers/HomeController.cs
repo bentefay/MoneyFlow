@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Web.Controllers
 {
@@ -7,7 +8,7 @@ namespace Web.Controllers
         [HttpGet("/")]
         public ActionResult<string> Get()
         {
-            return "Hello, World!";
+            return $"Hello, World! It's {DateTime.Now.DayOfWeek}.";
         }
     }
 }
