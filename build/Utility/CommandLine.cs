@@ -20,13 +20,12 @@ namespace Build.Utility
                     () => "");
         }
 
-        public static Task<Option<Unit>> RunToSuccess(params string[] arguments)
+        public static OptionAsync<Unit> RunToOption(params string[] arguments)
         {
             return Run(arguments, redirectStreams: false)
                 .ToAsync()
                 .Where(result => result.ExitCode == 0)
-                .Map(_ => unit)
-                .ToOption();
+                .Map(_ => unit);
         }
         
         public static Task<Option<CommandLineResult>> Run(params string[] arguments)
@@ -86,14 +85,22 @@ namespace Build.Utility
 
                 cancellationToken.Value.ThrowIfCancellationRequested();
 
-                if (!process.Start())
+                try
                 {
-                    taskCompletionSource.TrySetResult(Prelude.None);
+                    if (!process.Start())
+                    {
+                        taskCompletionSource.TrySetResult(Prelude.None);
+                    }
+                    else if (redirectStreams)
+                    {
+                        process.BeginOutputReadLine();
+                        process.BeginErrorReadLine();
+                    }
                 }
-                else if (redirectStreams)
+                catch (Exception e)
                 {
-                    process.BeginOutputReadLine();
-                    process.BeginErrorReadLine();
+                    Console.WriteLine($"Error while running command '{argumentTokens.Join(" ")}': {e.Message}");
+                    taskCompletionSource.TrySetResult(Prelude.None);
                 }
 
                 return await taskCompletionSource.Task.ConfigureAwait(false);

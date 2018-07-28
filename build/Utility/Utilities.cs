@@ -42,7 +42,7 @@ namespace Build.Utility
             Console.ResetColor();
         }
         
-        public static Option<Unit> DeleteRecursive(string directoryPath)
+        public static OptionAsync<Unit> DeleteRecursive(string directoryPath)
         {
             try
             {
@@ -50,7 +50,7 @@ namespace Build.Utility
                 {
                     Directory.Delete(directoryPath, recursive: true);
                 }
-                return Some(unit);
+                return SomeAsync(unit);
             }
             catch (Exception e)
             {

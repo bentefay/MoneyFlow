@@ -1,17 +1,18 @@
 {
   "devDependencies": {
-    "@types/jest": "^23.1.4",
-    "@types/react": "^16.4.6",
+    "@types/jest": "^23.3.1",
+    "@types/react": "^16.4.7",
     "@types/react-dom": "^16.0.6",
-    "@types/react-redux": "^6.0.3",
-    "@types/react-router": "^4.0.28",
-    "@types/react-router-dom": "^4.2.7",
+    "@types/react-redux": "^6.0.5",
+    "@types/react-router": "^4.0.29",
+    "@types/react-router-dom": "^4.3.0",
     "@types/react-router-redux": "^5.0.15",
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
-    "jest": "^23.3.0",
-    "parcel-bundler": "^1.9.4",
-    "ts-jest": "^23.0.0"
+    "jest": "^23.4.2",
+    "parcel-bundler": "^1.9.7",
+    "ts-jest": "^23.0.1",
+    "typescript": "^2.9.2"
   },
   "dependencies": {
     "cuid": "^2.1.1",
@@ -22,8 +23,8 @@
     "react-router-dom": "^4.3.1",
     "react-router-redux": "^4.0.8",
     "redux-observable": "^1.0.0",
-    "rxjs": "^6.2.1",
-    "rxjs-compat": "^6.2.1",
+    "rxjs": "^6.2.2",
+    "rxjs-compat": "^6.2.2",
     "tslib": "^1.9.3",
     "typesafe-actions": "^2.0.4"
   }

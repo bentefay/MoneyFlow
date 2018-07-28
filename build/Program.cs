@@ -11,7 +11,7 @@ namespace Build
     public static class Program
     {
         public static async Task<int> Main(string[] args)
-        {
+        {           
             // q[uiet], m[inimal], n[ormal], d[etailed], and diag[nostic]
             var verbosity = "m";
             var configuration = "release";
@@ -29,22 +29,17 @@ namespace Build
             return await SomeAsync(unit)
                 
                 .Bind(_ => Section("Clean", () => 
-                    DeleteRecursive(buildDirectory)))
+                    DeleteRecursive(buildDirectory)
+                    .Bind(unit => Dotnet.Clean("src/Web", configuration, verbosity))
+                    .Bind(unit => Dotnet.Clean("test/Web", configuration, verbosity))))
                 
-                .Bind(_ => Section("Test", () => 
-                    RunToSuccess($"dotnet test test/Web --configuration {configuration} --output {buildDirectory}/test --results-directory {buildDirectory}/test/results --verbosity {verbosity} --logger trx;logfilename=results.xml")))
+                .Bind(_ => Section("Test", () => Dotnet.Test("test/Web", configuration, buildDirectory, verbosity)))
+                               
+                .Bind(_ => Section("Publish", () => Dotnet.Publish("src/Web", configuration, buildDirectory, verbosity)))
                 
-                .Bind(_ => Section("Restore", () => 
-                    RunToSuccess($"dotnet restore src/Web --verbosity {verbosity}")))
+                .Bind(_ => Section("Client", () => Parcel.Build("src/Web/Client", $"{buildDirectory}/publish/wwwroot")))
                 
-                .Bind(_ => Section("Build", () => 
-                    RunToSuccess($"dotnet build src/Web --configuration {configuration} --output {buildDirectory}/build --verbosity {verbosity}")))
-                
-                .Bind(_ => Section("Publish", () => 
-                    RunToSuccess($"dotnet publish src/Web --configuration {configuration} --output {buildDirectory}/publish --verbosity {verbosity}")))
-                
-                .Bind(_ => Section("Zip", () => 
-                    ZipDirectory($"{buildDirectory}/publish", $"{buildDirectory}/publish.zip")))
+                .Bind(_ => Section("Zip", () => ZipDirectory($"{buildDirectory}/publish", $"{buildDirectory}/publish.zip")))
                 
                 .Match(
                     _ =>
