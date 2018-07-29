@@ -5,9 +5,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LanguageExt;
-using static LanguageExt.Prelude;
+using static Make.Utility.Utilities;
 
-namespace Build.Utility
+namespace Make.Utility
 {
     public static class CommandLine
     {      
@@ -17,38 +17,38 @@ namespace Build.Utility
                 .ToAsync()
                 .Match(
                     result => string.Join(Environment.NewLine, result.Output) + string.Join(Environment.NewLine, result.Error),
-                    () => "");
+                    _ => "");
         }
 
-        public static OptionAsync<Unit> RunToOption(params string[] arguments)
+        public static EitherAsync<Error, Unit> RunToOption(params string[] arguments)
         {
+            Log(arguments.Join(" "));
+            
             return Run(arguments, redirectStreams: false)
                 .ToAsync()
                 .Where(result => result.ExitCode == 0)
-                .Map(_ => unit);
-        }
-        
-        public static Task<Option<CommandLineResult>> Run(params string[] arguments)
-        {
-            return Run(arguments, redirectStreams: false);
+                .Map(_ => Prelude.unit);
         }
         
         // Reference: https://github.com/jamesmanning/RunProcessAsTask/blob/master/src/RunProcessAsTask/ProcessEx.cs#L27
         
-        public static async Task<Option<CommandLineResult>> Run(IEnumerable<string> arguments, bool redirectStreams = false, CancellationToken? cancellationToken = null)
+        private static async Task<Either<Error, CommandLineResult>> Run(IEnumerable<string> command, bool redirectStreams = false, CancellationToken? cancellationToken = null)
         {
             cancellationToken = cancellationToken ?? CancellationToken.None;
 
-            var argumentTokens = arguments.SelectMany(argument => argument.Split(' ')).ToList();
+            var commandTokens = command.SelectMany(argument => argument.Split(' ', StringSplitOptions.RemoveEmptyEntries)).ToList();
+
+            var fileName = commandTokens.First();
+            var arguments = commandTokens.Skip(1).Join(" ");
             
-            var processStartInfo = new ProcessStartInfo(argumentTokens.First(), argumentTokens.Skip(1).Join(" "))
+            var processStartInfo = new ProcessStartInfo(fileName, arguments)
             {
                 UseShellExecute = false,
                 RedirectStandardOutput = redirectStreams,
                 RedirectStandardError = redirectStreams
             };
 
-            var taskCompletionSource = new TaskCompletionSource<Option<CommandLineResult>>();
+            var taskCompletionSource = new TaskCompletionSource<Either<Error, CommandLineResult>>();
            
             var process = new Process
             {
@@ -89,7 +89,7 @@ namespace Build.Utility
                 {
                     if (!process.Start())
                     {
-                        taskCompletionSource.TrySetResult(Prelude.None);
+                        taskCompletionSource.TrySetResult(Error.Create("Could not start command '{fileName} {arguments}'"));
                     }
                     else if (redirectStreams)
                     {
@@ -99,8 +99,7 @@ namespace Build.Utility
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine($"Error while running command '{argumentTokens.Join(" ")}': {e.Message}");
-                    taskCompletionSource.TrySetResult(Prelude.None);
+                    taskCompletionSource.TrySetResult(Error.Create($"Error while running command '{fileName} {arguments}': {e.Message}", e));
                 }
 
                 return await taskCompletionSource.Task.ConfigureAwait(false);

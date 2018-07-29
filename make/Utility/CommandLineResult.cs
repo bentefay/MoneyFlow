@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Build.Utility
+namespace Make.Utility
 {
     public class CommandLineResult
     {

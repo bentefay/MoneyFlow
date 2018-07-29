@@ -4,7 +4,7 @@ using System.IO.Compression;
 using LanguageExt;
 using static LanguageExt.Prelude;
 
-namespace Build.Utility
+namespace Make.Utility
 {
     public static class Utilities
     {       
@@ -42,7 +42,7 @@ namespace Build.Utility
             Console.ResetColor();
         }
         
-        public static OptionAsync<Unit> DeleteRecursive(string directoryPath)
+        public static EitherAsync<Error, Unit> DeleteRecursive(string directoryPath)
         {
             try
             {
@@ -50,26 +50,24 @@ namespace Build.Utility
                 {
                     Directory.Delete(directoryPath, recursive: true);
                 }
-                return SomeAsync(unit);
+                return unit;
             }
             catch (Exception e)
             {
-                LogError($"Failed to recusively delete directory '{directoryPath}': {e.Message}");
-                return None;
+                return Error.Create($"Failed to recusively delete directory '{directoryPath}': {e.Message}", e);
             }
         }
 
-        public static Option<Unit> ZipDirectory(string source, string destination)
+        public static EitherAsync<Error, Unit> ZipDirectory(string source, string destination)
         {
             try
             {
                 ZipFile.CreateFromDirectory(source, destination);
-                return Some(unit);
+                return unit;
             }
             catch (Exception e)
             {
-                LogError($"Failed to zip '{source}' to '{destination}': {e.Message}");
-                return None;
+                return Error.Create($"Failed to zip '{source}' to '{destination}': {e.Message}", e);
             }
         }
     }
