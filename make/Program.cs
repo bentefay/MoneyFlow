@@ -32,7 +32,7 @@ namespace Make
             
             app.Command("test", test =>
             {
-                test.Command("server", server => { server.OnExecute(() => Build(config, dotnetConfig, parcelConfig)); });
+                test.Command("server", server => { server.OnExecute(() => TestServer(config, dotnetConfig)); });
             });
 
             app.OnExecute(() =>
@@ -44,20 +44,20 @@ namespace Make
             return app.Execute(args);
         }
 
-        public static Task<int> RunClient(Config c, ParcelConfig p)
+        private static Task<int> RunClient(Config c, ParcelConfig p)
         {
-            return Npm.Update("")
-                .Bind(_ => Parcel.Build(p.Project.ProjectDirectory, "--open"))
+            return Npm.Install(p.Project.ProjectDirectory)
+                .Bind(_ => Parcel.RunDev(p.Project.ProjectDirectory, p.Verbosity))
                 .ToExitCode();
         }
-        
-        public static Task<int> RunServer(Config c, DotnetConfig d)
+
+        private static Task<int> RunServer(Config c, DotnetConfig d)
         {
             return Dotnet.Run(d.Project.Dir)
                 .ToExitCode();
         }
-        
-        public static Task<int> TestServer(Config c, DotnetConfig d)
+
+        private static Task<int> TestServer(Config c, DotnetConfig d)
         {
             return d.TestProjects.ForEach(testProject =>
                     Dotnet.Test(testProject.Dir))
@@ -70,30 +70,32 @@ namespace Make
 
             Log($"Building in configuration '{d.Configuration}'");
 
-            Log($"Dotnet SDK version: {await CommandLine.RunToString("dotnet --version")}");
+            Log($"Dotnet SDK version: {await CommandLine.ToString("dotnet --version")}");
 
             return await RightAsync<Error, Unit>(Task.FromResult(unit))
-                .Bind(_ =>
-                    Section("Clean", () =>
-                        DeleteRecursive(c.BuildDir)
-                            .Bind(unit =>
-                                Dotnet.Clean(d.Project.Dir, d.Configuration, d.Verbosity))
-                            .Bind(unit => d.TestProjects.ForEach(testProject =>
-                                Dotnet.Clean(testProject.Dir, d.Configuration, d.Verbosity)))))
-                .Bind(_ =>
-                    Section("Test Server", () =>
-                        d.TestProjects.ForEach(testProject =>
-                            Dotnet.Test(testProject.Dir, d.Configuration, d.Verbosity, $"{c.BuildDir}/test/{testProject.Name}", $"{c.BuildDir}/test/results", testProject.Name))))
-                .Bind(_ =>
-                    Section("Publish Server", () =>
-                        Dotnet.Publish(d.Project.Dir, d.Configuration, d.Verbosity, c.PublishDir)))
+//                .Bind(_ =>
+//                    Section("Clean", () =>
+//                        DeleteRecursive(c.BuildDir)
+//                            .Bind(unit =>
+//                                Dotnet.Clean(d.Project.Dir, d.Configuration, d.Verbosity))
+//                            .Bind(unit => d.TestProjects.ForEach(testProject =>
+//                                Dotnet.Clean(testProject.Dir, d.Configuration, d.Verbosity)))))
+//                .Bind(_ =>
+//                    Section("Test Server", () =>
+//                        d.TestProjects.ForEach(testProject =>
+//                            Dotnet.Test(testProject.Dir, d.Configuration, d.Verbosity, $"{c.BuildDir}/test/{testProject.Name}", $"{c.BuildDir}/test/results", testProject.Name))))
+//                .Bind(_ =>
+//                    Section("Publish Server", () =>
+//                        Dotnet.Publish(d.Project.Dir, d.Configuration, d.Verbosity, c.PublishDir)))
                 .Bind(_ =>
                     Section("Publish Client", () =>
-                        Npm.Update("")
-                            .Bind(none => Parcel.Build(p.Project.ProjectDirectory, $"{c.PublishDir}/wwwroot", $"{c.BuildDir}/client/cache"))))
+                        Npm.Install(p.Project.ProjectDirectory)
+                            .Bind(__ => Npm.Update(p.Project.ProjectDirectory))
+                            .Bind(__ => Parcel.BuildProd(p.Project.ProjectDirectory, $"{c.PublishDir}/wwwroot", $"{c.BuildDir}/client/cache", p.Verbosity))))
                 .Bind(_ =>
                     Section("Zip",
                         () => ZipDirectory(c.PublishDir, c.PublishZipPath)))
+                        
                 .ToExitCode();
         }
     }

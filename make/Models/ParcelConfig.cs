@@ -4,6 +4,12 @@ namespace Make.Models
 {
     public class ParcelConfig
     {
-        public ParcelProject Project => new[] {"Web"}.Select(name => new ParcelProject(name, $"src/{name}/Client/index.html")).First();
+        // 0 (Disabled) | 1 (Errors) | 2 (Errors + Warnings) | 3 (Everything)
+        public int Verbosity = 2;
+
+        public ParcelProject Project =>
+            new[] {"Web"}
+                .Select(name => new ParcelProject(name, $"src/{name}/Client"))
+                .First();
     }
 }
