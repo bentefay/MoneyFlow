@@ -61,6 +61,7 @@ namespace Make.Utility
         {
             try
             {
+                Log($"Zipping '{source}' to '{destination}'");
                 ZipFile.CreateFromDirectory(source, destination);
                 return unit;
             }

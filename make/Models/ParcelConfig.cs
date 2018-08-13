@@ -5,7 +5,7 @@ namespace Make.Models
     public class ParcelConfig
     {
         // 0 (Disabled) | 1 (Errors) | 2 (Errors + Warnings) | 3 (Everything)
-        public int Verbosity = 2;
+        public int Verbosity = 3;
 
         public ParcelProject Project =>
             new[] {"Client"}
