@@ -29,6 +29,15 @@ as you normally would, then either:
 3. In the future, a desktop app will do this for you automatically 
    (it will all be open source, so you can be sure nothing :fish: is going on).
 
+## Getting started
+
+Clone this repository then:
+
+- `make run server`
+- `make run client`
+- `make test server`
+- `make build` (same build that CI runs to prepare for deployment)
+
 ## Resources
 
 - [Web App](https://moneyflow.azurewebsites.net/)
