@@ -18,28 +18,28 @@ namespace Make
                 Description = "Build, test and run MoneyFlow"
             };
 
+            app.HelpOption(inherited: true);
+
             var config = new Config();
             var dotnetConfig = new DotnetConfig();
             var parcelConfig = new ParcelConfig();
-            
+
             app.Command("build", build => { build.OnExecute(() => Build(config, dotnetConfig, parcelConfig)); });
-            
+
             app.Command("run", run =>
             {
                 run.Command("client", client => { client.OnExecute(() => RunClient(config, parcelConfig)); });
                 run.Command("server", server => { server.OnExecute(() => RunServer(config, dotnetConfig)); });
+                run.OnExecuteShowHelp();
             });
-            
+
             app.Command("test", test =>
             {
                 test.Command("server", server => { server.OnExecute(() => TestServer(config, dotnetConfig)); });
+                test.OnExecuteShowHelp();
             });
 
-            app.OnExecute(() =>
-            {
-                app.ShowHelp();
-                return 1;
-            });
+            app.OnExecuteShowHelp();
 
             return app.Execute(args);
         }
@@ -73,20 +73,20 @@ namespace Make
             Log($"Dotnet SDK version: {await CommandLine.ToString("dotnet --version")}");
 
             return await RightAsync<Error, Unit>(Task.FromResult(unit))
-//                .Bind(_ =>
-//                    Section("Clean", () =>
-//                        DeleteRecursive(c.BuildDir)
-//                            .Bind(unit =>
-//                                Dotnet.Clean(d.Project.Dir, d.Configuration, d.Verbosity))
-//                            .Bind(unit => d.TestProjects.ForEach(testProject =>
-//                                Dotnet.Clean(testProject.Dir, d.Configuration, d.Verbosity)))))
-//                .Bind(_ =>
-//                    Section("Test Server", () =>
-//                        d.TestProjects.ForEach(testProject =>
-//                            Dotnet.Test(testProject.Dir, d.Configuration, d.Verbosity, $"{c.BuildDir}/test/{testProject.Name}", $"{c.BuildDir}/test/results", testProject.Name))))
-//                .Bind(_ =>
-//                    Section("Publish Server", () =>
-//                        Dotnet.Publish(d.Project.Dir, d.Configuration, d.Verbosity, c.PublishDir)))
+                .Bind(_ =>
+                    Section("Clean", () =>
+                        DeleteRecursive(c.BuildDir)
+                            .Bind(unit =>
+                                Dotnet.Clean(d.Project.Dir, d.Configuration, d.Verbosity))
+                            .Bind(unit => d.TestProjects.ForEach(testProject =>
+                                Dotnet.Clean(testProject.Dir, d.Configuration, d.Verbosity)))))
+                .Bind(_ =>
+                    Section("Test Server", () =>
+                        d.TestProjects.ForEach(testProject =>
+                            Dotnet.Test(testProject.Dir, d.Configuration, d.Verbosity, $"{c.BuildDir}/test/{testProject.Name}", $"{c.BuildDir}/test/results", testProject.Name))))
+                .Bind(_ =>
+                    Section("Publish Server", () =>
+                        Dotnet.Publish(d.Project.Dir, d.Configuration, d.Verbosity, c.PublishDir)))
                 .Bind(_ =>
                     Section("Publish Client", () =>
                         Npm.Install(p.Project.ProjectDirectory)
@@ -95,7 +95,6 @@ namespace Make
                 .Bind(_ =>
                     Section("Zip",
                         () => ZipDirectory(c.PublishDir, c.PublishZipPath)))
-                        
                 .ToExitCode();
         }
     }

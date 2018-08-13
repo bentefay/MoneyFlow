@@ -8,8 +8,8 @@ namespace Make.Models
         public int Verbosity = 2;
 
         public ParcelProject Project =>
-            new[] {"Web"}
-                .Select(name => new ParcelProject(name, $"src/{name}/Client"))
+            new[] {"Client"}
+                .Select(name => new ParcelProject(name, $"src/{name}"))
                 .First();
     }
 }

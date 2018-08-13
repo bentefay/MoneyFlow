@@ -13,16 +13,7 @@ namespace Make.Utility
             LogSection(title);
             return func();
         }
-        
-        public static void LogStart(string text)
-        {
-            Log();
-            Log(new string('+', text.Length), ConsoleColor.Green);
-            Log(text, ConsoleColor.Green);
-            Log(new string('+', text.Length), ConsoleColor.Green);
-            Log();
-        }
-        
+
         public static void LogSection(string text)
         {
             Log();
@@ -68,6 +59,19 @@ namespace Make.Utility
             catch (Exception e)
             {
                 return Error.Create($"Failed to zip '{source}' to '{destination}': {e.Message}", e);
+            }
+        }
+        
+        public static T Using<T>(Action after, Func<T> func)
+        {
+            return Using(Disposable.Create(after), func);
+        }
+        
+        public static T Using<T>(IDisposable disposable, Func<T> func)
+        {
+            using (disposable)
+            {
+                return func();
             }
         }
     }

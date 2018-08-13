@@ -6,12 +6,12 @@ namespace Make.Utility
     {
         public static EitherAsync<Error, Unit> RunDev(string projectDirectory, int logLevel)
         {
-            return CommandLine.RunToOption($"{Exe(projectDirectory)} {projectDirectory}/index.html --open --log-level {logLevel}");
+            return CommandLine.ToEither($"{Exe(projectDirectory)} {projectDirectory}/index.html --open --log-level {logLevel}");
         }
 
         public static EitherAsync<Error, Unit> BuildProd(string projectDirectory, string outputDirectory, string cacheDirectory, int logLevel)
         {
-            return CommandLine.RunToOption($"{Exe(projectDirectory)} build {projectDirectory}/index.html --out-dir {outputDirectory} --cache-dir {cacheDirectory} --log-level {logLevel}");
+            return CommandLine.ToEither($"{Exe(projectDirectory)} build {projectDirectory}/index.html --out-dir {outputDirectory} --cache-dir {cacheDirectory} --log-level {logLevel}");
         }
 
         private static string Exe(string projectDirectory)

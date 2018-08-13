@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 using LanguageExt;
 using static LanguageExt.Prelude;
@@ -16,96 +12,51 @@ namespace Make.Utility
     {
         public static async Task<string> ToString(params string[] command)
         {
-            return await RunExpanded(command, redirectStreams: true)
+            return await Run(command, new CommandLineOptions(redirectStreams: true))
                 .Match(
                     result => string.Join(Environment.NewLine, result.Output),
                     _ => "");
         }
 
-        public static EitherAsync<Error, Unit> RunToOption(params string[] command)
+        public static EitherAsync<Error, Unit> ToEither(params string[] command) => ToEither(null, command);
+
+        public static EitherAsync<Error, Unit> ToEither(CommandLineOptions options, params string[] command)
         {
-            return ResolveCommand(command)
+            options = options ?? new CommandLineOptions();
+            
+            return Command.Resolve(command)
                 .Bind(c =>
                 {
-                    Log($"{c.Exe} {c.Arguments}");
-                    return Run(c);
+                    Log();
+                    Log(!string.IsNullOrWhiteSpace(options.WorkingDirectory) ? $"[{options.WorkingDirectory}] {c}" : $"{c}");
+                    return Run(c, options.With(redirectStreams: false));
                 })
                 .Where(result => result.ExitCode == 0)
                 .Map(_ => unit);
         }
 
-        private static EitherAsync<Error, (string Exe, string Arguments)> ResolveCommand(params string[] command)
+        private static EitherAsync<Error, CommandLineResult> Run(
+            string[] command,             
+            CommandLineOptions options)
         {
-            var commandTokens = command.SelectMany(argument => argument.Split(' ', StringSplitOptions.RemoveEmptyEntries)).ToList();
-            var exe = commandTokens.First().Trim();
-            var arguments = commandTokens.Skip(1).Select(a => a.Trim()).Join(" ");
-
-            return ResolveExePath(exe)
-                .Map(exeAbsolutePath => ($"\"{exeAbsolutePath}\"", arguments));
-        }
-
-        private static EitherAsync<Error, string> ResolveExePath(string exe)
-        {
-            try
-            {
-                var favouredExtensions = FavouredExtensions().Concat(new[] {""});
-                var exePaths = Path.HasExtension(exe)
-                    ? new[] {exe}
-                    : favouredExtensions.Select(extension =>
-                        string.IsNullOrEmpty(extension) ? exe : Path.ChangeExtension(exe, extension));
-
-                var basePathsToSearch = Path.IsPathRooted(exe) ? new[] {""} : new[] {""}.Concat(GetEnvironmentPaths());
-
-                var exeAbsolutePaths = basePathsToSearch
-                    .SelectMany(basePath => exePaths.Select(exePath => string.IsNullOrEmpty(basePath) ? exePath : Path.Combine(basePath, exePath)));
-                    
-                var exeAbsolutePath = exeAbsolutePaths
-                    .FirstOrDefault(File.Exists);
-
-                return string.IsNullOrEmpty(exeAbsolutePath)
-                    ? LeftAsync<Error, string>(Task.FromResult(CouldNotFindExe(exe, exeAbsolutePaths)))
-                    : exeAbsolutePath;
-            }
-            catch (Exception e)
-            {
-                return Error.Create($"Error while trying to resolve location of '{exe}'", e);
-            }
-        }
-
-        private static Error CouldNotFindExe(string exe, IEnumerable<string> exeAbsolutePaths)
-        {
-            return Error.Create($"Could not find location of exe '{exe}'. " +
-                                $"Searched the following locations:{Environment.NewLine}{string.Join(Environment.NewLine, exeAbsolutePaths)}");
-        }
-
-        private static string[] GetEnvironmentPaths()
-        {
-            var pathEnv = Environment.GetEnvironmentVariable("PATH");
-            return pathEnv == null ? new string[0] : pathEnv.Split(';');
-        }
-
-        private static string[] FavouredExtensions()
-        {
-            return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? new[] {".exe", ".cmd"} : new string[] { };
-        }
-
-        private static EitherAsync<Error, CommandLineResult> RunExpanded(string[] command, bool redirectStreams = false, CancellationToken? cancellationToken = null)
-        {
-            return ResolveCommand(command)
-                .Bind(c => Run(c, redirectStreams, cancellationToken));
+            return Command.Resolve(command)
+                .Bind(c => Run(c, options));
         }
 
         // Reference: https://github.com/jamesmanning/RunProcessAsTask/blob/master/src/RunProcessAsTask/ProcessEx.cs#L27
 
-        private static async Task<Either<Error, CommandLineResult>> Run((string Exe, string Arguments) command, bool redirectStreams = false, CancellationToken? cancellationToken = null)
+        private static async Task<Either<Error, CommandLineResult>> Run(
+            Command command, 
+            CommandLineOptions options = null)
         {
-            cancellationToken = cancellationToken ?? CancellationToken.None;
-
+            options = options ?? new CommandLineOptions();
+            
             var processStartInfo = new ProcessStartInfo(command.Exe, command.Arguments)
             {
                 UseShellExecute = false,
-                RedirectStandardOutput = redirectStreams,
-                RedirectStandardError = redirectStreams
+                RedirectStandardOutput = options.RedirectStreams,
+                RedirectStandardError = options.RedirectStreams,
+                WorkingDirectory = options.WorkingDirectory
             };
 
             var taskCompletionSource = new TaskCompletionSource<Either<Error, CommandLineResult>>();
@@ -116,7 +67,7 @@ namespace Make.Utility
                 EnableRaisingEvents = true
             };
 
-            var (standardOutput, standardError) = redirectStreams ? GetStreams(process) : CreateEmptyStreams();
+            var (standardOutput, standardError) = options.RedirectStreams ? GetStreams(process) : CreateEmptyStreams();
 
             process.Exited += async (sender, args) =>
             {
@@ -142,17 +93,17 @@ namespace Make.Utility
                 }
             }
 
-            using (cancellationToken.Value.Register(Cancel))
+            using (options.CancellationToken.Register(Cancel))
             {
-                cancellationToken.Value.ThrowIfCancellationRequested();
+                options.CancellationToken.ThrowIfCancellationRequested();
 
                 try
                 {
                     if (!process.Start())
                     {
-                        taskCompletionSource.TrySetResult(Error.Create($"Could not start command '{ToString(command)}'"));
+                        taskCompletionSource.TrySetResult(Error.Create($"Could not start command '{command}'"));
                     }
-                    else if (redirectStreams)
+                    else if (options.RedirectStreams)
                     {
                         process.BeginOutputReadLine();
                         process.BeginErrorReadLine();
@@ -160,7 +111,7 @@ namespace Make.Utility
                 }
                 catch (Exception e)
                 {
-                    taskCompletionSource.TrySetResult(Error.Create($"Error while running command '{ToString(command)}': {e.Message}", e));
+                    taskCompletionSource.TrySetResult(Error.Create($"Error while running command '{command}': {e.Message}", e));
                 }
 
                 return await taskCompletionSource.Task.ConfigureAwait(false);
@@ -197,11 +148,6 @@ namespace Make.Utility
             };
 
             return (standardOutputResults.Task, standardErrorResults.Task);
-        }
-
-        private static string ToString((string Exe, string Arguments) command)
-        {
-            return string.IsNullOrEmpty(command.Arguments) ? command.Exe : string.Join(" ", command.Exe, command.Arguments);
         }
     }
 }

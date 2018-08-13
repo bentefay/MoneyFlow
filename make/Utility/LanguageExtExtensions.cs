@@ -30,6 +30,13 @@ namespace Make.Utility
                 {
                     Log();
                     LogError($"Build failed: {error.Message}");
+                    error.Exception.Iter(exception =>
+                    {
+                        Log();
+                        LogError($"Exception: {exception.Message}");
+                        Log();
+                        LogError(exception.StackTrace);
+                    });
                     return 1;
                 });
         }
