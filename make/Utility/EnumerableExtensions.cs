@@ -9,7 +9,7 @@ namespace Make.Utility
 {
     public static class EnumerableExtensions
     {
-        public static EitherAsync<Error, Unit> ForEach<T>(this IEnumerable<T> seq, Func<T, EitherAsync<Error, Unit>> f)
+        public static EitherAsync<Error, Unit> Do<T>(this IEnumerable<T> seq, Func<T, EitherAsync<Error, Unit>> f)
         {
             return seq.Aggregate(
                 RightAsync<Error, Unit>(Task.FromResult(unit)),

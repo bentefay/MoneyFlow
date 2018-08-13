@@ -21,7 +21,7 @@ namespace Make.Utility
             return Do(functions);
         }
 
-        public static void LogSection(string text)
+        private static void LogSection(string text)
         {
             Log();
             Log(new string('=', text.Length), ConsoleColor.DarkCyan);
@@ -31,6 +31,7 @@ namespace Make.Utility
         }
 
         public static void LogSuccess(string text) => Log(text, ConsoleColor.Green);
+        
         public static void LogError(string text) => Log(text, ConsoleColor.Red);
         
         public static void Log(string text = "", ConsoleColor color = ConsoleColor.White)
@@ -67,19 +68,6 @@ namespace Make.Utility
             {
                 return Error.Create($"Failed to zip '{source}' to '{destination}': {e.Message}", e);
             }
-        }
-        
-        public static T Using<T>(Action after, Func<T> func)
-        {
-            return Using(Disposable.Create(after), func);
-        }
-        
-        public static T Using<T>(IDisposable disposable, Func<T> func)
-        {
-            using (disposable)
-            {
-                return func();
-            }
-        }
+        }        
     }
 }
