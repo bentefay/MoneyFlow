@@ -1,17 +1,24 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
+using System.Threading.Tasks;
 using LanguageExt;
 using static LanguageExt.Prelude;
 
 namespace Make.Utility
 {
     public static class Utilities
-    {       
-        public static T Section<T>(string title, Func<T> func)
+    {
+        public static EitherAsync<Error, Unit> Do(params Func<EitherAsync<Error, Unit>>[] functions)
+        {
+            return functions.Aggregate(RightAsync<Error, Unit>(Task.FromResult(unit)), (acc, f) => acc.Bind(_ => f()));
+        }
+        
+        public static EitherAsync<Error, Unit> DoSection(string title, params Func<EitherAsync<Error, Unit>>[] functions)
         {
             LogSection(title);
-            return func();
+            return Do(functions);
         }
 
         public static void LogSection(string text)
