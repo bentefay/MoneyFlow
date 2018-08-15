@@ -2,18 +2,18 @@
 
 namespace Make.Utility
 {
-    public class CommandLineOptions
+    public class ExecutionOptions
     {
-        public CommandLineOptions(string workingDirectory = null, bool redirectStreams = false, CancellationToken? cancellationToken = null)
+        public ExecutionOptions(string workingDirectory = null, bool redirectStreams = false, CancellationToken? cancellationToken = null)
         {
             WorkingDirectory = workingDirectory;
             RedirectStreams = redirectStreams;
             CancellationToken = cancellationToken ?? CancellationToken.None;
         }
 
-        public CommandLineOptions With(string workingDirectory = null, bool? redirectStreams = null, CancellationToken? cancellationToken = null)
+        public ExecutionOptions With(string workingDirectory = null, bool? redirectStreams = null, CancellationToken? cancellationToken = null)
         {
-            return new CommandLineOptions(
+            return new ExecutionOptions(
                 workingDirectory ?? WorkingDirectory,
                 redirectStreams ?? RedirectStreams,
                 cancellationToken ?? CancellationToken);

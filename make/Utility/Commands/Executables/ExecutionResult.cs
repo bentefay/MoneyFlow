@@ -2,13 +2,13 @@
 
 namespace Make.Utility
 {
-    public class CommandLineResult
+    public class ExecutionResult
     {
         public int ExitCode { get; }
         public IReadOnlyList<string> Output { get; }
         public IReadOnlyList<string> Error { get; }
 
-        public CommandLineResult(int exitCode, IReadOnlyList<string> output, IReadOnlyList<string> error)
+        public ExecutionResult(int exitCode, IReadOnlyList<string> output, IReadOnlyList<string> error)
         {
             ExitCode = exitCode;
             Output = output;

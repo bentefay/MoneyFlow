@@ -8,23 +8,23 @@ using static Make.Utility.Utilities;
 
 namespace Make.Utility
 {
-    public static class CommandLine
+    public static class Execute
     {
-        public static async Task<string> ToString(params string[] command)
+        public static async Task<string> RunToString(params string[] command)
         {
-            return await Run(command, new CommandLineOptions(redirectStreams: true))
+            return await Run(command, new ExecutionOptions(redirectStreams: true))
                 .Match(
                     result => string.Join(Environment.NewLine, result.Output),
                     _ => "");
         }
 
-        public static EitherAsync<Error, Unit> ToEither(params string[] command) => ToEither(null, command);
+        public static EitherAsync<Error, Unit> RunToEither(params string[] command) => RunToEither(null, command);
 
-        public static EitherAsync<Error, Unit> ToEither(CommandLineOptions options, params string[] command)
+        public static EitherAsync<Error, Unit> RunToEither(ExecutionOptions options, params string[] command)
         {
-            options = options ?? new CommandLineOptions();
+            options = options ?? new ExecutionOptions();
             
-            return Command.Resolve(command)
+            return CommandLine.Resolve(command)
                 .Bind(c =>
                 {
                     Log();
@@ -35,23 +35,23 @@ namespace Make.Utility
                 .Map(_ => unit);
         }
 
-        private static EitherAsync<Error, CommandLineResult> Run(
+        private static EitherAsync<Error, ExecutionResult> Run(
             string[] command,             
-            CommandLineOptions options)
+            ExecutionOptions options)
         {
-            return Command.Resolve(command)
+            return CommandLine.Resolve(command)
                 .Bind(c => Run(c, options));
         }
 
         // Reference: https://github.com/jamesmanning/RunProcessAsTask/blob/master/src/RunProcessAsTask/ProcessEx.cs#L27
 
-        private static async Task<Either<Error, CommandLineResult>> Run(
-            Command command, 
-            CommandLineOptions options = null)
+        private static async Task<Either<Error, ExecutionResult>> Run(
+            CommandLine commandLine, 
+            ExecutionOptions options = null)
         {
-            options = options ?? new CommandLineOptions();
+            options = options ?? new ExecutionOptions();
             
-            var processStartInfo = new ProcessStartInfo(command.Exe, command.Arguments)
+            var processStartInfo = new ProcessStartInfo(commandLine.Exe, commandLine.Arguments)
             {
                 UseShellExecute = false,
                 RedirectStandardOutput = options.RedirectStreams,
@@ -59,7 +59,7 @@ namespace Make.Utility
                 WorkingDirectory = options.WorkingDirectory
             };
 
-            var taskCompletionSource = new TaskCompletionSource<Either<Error, CommandLineResult>>();
+            var taskCompletionSource = new TaskCompletionSource<Either<Error, ExecutionResult>>();
 
             var process = new Process
             {
@@ -72,7 +72,7 @@ namespace Make.Utility
             process.Exited += async (sender, args) =>
             {
                 taskCompletionSource.TrySetResult(
-                    new CommandLineResult(
+                    new ExecutionResult(
                         process.ExitCode,
                         await standardOutput.ConfigureAwait(false),
                         await standardError.ConfigureAwait(false)
@@ -101,7 +101,7 @@ namespace Make.Utility
                 {
                     if (!process.Start())
                     {
-                        taskCompletionSource.TrySetResult(Error.Create($"Could not start command '{command}'"));
+                        taskCompletionSource.TrySetResult(Error.Create($"Could not start command '{commandLine}'"));
                     }
                     else if (options.RedirectStreams)
                     {
@@ -111,7 +111,7 @@ namespace Make.Utility
                 }
                 catch (Exception e)
                 {
-                    taskCompletionSource.TrySetResult(Error.Create($"Error while running command '{command}': {e.Message}", e));
+                    taskCompletionSource.TrySetResult(Error.Create($"Error while running command '{commandLine}': {e.Message}", e));
                 }
 
                 return await taskCompletionSource.Task.ConfigureAwait(false);

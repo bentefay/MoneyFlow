@@ -7,12 +7,12 @@ namespace Make.Utility
     {
         public static EitherAsync<Error, Unit> Install(string directory)
         {
-            return CommandLine.ToEither(new CommandLineOptions(directory), "npm install");
+            return Execute.RunToEither(new ExecutionOptions(directory), "npm install");
         }
         
         public static EitherAsync<Error, Unit> Ci(string directory)
         {
-            return CommandLine.ToEither(new CommandLineOptions(directory), "npm ci");
+            return Execute.RunToEither(new ExecutionOptions(directory), "npm ci");
         }
     }
 }

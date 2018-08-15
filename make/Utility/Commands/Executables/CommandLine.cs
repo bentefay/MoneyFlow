@@ -8,9 +8,9 @@ using LanguageExt;
 
 namespace Make.Utility
 {
-    public class Command
+    public class CommandLine
     {
-        private Command(string exe, string arguments)
+        private CommandLine(string exe, string arguments)
         {
             Exe = exe;
             Arguments = arguments;
@@ -24,7 +24,7 @@ namespace Make.Utility
             return string.IsNullOrEmpty(Arguments) ? Exe : string.Join(" ", Exe, Arguments);
         }
 
-        public static EitherAsync<Error, Command> Resolve(params string[] command)
+        public static EitherAsync<Error, CommandLine> Resolve(params string[] command)
         {
             var commandTokens = command
                 .SelectMany(argument => argument.Split(' ', StringSplitOptions.RemoveEmptyEntries))
@@ -43,7 +43,7 @@ namespace Make.Utility
                 .Join(" ");
 
             return ResolveExePath(exe)
-                .Map(exeAbsolutePath => new Command($"\"{exeAbsolutePath}\"", arguments));
+                .Map(exeAbsolutePath => new CommandLine($"\"{exeAbsolutePath}\"", arguments));
         }
 
         private static EitherAsync<Error, string> ResolveExePath(string exe)
