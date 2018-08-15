@@ -29,7 +29,13 @@ namespace Make.Utility
         
         public static CommandLineApplication WithCommand(this CommandLineApplication app, string name, Action<CommandLineApplication> f)
         {
-            app.Command(name, f);
+            name
+                .Split('|', StringSplitOptions.RemoveEmptyEntries)
+                .Iter(nameAlias =>
+                {
+                    var command = app.Command(nameAlias, f);
+                    command.ThrowOnUnexpectedArgument = false;
+                });
             return app;
         }
     }

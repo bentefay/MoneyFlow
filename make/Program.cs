@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using LanguageExt;
 using Make.Models;
 using Make.Utility;
@@ -21,16 +22,23 @@ namespace Make
                     Name = "make",
                     Description = "Build, test and run MoneyFlow"
                 }
-                .WithCommand("build", build => build.WithExecute(() => Build(config, dotnetConfig, parcelConfig)))
-                .WithCommand("run", run => run
-                    .WithCommand("client", client => client.OnExecute(() => RunClient(config, parcelConfig)))
-                    .WithCommand("server", server => server.OnExecute(() => RunServer(config, dotnetConfig)))
+                .WithCommand("client|c", client => client.WithExecute(() => ExecuteCommandClient(parcelConfig, client)))
+                .WithCommand("build|b", build => build.WithExecute(() => Build(config, dotnetConfig, parcelConfig)))
+                .WithCommand("run|r", run => run
+                    .WithCommand("client|c", client => client.OnExecute(() => RunClient(config, parcelConfig)))
+                    .WithCommand("server|s", server => server.OnExecute(() => RunServer(config, dotnetConfig)))
                     .WithExecuteShowingHelp())
-                .WithCommand("test", test => test
-                    .WithCommand("server", server => server.OnExecute(() => TestServer(config, dotnetConfig)))
+                .WithCommand("test|t", test => test
+                    .WithCommand("server|s", server => server.OnExecute(() => TestServer(config, dotnetConfig)))
                     .WithExecuteShowingHelp())
                 .WithExecuteShowingHelp()
                 .Execute(args);
+        }
+
+        private static Task<int> ExecuteCommandClient(ParcelConfig p, CommandLineApplication client)
+        {
+            return CommandLine.ToEither(new CommandLineOptions(p.Project.ProjectDirectory), client.RemainingArguments.ToArray())
+                .ToExitCode();
         }
 
         private static Task<int> RunClient(Config c, ParcelConfig p)

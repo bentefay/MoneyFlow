@@ -26,9 +26,21 @@ namespace Make.Utility
 
         public static EitherAsync<Error, Command> Resolve(params string[] command)
         {
-            var commandTokens = command.SelectMany(argument => argument.Split(' ', StringSplitOptions.RemoveEmptyEntries)).ToList();
-            var exe = commandTokens.First().Trim();
-            var arguments = commandTokens.Skip(1).Select(a => a.Trim()).Join(" ");
+            var commandTokens = command
+                .SelectMany(argument => argument.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+                .ToList();
+
+            if (!commandTokens.Any())
+                return Error.Create($"Could not resolve empty command");
+            
+            var exe = commandTokens
+                .First()
+                .Trim();
+            
+            var arguments = commandTokens
+                .Skip(1)
+                .Select(a => a.Trim())
+                .Join(" ");
 
             return ResolveExePath(exe)
                 .Map(exeAbsolutePath => new Command($"\"{exeAbsolutePath}\"", arguments));
