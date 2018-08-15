@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Make.Models
+namespace Make.Config
 {
     public class Config
     {

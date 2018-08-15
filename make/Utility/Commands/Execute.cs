@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using LanguageExt;
-using static LanguageExt.Prelude;
-using static Make.Utility.Utilities;
+using Make.Utility.Commands.Executables;
+using Make.Utility.Extensions;
 
-namespace Make.Utility
+namespace Make.Utility.Commands
 {
     public static class Execute
     {
@@ -27,12 +27,12 @@ namespace Make.Utility
             return CommandLine.Resolve(command)
                 .Bind(c =>
                 {
-                    Log();
-                    Log(!string.IsNullOrWhiteSpace(options.WorkingDirectory) ? $"[{options.WorkingDirectory}] {c}" : $"{c}");
+                    Utilities.Log();
+                    Utilities.Log(!string.IsNullOrWhiteSpace(options.WorkingDirectory) ? $"[{options.WorkingDirectory}] {c}" : $"{c}");
                     return Run(c, options.With(redirectStreams: false));
                 })
                 .Where(result => result.ExitCode == 0)
-                .Map(_ => unit);
+                .Map(_ => Prelude.unit);
         }
 
         private static EitherAsync<Error, ExecutionResult> Run(

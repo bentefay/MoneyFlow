@@ -1,4 +1,4 @@
-﻿namespace Make.Models
+﻿namespace Make.Config
 {
     public class ParcelProject
     {

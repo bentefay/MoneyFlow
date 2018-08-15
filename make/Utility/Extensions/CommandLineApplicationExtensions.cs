@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using McMaster.Extensions.CommandLineUtils;
 
-namespace Make.Utility
+namespace Make.Utility.Extensions
 {
     internal static class CommandLineApplicationExtensions
     {

@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 
-namespace Make.Utility
+namespace Make.Utility.Commands.Executables
 {
     public class ExecutionOptions
     {

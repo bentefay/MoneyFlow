@@ -1,6 +1,6 @@
 ﻿using LanguageExt;
 
-namespace Make.Utility
+namespace Make.Utility.Commands
 {
     public static class Dotnet
     {

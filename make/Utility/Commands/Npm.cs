@@ -1,7 +1,7 @@
 ﻿using LanguageExt;
-using static Make.Utility.Utilities;
+using Make.Utility.Commands.Executables;
 
-namespace Make.Utility
+namespace Make.Utility.Commands
 {
     public static class Npm
     {

@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace Make.Models
+namespace Make.Config
 {
     public class ParcelConfig
     {

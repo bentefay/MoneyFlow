@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Make.Utility
+namespace Make.Utility.Commands.Executables
 {
     public class ExecutionResult
     {

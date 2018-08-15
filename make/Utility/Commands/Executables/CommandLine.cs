@@ -5,8 +5,9 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using LanguageExt;
+using Make.Utility.Extensions;
 
-namespace Make.Utility
+namespace Make.Utility.Commands.Executables
 {
     public class CommandLine
     {

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using LanguageExt;
-using static Make.Utility.Utilities;
 
-namespace Make.Utility
+namespace Make.Utility.Extensions
 {
     public static class LanguageExtExtensions
     {
@@ -22,20 +21,20 @@ namespace Make.Utility
             return either.Match(
                 _ =>
                 {
-                    Log();
-                    LogSuccess("Build completed successfully");
+                    Utilities.Log();
+                    Utilities.LogSuccess("Build completed successfully");
                     return 0;
                 },
                 error =>
                 {
-                    Log();
-                    LogError($"Build failed: {error.Message}");
+                    Utilities.Log();
+                    Utilities.LogError($"Build failed: {error.Message}");
                     error.Exception.Iter(exception =>
                     {
-                        Log();
-                        LogError($"Exception: {exception.Message}");
-                        Log();
-                        LogError(exception.StackTrace);
+                        Utilities.Log();
+                        Utilities.LogError($"Exception: {exception.Message}");
+                        Utilities.Log();
+                        Utilities.LogError(exception.StackTrace);
                     });
                     return 1;
                 });

@@ -1,8 +1,11 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using LanguageExt;
-using Make.Models;
+using Make.Config;
 using Make.Utility;
+using Make.Utility.Commands;
+using Make.Utility.Commands.Executables;
+using Make.Utility.Extensions;
 using McMaster.Extensions.CommandLineUtils;
 using static LanguageExt.Prelude;
 using static Make.Utility.Utilities;
@@ -13,7 +16,7 @@ namespace Make
     {
         public static int Main(string[] args)
         {
-            var config = new Config();
+            var config = new Config.Config();
             var dotnetConfig = new DotnetConfig();
             var parcelConfig = new ParcelConfig();
 
@@ -42,7 +45,7 @@ namespace Make
                 .ToExitCode();
         }
 
-        private static Task<int> RunClient(Config c, DotnetConfig d, ParcelConfig p)
+        private static Task<int> RunClient(Config.Config c, DotnetConfig d, ParcelConfig p)
         {
             return Do(
                     () => Npm.Install(p.Project.ProjectDirectory),
@@ -50,14 +53,14 @@ namespace Make
                 .ToExitCode();
         }
 
-        private static Task<int> RunServer(Config c, DotnetConfig d)
+        private static Task<int> RunServer(Config.Config c, DotnetConfig d)
         {
             return Do(
                     () => Dotnet.RunWatch(d.Project.Dir))
                 .ToExitCode();
         }
 
-        private static Task<int> TestServer(Config c, DotnetConfig d)
+        private static Task<int> TestServer(Config.Config c, DotnetConfig d)
         {
             return Do(
                     () => d.TestProjects.Do(testProject =>
@@ -65,7 +68,7 @@ namespace Make
                 .ToExitCode();
         }
 
-        private static Task<int> Build(Config c, DotnetConfig d, ParcelConfig p)
+        private static Task<int> Build(Config.Config c, DotnetConfig d, ParcelConfig p)
         {
             return Do(
                     () => LogInfo(c, d).ToAsync(),
@@ -93,7 +96,7 @@ namespace Make
                 .ToExitCode();
         }
 
-        private static async Task<Either<Error, Unit>> LogInfo(Config c, DotnetConfig d)
+        private static async Task<Either<Error, Unit>> LogInfo(Config.Config c, DotnetConfig d)
         {
             Log($"Working directory: {c.RootDir}");
 

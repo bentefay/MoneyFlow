@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Make.Utility
+namespace Make.Utility.Extensions
 {
     public static class StringExtensions 
     {
