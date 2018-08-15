@@ -103,6 +103,10 @@ namespace Make
             Log($"Building in configuration '{d.Configuration}'");
 
             Log($"Dotnet SDK version: {await Executable.RunToString("dotnet --version")}");
+            
+            Log($"Node version: {await Executable.RunToString("node --version")}");
+            
+            Log($"NPM version: {await Executable.RunToString("npm --version")}");
 
             return unit;
         }
