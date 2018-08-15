@@ -9,10 +9,10 @@ namespace Make.Utility
         {
             return CommandLine.ToEither(new CommandLineOptions(directory), "npm install");
         }
-
-        public static EitherAsync<Error, Unit> Update(string directory)
+        
+        public static EitherAsync<Error, Unit> Ci(string directory)
         {
-            return CommandLine.ToEither(new CommandLineOptions(directory), "npm update");
+            return CommandLine.ToEither(new CommandLineOptions(directory), "npm ci");
         }
     }
 }

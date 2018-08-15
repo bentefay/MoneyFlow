@@ -20,7 +20,8 @@ namespace Make
             return new CommandLineApplication
                 {
                     Name = "make",
-                    Description = "Build, test and run MoneyFlow"
+                    Description = "Build, test and run MoneyFlow",
+                    ThrowOnUnexpectedArgument = false
                 }
                 .WithCommand("client|c", client => client.WithExecute(() => ExecuteCommandClient(parcelConfig, client)))
                 .WithCommand("build|b", build => build.WithExecute(() => Build(config, dotnetConfig, parcelConfig)))
@@ -82,8 +83,7 @@ namespace Make
                         () => Dotnet.Publish(d.Project.Dir, d.Configuration, d.Verbosity, c.PublishDir)
                     ),
                     () => DoSection("Publish Client",
-                        () => Npm.Install(p.Project.ProjectDirectory),
-                        () => Npm.Update(p.Project.ProjectDirectory),
+                        () => Npm.Ci(p.Project.ProjectDirectory),
                         () => Parcel.BuildProd(p.Project.ProjectDirectory, $"{c.PublishDir}/wwwroot", $"{c.BuildDir}/client/cache", p.Verbosity)
                     ),
                     () => DoSection("Zip",
