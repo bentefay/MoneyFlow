@@ -33,10 +33,10 @@ as you normally would, then either:
 
 Clone this repository then:
 
-- `make run server`
-- `make run client`
-- `make test server`
-- `make build` (same build that CI runs to prepare for deployment)
+- `m run server` (watch run server)
+- `m run client` (watch run client)
+- `m test server` (watch test server)
+- `m build` (same build that CI runs to prepare for deployment)
 
 ## Resources
 

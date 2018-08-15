@@ -37,14 +37,14 @@ namespace Make
         {
             return Do(
                     () => Npm.Install(p.Project.ProjectDirectory),
-                    () => Parcel.RunDev(p.Project.ProjectDirectory, p.Verbosity))
+                    () => Parcel.RunDev(p.Project.ProjectDirectory, $"{c.BuildDir}/client/dist", $"{c.BuildDir}/client/cache", p.Verbosity))
                 .ToExitCode();
         }
 
         private static Task<int> RunServer(Config c, DotnetConfig d)
         {
             return Do(
-                    () => Dotnet.Run(d.Project.Dir))
+                    () => Dotnet.RunWatch(d.Project.Dir))
                 .ToExitCode();
         }
 
@@ -52,7 +52,7 @@ namespace Make
         {
             return Do(
                     () => d.TestProjects.Do(testProject =>
-                        Dotnet.Test(testProject.Dir)))
+                        Dotnet.TestWatch(testProject.Dir)))
                 .ToExitCode();
         }
 
