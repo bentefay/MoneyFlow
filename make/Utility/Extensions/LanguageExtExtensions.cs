@@ -39,5 +39,10 @@ namespace Make.Utility.Extensions
                     return 1;
                 });
         }
+
+        public static EitherAsync<Error, T> ToRightAsync<T>(this Task<T> task)
+        {
+            return Prelude.RightAsync<Error, T>(task);
+        }
     }
 }
