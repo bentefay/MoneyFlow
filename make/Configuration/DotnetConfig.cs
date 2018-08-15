@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Make.Config
+namespace Make.Configuration
 {
     public class DotnetConfig
     {
