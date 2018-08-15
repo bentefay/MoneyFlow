@@ -9,9 +9,9 @@ using Make.Utility.Extensions;
 
 namespace Make.Utility.Commands.Executables
 {
-    public class CommandLine
+    public class ExecutionArguments
     {
-        private CommandLine(string exe, string arguments)
+        private ExecutionArguments(string exe, string arguments)
         {
             Exe = exe;
             Arguments = arguments;
@@ -25,7 +25,7 @@ namespace Make.Utility.Commands.Executables
             return string.IsNullOrEmpty(Arguments) ? Exe : string.Join(" ", Exe, Arguments);
         }
 
-        public static EitherAsync<Error, CommandLine> Resolve(params string[] command)
+        public static EitherAsync<Error, ExecutionArguments> Resolve(params string[] command)
         {
             var commandTokens = command
                 .SelectMany(argument => argument.Split(' ', StringSplitOptions.RemoveEmptyEntries))
@@ -44,7 +44,7 @@ namespace Make.Utility.Commands.Executables
                 .Join(" ");
 
             return ResolveExePath(exe)
-                .Map(exeAbsolutePath => new CommandLine($"\"{exeAbsolutePath}\"", arguments));
+                .Map(exeAbsolutePath => new ExecutionArguments($"\"{exeAbsolutePath}\"", arguments));
         }
 
         private static EitherAsync<Error, string> ResolveExePath(string exe)

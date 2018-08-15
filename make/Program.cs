@@ -41,7 +41,7 @@ namespace Make
 
         private static Task<int> ExecuteCommandClient(ParcelConfig p, CommandLineApplication client)
         {
-            return Execute.RunToEither(new ExecutionOptions(p.Project.ProjectDirectory), client.RemainingArguments.ToArray())
+            return Executable.RunToEither(new ExecutionOptions(p.Project.ProjectDirectory), client.RemainingArguments.ToArray())
                 .ToExitCode();
         }
 
@@ -102,7 +102,7 @@ namespace Make
 
             Log($"Building in configuration '{d.Configuration}'");
 
-            Log($"Dotnet SDK version: {await Execute.RunToString("dotnet --version")}");
+            Log($"Dotnet SDK version: {await Executable.RunToString("dotnet --version")}");
 
             return unit;
         }

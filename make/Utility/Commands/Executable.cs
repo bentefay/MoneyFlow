@@ -8,7 +8,7 @@ using Make.Utility.Extensions;
 
 namespace Make.Utility.Commands
 {
-    public static class Execute
+    public static class Executable
     {
         public static async Task<string> RunToString(params string[] command)
         {
@@ -24,7 +24,7 @@ namespace Make.Utility.Commands
         {
             options = options ?? new ExecutionOptions();
             
-            return CommandLine.Resolve(command)
+            return ExecutionArguments.Resolve(command)
                 .Bind(c =>
                 {
                     Utilities.Log();
@@ -39,19 +39,19 @@ namespace Make.Utility.Commands
             string[] command,             
             ExecutionOptions options)
         {
-            return CommandLine.Resolve(command)
+            return ExecutionArguments.Resolve(command)
                 .Bind(c => Run(c, options));
         }
 
         // Reference: https://github.com/jamesmanning/RunProcessAsTask/blob/master/src/RunProcessAsTask/ProcessEx.cs#L27
 
         private static async Task<Either<Error, ExecutionResult>> Run(
-            CommandLine commandLine, 
+            ExecutionArguments executionArguments, 
             ExecutionOptions options = null)
         {
             options = options ?? new ExecutionOptions();
             
-            var processStartInfo = new ProcessStartInfo(commandLine.Exe, commandLine.Arguments)
+            var processStartInfo = new ProcessStartInfo(executionArguments.Exe, executionArguments.Arguments)
             {
                 UseShellExecute = false,
                 RedirectStandardOutput = options.RedirectStreams,
@@ -101,7 +101,7 @@ namespace Make.Utility.Commands
                 {
                     if (!process.Start())
                     {
-                        taskCompletionSource.TrySetResult(Error.Create($"Could not start command '{commandLine}'"));
+                        taskCompletionSource.TrySetResult(Error.Create($"Could not start command '{executionArguments}'"));
                     }
                     else if (options.RedirectStreams)
                     {
@@ -111,7 +111,7 @@ namespace Make.Utility.Commands
                 }
                 catch (Exception e)
                 {
-                    taskCompletionSource.TrySetResult(Error.Create($"Error while running command '{commandLine}': {e.Message}", e));
+                    taskCompletionSource.TrySetResult(Error.Create($"Error while running command '{executionArguments}': {e.Message}", e));
                 }
 
                 return await taskCompletionSource.Task.ConfigureAwait(false);
