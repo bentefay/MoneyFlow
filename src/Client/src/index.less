@@ -1,0 +1,91 @@
+@import  "./palette.less";
+
+* {
+    box-sizing: border-box;
+}
+
+body, html {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+}
+
+.account {
+    height: 100%;
+    display: flex;
+    flex-flow: nowrap column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+
+    .background {
+        position: fixed;
+        z-index: -1;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: @color0; // @color7;
+        path.gray {
+            fill: darken(@color0, 2%);
+        }
+        path.blue {
+            fill: #009cf12a;
+        }
+        path.orange {
+            fill: darken(desaturate(@color1, 50%), 20%);
+        }        
+    }
+
+    .brand {
+        font-size: 50px;
+        margin-bottom: 20px;
+        .first {
+            color: @color1;
+            font-size: 65%;
+            margin-bottom: -22px;
+            margin-left: 2px;
+        }
+        .second {
+            color: @color7; // @color0
+        }
+    }
+
+    .form {
+        border: 1px solid @color6;
+        background-color: @color7;
+        border-radius: 5px;
+        box-shadow: 5px 5px 20px #0004;
+        padding: 40px;
+        min-width: 350px;
+
+        .label {
+            display: block;
+            font-weight: 600;
+        }
+        
+        .input {
+            font-size: 18px;
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 30px;
+            border: 1px solid @color6;
+            border-radius: 2px;
+            padding: 5px 10px;
+            width: 100%;
+        }
+
+        .button {
+            font-size: 18px;
+            margin-top: 10px;
+            background-color: @color4;
+            border: none;
+            border-radius: 2px;
+            padding: 7px 15px;
+            width: 100%;
+            cursor: pointer;
+            color: white;
+        }
+    }
+}

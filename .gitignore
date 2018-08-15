@@ -6,3 +6,4 @@ obj/
 artifacts/
 **/Client/dist/
 **/Client/.cache/
+wwwroot/

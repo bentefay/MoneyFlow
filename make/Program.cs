@@ -26,7 +26,7 @@ namespace Make
                 .WithCommand("client|c", client => client.WithExecute(() => ExecuteCommandClient(parcelConfig, client)))
                 .WithCommand("build|b", build => build.WithExecute(() => Build(config, dotnetConfig, parcelConfig)))
                 .WithCommand("run|r", run => run
-                    .WithCommand("client|c", client => client.OnExecute(() => RunClient(config, parcelConfig)))
+                    .WithCommand("client|c", client => client.OnExecute(() => RunClient(config, dotnetConfig, parcelConfig)))
                     .WithCommand("server|s", server => server.OnExecute(() => RunServer(config, dotnetConfig)))
                     .WithExecuteShowingHelp())
                 .WithCommand("test|t", test => test
@@ -42,11 +42,11 @@ namespace Make
                 .ToExitCode();
         }
 
-        private static Task<int> RunClient(Config c, ParcelConfig p)
+        private static Task<int> RunClient(Config c, DotnetConfig d, ParcelConfig p)
         {
             return Do(
                     () => Npm.Install(p.Project.ProjectDirectory),
-                    () => Parcel.RunDev(p.Project.ProjectDirectory, $"{c.BuildDir}/client/dist", $"{c.BuildDir}/client/cache", p.Verbosity))
+                    () => Parcel.RunDev(p.Project.ProjectDirectory, $"{d.Project.Dir}/wwwroot", $"{c.BuildDir}/client/cache", p.Verbosity))
                 .ToExitCode();
         }
 

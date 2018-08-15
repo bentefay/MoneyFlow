@@ -5,7 +5,7 @@ namespace Web.Controllers
 {
     public class HomeController : ControllerBase
     {
-        [HttpGet("/")]
+        [HttpGet("/hello")]
         public ActionResult<string> Get()
         {
             return $"Hello, World! It's {DateTime.Now.DayOfWeek}.";
