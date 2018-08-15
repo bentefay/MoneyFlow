@@ -1,8 +1,4 @@
-﻿using System.ComponentModel.Design;
-using System.Linq;
-using System.Threading.Tasks;
-using LanguageExt;
-using LanguageExt.SomeHelp;
+﻿using LanguageExt;
 using Make.Utility.Commands.Executables;
 using Make.Utility.Extensions;
 
