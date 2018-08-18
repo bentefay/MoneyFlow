@@ -1,7 +1,7 @@
 import "tslib";
 import * as React from "react";
 import { render } from "react-dom";
-import { account, background, blue, orange, gray, brand, first, second, form, label, input, button, blue2 } from './index.style';
+import { account, background, orange2, orange1, gray2, brand, first, second, form, label, input, button, gray3 } from './index.style';
 
 const Root = () => (
   <div className={account}>
@@ -12,12 +12,15 @@ const Root = () => (
       width="100%"
       height="100%"
       preserveAspectRatio="none">
-      <path className={blue} d={path(100, 40, 0, 1)} />
-      <path className={blue2} d={path(100, 30, 0, 1)} />
-      <path className={orange} d={path(160, 100, 57, 1)} />
-      <path className={orange} d={path(170, -90, -26, 1)} />
-      <path className={gray} d={path(160, -90, -25, 1)} />
-      <path className={gray} d="M0 49.9 H 100 V 50.1 H 0" />
+
+      <path className={orange2} d={path(100, 40, 0, 1)} />
+      <path className={gray3} d={path(100, 30, 0, 1)} />
+
+      <path className={orange1} d={path(160, 100, 57, 1)} />
+      <path className={orange1} d={path(170, -90, -26, 1)} />
+
+      <path className={gray2} d={path(160, -90, -25, 1)} />
+      <path className={gray2} d="M0 49.9 H 100 V 50.1 H 0" />
     </svg>
 
     <div className={brand}>
@@ -25,7 +28,7 @@ const Root = () => (
       <div className={second}>Flow</div>
     </div>
 
-    <form className={form}>
+    <form className={`pure-form ${form}`}>
       <div>{process.env.API_BASE_URL}</div>
 
       <label className={label}>Email address</label>
@@ -34,7 +37,7 @@ const Root = () => (
       <label className={label}>Password</label>
       <input className={input} type="password" required />
 
-      <button className={button}>Sign in</button>
+      <button className={`pure-button ${button}`}>Sign in</button>
     </form>
   </div>
 );

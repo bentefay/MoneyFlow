@@ -1,5 +1,5 @@
 import { css, injectGlobal } from "emotion";
-import { color0, color1, color7, color6, color4 } from './palette.style';
+import { color1, color7, color6, color4 } from './palette.style';
 
 injectGlobal({
     '*': {
@@ -32,36 +32,37 @@ injectGlobal({
     backgroundColor: "#203B46"
   });
   
-  export const gray = css({
+  export const gray2 = css({
     fill: "#23404C"
   });
   
-  export const blue = css({
+  export const orange2 = css({
     fill: "#F4A261"
   });
 
-  export const blue2 = css({
+  export const gray3 = css({
     fill: "#264653"
   });
   
-  export const orange = css({
+  export const orange1 = css({
     fill: "#E76F51"
   });
   
   export const brand = css({
-    fontSize: '50px',
+    fontSize: '70px',
     marginBottom: '20px'
   });
   
   export const first = css({
     color: color1,
-    fontSize: '65%',
-    marginBottom: "-22px",
-    marginLeft: "2px",
+    fontSize: "75%",
+    marginBottom: "-14px",
+    marginLeft: "18px"
   });
   
   export const second = css({
-    color: color7
+    color: color7,
+    fontFamily: "'Sacramento', serif"
   });
   
   export const form = css({
@@ -93,10 +94,6 @@ injectGlobal({
     fontSize: '18px',
     marginTop: '10px',
     backgroundColor: color4,
-    border: 'none',
-    borderRadius: '2px',
-    padding: '7px 15px',
-    width: '100%',
-    cursor: 'pointer',
-    color: 'white'
+    color: 'white',
+    width: '100%'
   });
