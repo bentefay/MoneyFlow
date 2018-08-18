@@ -21,33 +21,7 @@ injectGlobal({
     justifyContent: "center",
     fontSize: "1.2em"
   });
-  
-  export const background = css({
-    position: "fixed",
-    zIndex: -1,
-    top: "0",
-    left: "0",
-    right: "0",
-    bottom: "0",
-    backgroundColor: "#203B46"
-  });
-  
-  export const gray2 = css({
-    fill: "#23404C"
-  });
-  
-  export const orange2 = css({
-    fill: "#F4A261"
-  });
-
-  export const gray3 = css({
-    fill: "#264653"
-  });
-  
-  export const orange1 = css({
-    fill: "#E76F51"
-  });
-  
+    
   export const brand = css({
     fontSize: '70px',
     marginBottom: '20px'

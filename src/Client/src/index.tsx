@@ -1,27 +1,13 @@
 import "tslib";
 import * as React from "react";
 import { render } from "react-dom";
-import { account, background, orange2, orange1, gray2, brand, first, second, form, label, input, button, gray3 } from './index.style';
+import { account, brand, first, second, form, label, input, button } from './index.style';
+import { Background } from "./background";
 
 const Root = () => (
   <div className={account}>
-    <svg
-      className={background}
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 100 100"
-      width="100%"
-      height="100%"
-      preserveAspectRatio="none">
-
-      <path className={orange2} d={path(100, 40, 0, 1)} />
-      <path className={gray3} d={path(100, 30, 0, 1)} />
-
-      <path className={orange1} d={path(160, 100, 57, 1)} />
-      <path className={orange1} d={path(170, -90, -26, 1)} />
-
-      <path className={gray2} d={path(160, -90, -25, 1)} />
-      <path className={gray2} d="M0 49.9 H 100 V 50.1 H 0" />
-    </svg>
+    
+    <Background />
 
     <div className={brand}>
       <div className={first}>Money</div>
@@ -43,21 +29,3 @@ const Root = () => (
 );
 
 render(<Root />, document.getElementById("root"));
-
-function path(
-  period: number,
-  amplitude: number,
-  phase: number,
-  repeat: number
-) {
-  const line = new Array(repeat)
-    .fill(0)
-    .map((_, i) => i)
-    .map(i => {
-      const offset = phase + period * i;
-      return `Q ${offset + period / 4} ${50 - amplitude}, ${offset +
-        period / 2} 50 T ${offset + period} 50`;
-    })
-    .join(" ");
-  return `M${phase} 50 ${line}`;
-}
