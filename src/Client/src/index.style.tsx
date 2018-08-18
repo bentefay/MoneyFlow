@@ -1,5 +1,5 @@
 import { css, injectGlobal } from "emotion";
-import { color0, color1, color7, color6, color4 } from './palette';
+import { color0, color1, color7, color6, color4 } from './palette.style';
 
 injectGlobal({
     '*': {
@@ -29,19 +29,23 @@ injectGlobal({
     left: "0",
     right: "0",
     bottom: "0",
-    backgroundColor: color0
+    backgroundColor: "#203B46"
   });
   
   export const gray = css({
-    fill: "#2e2e39"
+    fill: "#23404C"
   });
   
   export const blue = css({
-    fill: "#2b445c"
+    fill: "#F4A261"
+  });
+
+  export const blue2 = css({
+    fill: "#264653"
   });
   
   export const orange = css({
-    fill: "#8e4830"
+    fill: "#E76F51"
   });
   
   export const brand = css({

@@ -1,7 +1,7 @@
 import "tslib";
 import * as React from "react";
 import { render } from "react-dom";
-import { account, background, blue, orange, gray, brand, first, second, form, label, input, button } from './index.style';
+import { account, background, blue, orange, gray, brand, first, second, form, label, input, button, blue2 } from './index.style';
 
 const Root = () => (
   <div className={account}>
@@ -13,8 +13,9 @@ const Root = () => (
       height="100%"
       preserveAspectRatio="none">
       <path className={blue} d={path(100, 40, 0, 1)} />
-      <path className={orange} d={path(160, 100, 50, 1)} />
-      <path className={orange} d={path(170, -90, -25, 1)} />
+      <path className={blue2} d={path(100, 30, 0, 1)} />
+      <path className={orange} d={path(160, 100, 57, 1)} />
+      <path className={orange} d={path(170, -90, -26, 1)} />
       <path className={gray} d={path(160, -90, -25, 1)} />
       <path className={gray} d="M0 49.9 H 100 V 50.1 H 0" />
     </svg>
