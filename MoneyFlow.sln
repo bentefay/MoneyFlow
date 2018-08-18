@@ -5,13 +5,6 @@ VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "src\Web\Web.csproj", "{2374316F-10A8-47FF-BFC6-0C9E1486CFAA}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{5A39DD58-9CC1-4778-8038-22F783C19E47}"
-ProjectSection(SolutionItems) = preProject
-	.gitignore = .gitignore
-	make.cmd = make.cmd
-	README.md = README.md
-EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Make", "make\Make.csproj", "{07BC5A94-B633-4C4C-BB89-BA9888C8359F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebTests", "test\WebTests\WebTests.csproj", "{CA3F9859-3478-458C-B5C3-191A7F392126}"
