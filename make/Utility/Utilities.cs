@@ -21,12 +21,12 @@ namespace Make.Utility
             return Do(functions);
         }
 
-        private static void LogSection(string text)
+        public static void LogSection(string text, ConsoleColor color = ConsoleColor.DarkCyan)
         {
             Log();
-            Log(new string('=', text.Length), ConsoleColor.DarkCyan);
-            Log(text, ConsoleColor.DarkCyan);
-            Log(new string('=', text.Length), ConsoleColor.DarkCyan);
+            Log(new string('=', text.Length), color);
+            Log(text, color);
+            Log(new string('=', text.Length), color);
             Log();
         }
 

@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using LanguageExt;
 using Make.Configuration;
@@ -19,52 +21,59 @@ namespace Make
             var config = new Config();
             var dotnetConfig = new DotnetConfig();
             var parcelConfig = new ParcelConfig();
+            var cancel = new CancellationTokenSource();
+            var options = new ExecutionOptions(cancellationToken: cancel.Token);
 
+            Console.CancelKeyPress += (sender, eventArgs) => {
+                LogSection("PRESSED CTRL+C. EXITING...", ConsoleColor.Red);
+                cancel.Cancel();
+            };
+                        
             return new CommandLineApplication
                 {
                     Name = "make",
                     Description = "Build, test and run MoneyFlow",
                     ThrowOnUnexpectedArgument = false
                 }
-                .WithCommand("client|c", client => client.WithExecute(() => ExecuteCommandClient(parcelConfig, client)))
-                .WithCommand("build|b", build => build.WithExecute(() => Build(config, dotnetConfig, parcelConfig)))
+                .WithExecutableCommand("client|c", client => ExecuteCommandClient(parcelConfig, client, options))
+                .WithExecutableCommand("build|b", build => Build(config, dotnetConfig, parcelConfig))
                 .WithCommand("run|r", run => run
-                    .WithCommand("client|c", client => client.OnExecute(() => RunClient(config, dotnetConfig, parcelConfig)))
-                    .WithCommand("server|s", server => server.OnExecute(() => RunServer(config, dotnetConfig)))
+                    .WithExecutableCommand("client|c", client => RunClient(config, dotnetConfig, parcelConfig, options))
+                    .WithExecutableCommand("server|s", server => RunServer(config, dotnetConfig, options))
                     .WithExecuteShowingHelp())
                 .WithCommand("test|t", test => test
-                    .WithCommand("server|s", server => server.OnExecute(() => TestServer(config, dotnetConfig)))
+                    .WithExecutableCommand("server|s", server => TestServer(config, dotnetConfig, options))
                     .WithExecuteShowingHelp())
                 .WithExecuteShowingHelp()
                 .Execute(args);
         }
 
-        private static Task<int> ExecuteCommandClient(ParcelConfig p, CommandLineApplication client)
+        private static Task<int> ExecuteCommandClient(ParcelConfig p, CommandLineApplication client, ExecutionOptions options)
         {
-            return Executable.RunToEither(new ExecutionOptions(p.Project.ProjectDirectory), client.RemainingArguments.ToArray())
+            return Executable.RunToEither(options.With(workingDirectory: p.Project.ProjectDirectory), client.RemainingArguments.ToArray())
                 .ToExitCode();
         }
 
-        private static Task<int> RunClient(Config c, DotnetConfig d, ParcelConfig p)
-        {
-            return Do(
-                    () => Npm.Install(p.Project.ProjectDirectory),
-                    () => Parcel.RunDev(p.Project.ProjectDirectory, $"{d.Project.Dir}/wwwroot", $"{c.BuildDir}/client/cache", p.Verbosity))
-                .ToExitCode();
-        }
-
-        private static Task<int> RunServer(Config c, DotnetConfig d)
+        private static Task<int> RunClient(Config c, DotnetConfig d, ParcelConfig p, ExecutionOptions options)
         {
             return Do(
-                    () => Dotnet.RunWatch(d.Project.Dir))
+                    () => Npm.Install(p.Project.ProjectDirectory, options),
+                    () => Parcel.RunDev(p.Project.ProjectDirectory, $"{d.Project.Dir}/wwwroot", $"{c.BuildDir}/client/cache", p.Verbosity, options))
                 .ToExitCode();
         }
 
-        private static Task<int> TestServer(Config c, DotnetConfig d)
+        private static Task<int> RunServer(Config c, DotnetConfig d, ExecutionOptions options)
+        {
+            return Do(
+                    () => Dotnet.RunWatch(d.Project.Dir, options))
+                .ToExitCode();
+        }
+
+        private static Task<int> TestServer(Config c, DotnetConfig d, ExecutionOptions options)
         {
             return Do(
                     () => d.TestProjects.Do(testProject =>
-                        Dotnet.TestWatch(testProject.Dir)))
+                        Dotnet.TestWatch(testProject.Dir, options)))
                 .ToExitCode();
         }
 

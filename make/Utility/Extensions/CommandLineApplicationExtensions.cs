@@ -38,5 +38,11 @@ namespace Make.Utility.Extensions
                 });
             return app;
         }
+        
+        public static CommandLineApplication WithExecutableCommand(this CommandLineApplication app, string name, Func<CommandLineApplication, Task<int>> f)
+        {
+            return WithCommand(app, name, application => application.WithExecute(() => f(application)));
+        }
+
     }
 }

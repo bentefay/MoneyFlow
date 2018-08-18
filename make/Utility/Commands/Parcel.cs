@@ -1,12 +1,13 @@
 ﻿using LanguageExt;
+using Make.Utility.Commands.Executables;
 
 namespace Make.Utility.Commands
 {
     public static class Parcel
     {
-        public static EitherAsync<Error, Unit> RunDev(string projectDirectory, string outputDirectory, string cacheDirectory, int logLevel)
+        public static EitherAsync<Error, Unit> RunDev(string projectDirectory, string outputDirectory, string cacheDirectory, int logLevel, ExecutionOptions options)
         {
-            return Executable.RunToEither($"{Exe(projectDirectory)} {projectDirectory}/index.html --out-dir {outputDirectory} --cache-dir {cacheDirectory} --log-level {logLevel} --open");
+            return Executable.RunToEither(options, $"{Exe(projectDirectory)} {projectDirectory}/index.html --out-dir {outputDirectory} --cache-dir {cacheDirectory} --log-level {logLevel} --open");
         }
 
         public static EitherAsync<Error, Unit> BuildProd(string projectDirectory, string outputDirectory, string cacheDirectory, int logLevel)

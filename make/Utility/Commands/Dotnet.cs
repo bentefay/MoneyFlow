@@ -1,4 +1,5 @@
 ﻿using LanguageExt;
+using Make.Utility.Commands.Executables;
 
 namespace Make.Utility.Commands
 {
@@ -19,14 +20,14 @@ namespace Make.Utility.Commands
             return Executable.RunToEither($"dotnet clean {projectDirectory} --configuration {configuration} --verbosity {verbosity}");
         }
        
-        public static EitherAsync<Error, Unit> TestWatch(string projectDirectory)
+        public static EitherAsync<Error, Unit> TestWatch(string projectDirectory, ExecutionOptions options)
         {
-            return Executable.RunToEither($"dotnet watch -p {projectDirectory} test");
+            return Executable.RunToEither(options, $"dotnet watch -p {projectDirectory} test");
         }
         
-        public static EitherAsync<Error, Unit> RunWatch(string projectDirectory)
+        public static EitherAsync<Error, Unit> RunWatch(string projectDirectory, ExecutionOptions options)
         {
-            return Executable.RunToEither($"dotnet watch -p {projectDirectory} run");
+            return Executable.RunToEither(options, $"dotnet watch -p {projectDirectory} run");
         }
     }
 }
