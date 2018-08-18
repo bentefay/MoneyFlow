@@ -20,6 +20,9 @@ const Root = () => (
     </div>
 
     <form className={css.form}>
+
+      <div>{process.env.API_BASE_URL}</div>
+
       <label className={css.label}>Email address</label>
       <input className={css.input} type="email" required />
 
