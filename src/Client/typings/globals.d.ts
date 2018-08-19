@@ -14,3 +14,4 @@ declare var System: System;
 
 declare module "*.less";
 declare module "*.css";
+declare module "redux-logger";
