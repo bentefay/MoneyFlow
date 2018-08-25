@@ -12,7 +12,11 @@ export const c = {
     borderRadius: '5px',
     boxShadow: '5px 5px 20px #0004',
     padding: '40px',
-    minWidth: '350px'
+    minWidth: '350px',
+    "@media (max-width: 600px)": {
+      margin: '20px',
+      minWidth: '0'
+    }
   }),
   label: css({
     fontWeight: 500
