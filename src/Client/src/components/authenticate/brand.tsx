@@ -1,6 +1,6 @@
 import * as React from "react";
 import { css } from "emotion";
-import { color1, color7 } from '../../palette.style';
+import { color1, color7 } from '../styles/palette.style';
 
 export const c = {
     brand: css({

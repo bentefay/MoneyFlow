@@ -1,6 +1,6 @@
 import * as React from "react";
 import { css } from "emotion";
-import { color6, color7, color4 } from '../../palette.style';
+import { color6, color7, color4 } from '../styles/palette.style';
 import { connect } from 'react-redux';
 import { RootState } from '../../store/store';
 import { usernameUpdated, passwordUpdated, authSubmitted } from '../../store/auth/actions';
