@@ -1,12 +1,5 @@
-import { ActionType, getType } from "typesafe-actions";
-import * as actions from "./actions";
-
-export type AuthAction = ActionType<typeof actions>;
-
-export type AuthState = Readonly<{
-  username: string | null,
-  password: string | null
-}>;
+import { getType } from "typesafe-actions";
+import { AuthAction, AuthState, authActions } from '.';
 
 const getDefaultState = (): AuthState => {
   return {
@@ -15,11 +8,11 @@ const getDefaultState = (): AuthState => {
   };
 }
 
-export const authReduceer = (state = getDefaultState(), action: AuthAction): AuthState => {
+export const authReducer = (state = getDefaultState(), action: AuthAction): AuthState => {
   switch (action.type) {
-    case getType(actions.passwordUpdated):
+    case getType(authActions.passwordUpdated):
       return { ...state, password: action.payload.password };
-    case getType(actions.usernameUpdated):
+    case getType(authActions.usernameUpdated):
       return { ...state, username: action.payload.username };
     default:
       return state;

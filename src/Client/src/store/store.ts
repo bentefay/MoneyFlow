@@ -3,16 +3,17 @@ import { createEpicMiddleware, combineEpics } from "redux-observable";
 import { combineReducers } from "redux";
 import { routerReducer } from "react-router-redux";
 import { StateType } from "typesafe-actions";
-import { vaultReduceer } from "./vault/reducer";
-import { authReduceer } from './auth/reducer';
+import { vaultReducer } from "./vault/reducer";
+import { authReducer } from './auth/reducer';
 import logger from 'redux-logger';
+import { getVault } from './auth';
 
-const rootEpic = combineEpics();
+const rootEpic = combineEpics(getVault);
 
 const rootReducer = combineReducers({
   router: routerReducer,
-  vault: vaultReduceer,
-  auth: authReduceer
+  vault: vaultReducer,
+  auth: authReducer
 });
 
 const epicMiddleware = createEpicMiddleware();
@@ -22,6 +23,6 @@ const initialState = {};
 
 export const store = createStore(rootReducer, initialState, enhancer);
 
-epicMiddleware.run(rootEpic)
+epicMiddleware.run(rootEpic as any)
 
 export type RootState = StateType<typeof rootReducer>;

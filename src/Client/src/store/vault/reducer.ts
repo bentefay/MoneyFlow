@@ -13,7 +13,7 @@ const getDefaultState = (): VaultState => {
   return null;
 }
 
-export const vaultReduceer = (state = getDefaultState(), action: VaultAction): VaultState => {
+export const vaultReducer = (state = getDefaultState(), action: VaultAction): VaultState => {
   switch (action.type) {
     case getType(actions.vaultRequested):
       return state;
