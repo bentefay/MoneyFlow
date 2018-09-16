@@ -1,16 +1,12 @@
+import { ValidationErrors, tagged, Untagged } from '../shared/model';
 
-export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>
-
-export type ValidationErrors<T> = {
-    readonly [P in keyof T]?:
-    T[P] extends (infer U)[] ? (U extends string | number ? string[] : ValidationErrors<U>[]) :
-    T[P] extends object ? ValidationErrors<T[P]> :
-    string[];
+export interface Invalid<T> {
+    type: "Invalid";
+    errors: ValidationErrors<T>;
 }
 
-export interface ValidationFailure<T> {
-    type: "ValidationFailure";
-    errors: ValidationErrors<T>;
+export function validationFailure<T>(value: Untagged<Invalid<T>>): Invalid<T> {
+    return { ...value, type: "Invalid" }
 }
 
 export interface GeneralFailure {
@@ -24,17 +20,9 @@ export interface GeneralFailure {
     error: any;
 }
 
-function taggedType<T extends object & { type: string }>(type: T["type"]) {
-    return (value: Omit<T, "type">): T => Object.assign({}, value, { type: type }) as any;
-}
+export const generalFailure = tagged<GeneralFailure>("GeneralFailure");
 
-export const generalFailure = taggedType<GeneralFailure>("GeneralFailure");
-
-export function validationFailure<T>(value: Omit<ValidationFailure<T>, "type">): ValidationFailure<T> {
-    return { ...value, type: "ValidationFailure" }
-}
-
-export type AuthState = Readonly<{
+export interface AuthState extends Readonly<{
     username: string | null,
     password: string | null
-}>;
+}> { }
