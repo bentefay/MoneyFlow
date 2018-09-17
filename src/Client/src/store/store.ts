@@ -6,9 +6,9 @@ import { StateType } from "typesafe-actions";
 import { vaultReducer } from "./vault/reducer";
 import { authReducer } from './auth/reducer';
 import logger from 'redux-logger';
-import { getVault } from './auth';
+import { login } from './auth';
 
-const rootEpic = combineEpics(getVault);
+const rootEpic = combineEpics(login);
 
 const rootReducer = combineReducers({
   router: routerReducer,

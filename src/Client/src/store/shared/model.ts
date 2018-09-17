@@ -3,7 +3,7 @@ export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>
 export type ValidationErrors<T> =
     T extends any[] ? ArrayValidationErrors<T[number]> :
     T extends object ? ObjectValidationErrors<T> :
-    string[]
+    ReadonlyArray<string>
 
 export type NonFunctionKeys<T> = {
     [K in keyof T]: T[K] extends Function ? never : K
@@ -21,20 +21,20 @@ export function tagged<T extends object & { type: string }>(type: T["type"]) {
     return (value: Untagged<T>): T => Object.assign({}, value, { type: type }) as any;
 }
 
-export type Unit = [];
+export const unit = Symbol("unit");
 
-export const unit: Unit = [];
+export type Unit = typeof unit;
 
-export interface Invalid<T> {
+export interface Invalid<T> extends Readonly<{
     type: "Invalid";
     errors: ValidationErrors<T>;
-}
+}> { }
 
 export function validationFailure<T>(value: Untagged<Invalid<T>>): Invalid<T> {
     return { ...value, type: "Invalid" }
 }
 
-export interface GeneralFailure {
+export interface GeneralFailure extends Readonly<{
     type: "GeneralFailure",
     friendly: {
         /** A present tense description of the action that failed (e.g. "Logging in", "Retrieving vault")  */
@@ -43,7 +43,7 @@ export interface GeneralFailure {
     };
     possibleSolutions?: string[];
     error: any;
-}
+}> { }
 
 export const generalFailure = tagged<GeneralFailure>("GeneralFailure");
 
