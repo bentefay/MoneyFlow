@@ -1,10 +1,10 @@
 import { createStandardAction } from "typesafe-actions";
-import { GeneralFailure, Invalid } from '../shared/model';
-import { AuthState, Username, Password, EncryptedVault } from '.';
+import { GeneralFailure, Invalid } from '../shared/models';
+import { Email, Password, EncryptedVault, AuthStateValue } from '.';
 
-export const usernameUpdated = createStandardAction("USERNAME_UPDATED")<{ username: Username }>();
-export const passwordUpdated = createStandardAction("PASSWORD_UPDATED")<{ password: Password }>();
-export const loginInitiated = createStandardAction("LOGIN_INITIATED")<{ username: Username, password: Password }>();
+export const emailUpdated = createStandardAction("USERNAME_UPDATED")<{ email: Email, invalidate: boolean }>();
+export const passwordUpdated = createStandardAction("PASSWORD_UPDATED")<{ password: Password, invalidate: boolean }>();
+export const loginInitiated = createStandardAction("LOGIN_INITIATED")();
 export const loginSucceeded = createStandardAction("LOGIN_SUCCEEDED")<EncryptedVault>();
-export const loginErrored = createStandardAction("LOGIN_ERRORED")<GeneralFailure | Invalid<AuthState>>();
-export const userAccountNotFound = createStandardAction("CREATE_ACCOUNT_REQUESTED")<{ username: Username, password: Password }>();
+export const loginErrored = createStandardAction("LOGIN_ERRORED")<GeneralFailure | Invalid<AuthStateValue>>();
+export const userAccountNotFound = createStandardAction("CREATE_ACCOUNT_REQUESTED")<{ email: Email, password: Password }>();

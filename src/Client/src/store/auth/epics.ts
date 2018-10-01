@@ -1,41 +1,48 @@
 import { Observable, from, of, empty } from 'rxjs';
-import { mergeMap, filter, mergeAll } from 'rxjs/operators';
-import { authActions, AuthAction, AuthState, Username, Password, EncryptedVault } from '.';
+import { mergeMap, filter, mergeAll, withLatestFrom } from 'rxjs/operators';
+import { authActions, AuthAction, Email, Password, EncryptedVault, LoginError, AuthStateValue } from '.';
 import { isActionOf } from 'typesafe-actions';
 import { RootState } from '../store';
 import { hash } from "bcryptjs";
 import * as t from 'io-ts';
-import taskEither, { TaskEither } from 'fp-ts/lib/TaskEither';
-import { Unit, Errors, GeneralFailure, Invalid, validationFailure, unit } from '../shared/model';
+import * as taskEither from 'fp-ts/lib/TaskEither';
+import { TaskEither } from 'fp-ts/lib/TaskEither';
+import { Unit, Errors, GeneralFailure, validationFailure, unit } from '../shared/models';
 import { fetchJson } from '../shared/http';
 import { loginErrored, userAccountNotFound, loginSucceeded } from './actions';
 import { identity } from 'fp-ts/lib/function';
+import { isEmpty } from 'lodash';
 
 export function login(action: Observable<AuthAction>, state: Observable<RootState>): Observable<AuthAction> {
     return action.pipe(
         filter(isActionOf(authActions.loginInitiated)),
-        mergeMap(({ payload: { username, password } }) => {
+        withLatestFrom(state),
+        mergeMap(([_, state]) =>
+            state.auth.value.email != null && state.auth.value.password != null && isEmpty(state.auth.errors.email) && isEmpty(state.auth.errors.password) ?
+                of({ email: state.auth.value.email, password: state.auth.value.password }) :
+                empty()),
+        mergeMap(({ email, password }) => {
             return from(
-                getSalt(username)
-                    .mapLeft<Unit | AuthAction>(mapSaltErrorToAction)
+                getSalt(email)
+                    .mapLeft<Unit | AuthAction>(mapLoginErrorToAction)
                     .chain(salt =>
                         salt != null ?
-                            toHash(password, salt).mapLeft(mapSaltErrorToAction) :
-                            taskEither.asLeft(userAccountNotFound({ username, password })))
+                            toHash(password, salt).mapLeft(mapLoginErrorToAction) :
+                            taskEither.asLeft(userAccountNotFound({ email, password })))
                     .chain(hashedPassword =>
-                        getVault(username, hashedPassword)
+                        getVault(email, hashedPassword)
                             .bimap(
-                                mapSaltErrorToAction,
+                                mapLoginErrorToAction,
                                 vault => loginSucceeded(vault)
                             ))
                     .fold(identity, identity)
-                    .map(action => action == unit ? empty() : of(action))
+                    .map(action => action === unit ? empty() : of(action))
                     .run())
                 .pipe(mergeAll());
         }));
 }
 
-function mapSaltErrorToAction(error: SaltError) {
+function mapLoginErrorToAction(error: LoginError) {
     return error == unit ? unit : loginErrored(error);
 }
 
@@ -45,15 +52,15 @@ const GetVaultSuccessResponse = t.type({
 
 const GetVaultValidationErrorResponse = t.type({
     validationErrors: t.type({
-        username: t.array(t.string),
+        email: t.array(t.string),
         password: t.array(t.string)
     })
 });
 
-function getVault(username: Username, hashedPassword: HashedPassword) {
+function getVault(email: Email, hashedPassword: HashedPassword): TaskEither<LoginError, EncryptedVault> {
     return fetchJson(
         `api/vault`,
-        { headers: authHeader({ username: username.value, password: hashedPassword.value }) },
+        { headers: authHeader({ email: email.value, password: hashedPassword.value }) },
         "Retrieving your data",
         [{
             match: ({ status }) => status == 200,
@@ -63,7 +70,7 @@ function getVault(username: Username, hashedPassword: HashedPassword) {
         {
             match: ({ status }) => status == 400,
             validator: GetVaultValidationErrorResponse,
-            chain: ({ validationErrors }) => taskEither.asLeft(validationFailure<AuthState>({ errors: validationErrors }))
+            chain: ({ validationErrors }) => taskEither.asLeft(validationFailure<AuthStateValue>({ errors: validationErrors }))
         }]
     )
 }
@@ -74,7 +81,7 @@ const GetSaltSuccessResponse = t.type({
 
 const GetSaltValidationErrorResponse = t.type({
     validationErrors: t.type({
-        username: t.array(t.string)
+        email: t.array(t.string)
     })
 });
 
@@ -88,12 +95,10 @@ export class HashedPassword {
     constructor(public readonly value: string) { }
 }
 
-export type SaltError = GeneralFailure | Invalid<AuthState> | Unit;
-
-function getSalt(username: Username): TaskEither<SaltError, PasswordSalt | null> {
+function getSalt(email: Email): TaskEither<LoginError, PasswordSalt | null> {
     return fetchJson(
         `/api/salt`,
-        { headers: authHeader({ username: username.value }) },
+        { headers: authHeader({ email: email.value }) },
         "Checking for your account",
         [{
             match: ({ status }) => status == 200,
@@ -103,7 +108,7 @@ function getSalt(username: Username): TaskEither<SaltError, PasswordSalt | null>
         {
             match: ({ status }) => status == 400,
             validator: GetSaltValidationErrorResponse,
-            chain: ({ validationErrors }) => taskEither.asLeft(validationFailure<AuthState>({ errors: validationErrors }))
+            chain: ({ validationErrors }) => taskEither.asLeft(validationFailure<AuthStateValue>({ errors: validationErrors }))
         }]);
 }
 
@@ -111,7 +116,7 @@ function getSalt(username: Username): TaskEither<SaltError, PasswordSalt | null>
 function toHash(password: Password, salt: PasswordSalt): TaskEither<GeneralFailure, HashedPassword> {
     return taskEither.tryCatch(
         () => hash(password.value, salt.value),
-        (error: any) => Errors.unexpected("Encrypting your password", error))
+        (error: any) => Errors.unexpected("Encrypting your password to send to our server", error))
         .map(hashedPassword => new HashedPassword(hashedPassword));
 }
 

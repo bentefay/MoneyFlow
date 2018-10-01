@@ -1,9 +1,10 @@
-import { GeneralFailure, generalFailure, unit } from './model';
+import { GeneralFailure, generalFailure, unit, Unit } from './models';
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
-import either, { Either } from 'fp-ts/lib/Either';
-import taskEither, { TaskEither } from 'fp-ts/lib/TaskEither';
-import { Unit } from '../shared/model';
+import * as either from 'fp-ts/lib/Either';
+import { Either } from 'fp-ts/lib/Either';
+import * as taskEither from 'fp-ts/lib/TaskEither';
+import { TaskEither } from 'fp-ts/lib/TaskEither';
 
 export interface ResponseType<T, L, R> {
     match: (response: Response) => boolean;
@@ -45,7 +46,7 @@ export function fetchJson(input: Request | string, init: RequestInit, actionDesc
 
 function parseTextResponse(response: Response, actionDescription: string): TaskEither<GeneralFailure, string> {
     return taskEither.tryCatch(
-        response.text,
+        () => response.text(),
         (error: any) =>
             Errors.Internet.unexpectedResponse(actionDescription, {
                 message: `Calling response.text returned an error on response with status code '${response.status}'`,
@@ -56,7 +57,7 @@ function parseTextResponse(response: Response, actionDescription: string): TaskE
 
 function parseJsonResponse<T>(response: Response, validator: t.Type<T>, actionDescription: string): TaskEither<GeneralFailure, T> {
     return taskEither.tryCatch(
-        response.json,
+        () => response.json(),
         (error: any) =>
             Errors.Internet.unexpectedResponse(actionDescription, {
                 message: "Calling response.json returned an error on response with status code '${response.status}'",
@@ -95,8 +96,9 @@ export module Errors {
             return generalFailure({
                 friendly: {
                     actionDescription: actionDescription,
-                    reason: "Our server returned an unexpected response or someone else's server responded"
+                    reason: "Our server returned an unexpected response or someone else's server responded (this would be weird)"
                 },
+                possibleSolutions: ["This is probably our fault, so we'll need to fix it"],
                 error: error
             });
         }

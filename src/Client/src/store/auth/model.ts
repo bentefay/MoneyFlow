@@ -1,10 +1,20 @@
+import { GeneralFailure, Unit, ValidationErrors, Invalid } from '../shared/models';
+
+export type LoginError = GeneralFailure | Invalid<AuthStateValue> | Unit;
+
 export interface AuthState extends Readonly<{
-    username: Username | null,
+    value: AuthStateValue,
+    errors: ValidationErrors<AuthStateValue>,
+    generalFailure?: GeneralFailure
+}> { }
+
+export interface AuthStateValue extends Readonly<{
+    email: Email | null,
     password: Password | null
 }> { }
 
-export class Username {
-    public type = Username;
+export class Email {
+    public type = Email;
     constructor(public readonly value: string) { }
 }
 

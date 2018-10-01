@@ -5,7 +5,7 @@ export type VaultAction = ActionType<typeof actions>;
 
 export type VaultState = Readonly<{
   identity: {
-    username: string
+    email: string
   }
 } | null>;
 
