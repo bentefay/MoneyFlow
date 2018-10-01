@@ -18,7 +18,7 @@ export const c = {
         padding: '40px',
         width: '350px',
         "@media (max-width: 500px)": {
-            margin: '20px',
+            margin: '0 20px',
             minWidth: '0',
             width: "auto"
         }

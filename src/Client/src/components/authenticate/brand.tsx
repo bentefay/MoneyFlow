@@ -5,15 +5,19 @@ import { color1, color7 } from '../styles/palette.style';
 export const c = {
     brand: css({
         fontSize: '70px',
-        marginBottom: '20px'
+        marginBottom: '20px',
+        "@media (max-width: 500px)": {
+            marginBottom: '0',
+            fontSize: '60px'
+        }
     }),
-    first: css({
+    money: css({
         color: color1,
         fontSize: "75%",
         marginBottom: "-14px",
         marginLeft: "18px"
     }),
-    second: css({
+    flow: css({
         color: color7,
         fontFamily: "'Sacramento', serif"
     })
@@ -21,7 +25,7 @@ export const c = {
 
 export const Brand = () => (
     <div className={c.brand}>
-        <div className={c.first}>Money</div>
-        <div className={c.second}>Flow</div>
+        <div className={c.money}>Money</div>
+        <div className={c.flow}>Flow</div>
     </div>
 );
