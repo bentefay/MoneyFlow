@@ -1,6 +1,8 @@
 # MoneyFlow
 
-[MoneyFlow](https://moneyflow.azurewebsites.net/) tracks how your money flows in, around, and out of your various banks and accounts. 
+[MoneyFlow](https://moneyflow.azurewebsites.net/) tracks your money and how it flows in and out of your various banks and accounts.
+
+[![Build Status](https://dev.azure.com/btefay/MoneyFlow/_apis/build/status/MoneyFlow)](https://dev.azure.com/btefay/MoneyFlow/_build/latest?definitionId=1)
 
 ## :page_facing_up: Single view of all your finances 
 
@@ -40,11 +42,10 @@ Clone this repository then:
 
 ## Resources
 
-- [Web App](https://moneyflow.azurewebsites.net/)
-- [Build Server](https://btefay.visualstudio.com/MoneyFlow/_build) 
-- [Build Status](https://btefay.visualstudio.com/MoneyFlow/_build/latest?definitionId=1)
+- [App](https://moneyflow.azurewebsites.net/)
+- [Build Server Management](https://dev.azure.com/btefay/MoneyFlow/_build) 
+- [Prod Server Management](https://portal.azure.com)
 - [Project Management](https://github.com/bentefay/MoneyFlow/projects/1)
-- [Server Hosting](https://portal.azure.com)
 
 ## Features
 
