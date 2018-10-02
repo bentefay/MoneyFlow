@@ -12,7 +12,7 @@ namespace Make.Utility.Commands
 
         public static EitherAsync<Error, Unit> BuildProd(string projectDirectory, string outputDirectory, string cacheDirectory, int logLevel)
         {
-            return Executable.RunToEither($"{Exe(projectDirectory)} build {projectDirectory}/index.html --out-dir {outputDirectory} --cache-dir {cacheDirectory} --log-level {logLevel} --no-autoinstall");
+            return Executable.RunToEither($"{Exe(projectDirectory)} build {projectDirectory}/index.html --out-dir {outputDirectory} --cache-dir {cacheDirectory} --log-level {logLevel}"); // --no-autoinstall
         }
 
         private static string Exe(string projectDirectory)
