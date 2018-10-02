@@ -25,6 +25,13 @@ namespace Make.Utility.Commands.Executables
             return string.IsNullOrEmpty(Arguments) ? Exe : string.Join(" ", Exe, Arguments);
         }
 
+        public string ToString(ExecutionOptions options)
+        {
+            return !string.IsNullOrWhiteSpace(options.WorkingDirectory) ? 
+                $"[{options.WorkingDirectory}] {ToString()}" : 
+                $"{ToString()}";
+        }
+        
         public static EitherAsync<Error, ExecutionArguments> Resolve(params string[] command)
         {
             var commandTokens = command

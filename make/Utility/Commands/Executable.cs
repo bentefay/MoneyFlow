@@ -23,16 +23,18 @@ namespace Make.Utility.Commands
         public static EitherAsync<Error, Unit> RunToEither(ExecutionOptions options, params string[] command)
         {
             options = options ?? new ExecutionOptions();
-            
+
             return ExecutionArguments.Resolve(command)
-                .Bind(c =>
+                .Bind(executionArguments =>
                 {
                     Utilities.Log();
-                    Utilities.Log(!string.IsNullOrWhiteSpace(options.WorkingDirectory) ? $"[{options.WorkingDirectory}] {c}" : $"{c}");
-                    return Run(c, options.With(redirectStreams: false));
+                    Utilities.Log(executionArguments.ToString(options));
+                    return Run(executionArguments, options.With(redirectStreams: false));
                 })
-                .Where(result => result.ExitCode == 0)
-                .Map(_ => Prelude.unit);
+                .Bind(result => 
+                    result.ExitCode == 0 ?
+                        Prelude.Right<Error, Unit>(Prelude.unit) :
+                        Error.Create($"'{result.ExecutionArguments.ToString(options)}'\n\n=> exit code '{result.ExitCode}'"));
         }
 
         private static EitherAsync<Error, ExecutionResult> Run(
@@ -71,11 +73,16 @@ namespace Make.Utility.Commands
 
             process.Exited += async (sender, args) =>
             {
+                var standardOutputValue = await standardOutput.ConfigureAwait(false);
+                var standardErrorValue = await standardError.ConfigureAwait(false);
+                
                 taskCompletionSource.TrySetResult(
                     new ExecutionResult(
+                        executionArguments,
+                        options,
                         process.ExitCode,
-                        await standardOutput.ConfigureAwait(false),
-                        await standardError.ConfigureAwait(false)
+                        standardOutputValue,
+                        standardErrorValue
                     )
                 );
             };
