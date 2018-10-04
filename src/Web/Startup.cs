@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Web.Utils;
+using Web.Utils.Serialization;
 
 namespace Web
 {
@@ -17,7 +19,10 @@ namespace Web
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services
+                .AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddJsonOptions(setup => ConfigureJsonSerializerSettings.Execute(setup.SerializerSettings));
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
