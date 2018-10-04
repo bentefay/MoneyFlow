@@ -26,7 +26,7 @@ namespace Web
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-        {
+        {          
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -36,6 +36,7 @@ namespace Web
                 app.UseHsts();
             }
 
+            app.UseMiddleware<SerilogMiddleware>();
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseHttpsRedirection();

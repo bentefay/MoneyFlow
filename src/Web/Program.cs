@@ -20,6 +20,7 @@ namespace Web
             try
             {
                 CreateWebHostBuilder(args)
+                    .UseSerilog()
                     .Build()
                     .Run();
                 
