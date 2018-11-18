@@ -27,21 +27,33 @@ namespace Make.Utility.Extensions
             return app;
         } 
         
-        public static CommandLineApplication WithCommand(this CommandLineApplication app, string name, Action<CommandLineApplication> f)
+        public static CommandLineApplication WithCommand(this CommandLineApplication app, string name, Action<CommandLineApplication> f, string description = null)
         {
-            name
-                .Split('|', StringSplitOptions.RemoveEmptyEntries)
-                .Iter(nameAlias =>
+            var names = name
+                .Split('|', StringSplitOptions.RemoveEmptyEntries);
+                            
+            names
+                .Iter((i, nameAlias) =>
                 {
                     var command = app.Command(nameAlias, f);
+                    if (i == 0)
+                    {
+                        command.Description = names.Length > 1 ? 
+                            $"[{string.Join("|", names)}] {description}" : 
+                            description;
+                    }
+                    else
+                    {
+                        command.ShowInHelpText = false;
+                    }
                     command.ThrowOnUnexpectedArgument = false;
                 });
             return app;
         }
         
-        public static CommandLineApplication WithExecutableCommand(this CommandLineApplication app, string name, Func<CommandLineApplication, Task<int>> f)
+        public static CommandLineApplication WithExecutableCommand(this CommandLineApplication app, string name, Func<CommandLineApplication, Task<int>> f, string description = null)
         {
-            return WithCommand(app, name, application => application.WithExecute(() => f(application)));
+            return WithCommand(app, name, application => application.WithExecute(() => f(application)), description);
         }
 
     }
