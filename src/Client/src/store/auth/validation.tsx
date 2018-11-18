@@ -22,7 +22,7 @@ export function validateEmail(email: Email): ValidationError[] {
 }
 
 export function validatePassword(password: Password): ValidationError[] {
-    return password.value.length < 12 ? [ `Add another ${12 - password.value.length} characters` ] : [];
+    return password.value.length < 12 ? [`Add another ${12 - password.value.length} letters, numbers or symbols`] : [];
 }
 
 export function withKey<T extends React.ReactElement<any>>(key: React.Key, element: T) {

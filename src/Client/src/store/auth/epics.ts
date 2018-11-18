@@ -12,6 +12,7 @@ import { fetchJson } from '../shared/http';
 import { loginErrored, userAccountNotFound, loginSucceeded } from './actions';
 import { identity } from 'fp-ts/lib/function';
 import { isEmpty } from 'lodash';
+import { apiBaseUrl } from '../../config';
 
 export function login(action: Observable<AuthAction>, state: Observable<RootState>): Observable<AuthAction> {
     return action.pipe(
@@ -59,7 +60,7 @@ const GetVaultValidationErrorResponse = t.type({
 
 function getVault(email: Email, hashedPassword: HashedPassword): TaskEither<LoginError, EncryptedVault> {
     return fetchJson(
-        `api/vault`,
+        `${apiBaseUrl}/api/vault`,
         { headers: authHeader({ email: email.value, password: hashedPassword.value }) },
         "Retrieving your data",
         [{
@@ -97,7 +98,7 @@ export class HashedPassword {
 
 function getSalt(email: Email): TaskEither<LoginError, PasswordSalt | null> {
     return fetchJson(
-        `/api/salt`,
+        `${apiBaseUrl}/api/salt`,
         { headers: authHeader({ email: email.value }) },
         "Checking for your account",
         [{

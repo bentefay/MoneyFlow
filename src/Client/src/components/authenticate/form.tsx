@@ -46,8 +46,6 @@ export const c = {
     })
 };
 
-console.log(process.env.API_BASE_URL);
-
 type Props = AuthState
 
 interface Actions {
@@ -71,7 +69,7 @@ const form = ({ value: { email, password }, errors, generalFailure, updateUserna
                 onChange={event => updatePassword(event.currentTarget.value, true)} />
         </Validation>
         <div className={c.inputDescription}>
-            Your password needs to have a length of <b>12 or more</b>.
+            Your password needs to be <b>12 or more</b> letters, numbers or symbols.
             Anything shorter is not safe.
       </div>
 
