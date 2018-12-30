@@ -9,3 +9,5 @@ export const color7 = '#f9f9f9';
 
 export const colorInvalid1 = '#b94a48';
 export const colorInvalid2 = '#e9322d';
+
+export const colorSuggestion = color2;

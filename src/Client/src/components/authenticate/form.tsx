@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { RootState } from '../../store/store';
 import { emailUpdated, passwordUpdated, loginInitiated } from '../../store/auth/actions';
 import { Email, Password, AuthState } from '../../store/auth';
+import { minimumPasswordLength } from '../../store/auth/validation';
 import { valueOrDefault } from '../../store/shared/functions';
 import { Validation } from './validation';
 import { GeneralFailureView } from './generalFailureView';
@@ -49,9 +50,24 @@ export const c = {
 type Props = AuthState
 
 interface Actions {
-    updateUsername(value: string, invalidate: boolean): void;
-    updatePassword(value: string, invalidate: boolean): void;
+    updateUsername(value: string, options: { revalidate: boolean }): void;
+    updatePassword(value: string, options: { revalidate: boolean }): void;
     submit(): void;
+}
+
+const PasswordDescription = ({ password }: { password: Password | null }) => {
+    if (password === null)
+        return <React.Fragment>Your password needs to be <b>12 or more</b> letters, numbers or symbols</React.Fragment>;
+
+    const remainingCharactersRequired = minimumPasswordLength - password.value.length;
+
+    if (remainingCharactersRequired > 1)
+        return <React.Fragment>Just <b>{remainingCharactersRequired}</b> more letters, numbers or symbols</React.Fragment>;
+
+    if (remainingCharactersRequired == 1)
+        return <React.Fragment>Just <b>1</b> more letter, number or symbol!</React.Fragment>;
+
+    return <React.Fragment></React.Fragment>;
 }
 
 const form = ({ value: { email, password }, errors, generalFailure, updateUsername, updatePassword, submit }: Props & Actions) => (
@@ -59,19 +75,18 @@ const form = ({ value: { email, password }, errors, generalFailure, updateUserna
         <label className={c.label}>Email address</label>
         <Validation errors={errors.email}>
             <input className={c.input} type="text" value={valueOrDefault(email, "")} formNoValidate
-                onChange={event => updateUsername(event.currentTarget.value, false)}
-                onBlur={event => updateUsername(event.currentTarget.value, true)} />
+                onChange={event => updateUsername(event.currentTarget.value, { revalidate: false })}
+                onBlur={event => updateUsername(event.currentTarget.value, { revalidate: true })} />
         </Validation>
 
         <label className={c.label}>Password</label>
         <Validation errors={errors.password}>
             <input className={c.input} type="password" value={valueOrDefault(password, "")} formNoValidate
-                onChange={event => updatePassword(event.currentTarget.value, true)} />
+                onChange={event => updatePassword(event.currentTarget.value, { revalidate: false })} />
         </Validation>
         <div className={c.inputDescription}>
-            Your password needs to be <b>12 or more</b> letters, numbers or symbols.
-            Anything shorter is not safe.
-      </div>
+            <PasswordDescription password={password} />
+        </div>
 
         <GeneralFailureView value={generalFailure} />
 
@@ -84,8 +99,8 @@ const form = ({ value: { email, password }, errors, generalFailure, updateUserna
 export const Form = connect(
     (state: RootState): Props => state.auth,
     (dispatch): Actions => ({
-        updateUsername: (value, invalidate) => dispatch(emailUpdated({ email: new Email(value), invalidate: invalidate })),
-        updatePassword: (value, invalidate) => dispatch(passwordUpdated({ password: new Password(value), invalidate: invalidate })),
+        updateUsername: (value, options) => dispatch(emailUpdated({ email: new Email(value), revalidate: options.revalidate })),
+        updatePassword: (value, options) => dispatch(passwordUpdated({ password: new Password(value), revalidate: options.revalidate })),
         submit: () => dispatch(loginInitiated())
     })
 )(form);

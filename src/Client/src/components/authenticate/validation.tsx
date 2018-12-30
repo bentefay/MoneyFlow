@@ -9,7 +9,7 @@ export const c = {
         borderColor: `${colorInvalid2} !important`,
         color: colorInvalid1
     }),
-    invalidMessages: css({ 
+    invalidMessages: css({
         listStyle: "none",
         padding: "0",
         margin: "-20px 0 30px 0",
@@ -21,13 +21,13 @@ export const c = {
 
 export const Validation = ({ errors, children }: { errors: ReadonlyArray<ValidationError> | undefined, children: React.ReactElement<any> }) =>
     <React.Fragment>
-      {React.cloneElement(children, errors && errors.length > 0 ? { className: `${children.props.className} ${c.invalidControl}` } : {})}
-      {
-        errors && errors.length > 0 ? 
-          <ul className={c.invalidMessages}>
-            {errors.map(error => 
-              <li key={isString(error) ? error : error.key} className={c.invalidMessage}>{error}</li>)}
-          </ul> :
-          null
-      }
+        {React.cloneElement(children, errors && errors.length > 0 ? { className: `${children.props.className} ${c.invalidControl}` } : {})}
+        {
+            errors && errors.length > 0 ?
+                <ul className={c.invalidMessages}>
+                    {errors.map(error =>
+                        <li key={isString(error) ? error : error.key} className={c.invalidMessage}>{error}</li>)}
+                </ul> :
+                null
+        }
     </React.Fragment>;

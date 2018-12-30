@@ -3,6 +3,8 @@ import { Email, Password } from '.';
 import { includes, flatten, some } from 'lodash';
 import { ValidationError } from '../shared/models';
 
+export const minimumPasswordLength = 12;
+
 export function validateEmail(email: Email): ValidationError[] {
     if (email.value.length == 0)
         return ["We need an email to identify your account"];
@@ -10,9 +12,10 @@ export function validateEmail(email: Email): ValidationError[] {
     const value = email.value;
 
     const errors = flatten([
-        !includes(value, "@") ? ["missing an '@'"] : [],
-        !includes(value, ".") ? ["missing a '.'"] : [],
-        value.length < 5 ? ["less than 5 characters"] : []
+        !includes(value, "@") ? ['missing an @'] : [],
+        !includes(value, ".") ? ['missing a .'] : [],
+        value.length < 5 ? ["less than 5 characters"] : [],
+        !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value) ? ["not of the form a@b.cd"] : []
     ]);
 
     if (errors.length > 0)
@@ -22,7 +25,7 @@ export function validateEmail(email: Email): ValidationError[] {
 }
 
 export function validatePassword(password: Password): ValidationError[] {
-    return password.value.length < 12 ? [`Add another ${12 - password.value.length} letters, numbers or symbols`] : [];
+    return password.value.length < minimumPasswordLength ? [`Your password is not long enough`] : [];
 }
 
 export function withKey<T extends React.ReactElement<any>>(key: React.Key, element: T) {
@@ -33,12 +36,12 @@ export function validate<T>(
     value: T | null,
     validator: (value: T) => ReadonlyArray<ValidationError>,
     existingErrors: ReadonlyArray<ValidationError> | undefined,
-    invalidate: boolean) {
+    revalidate: boolean) {
 
     if (value == null)
         return [];
 
-    return invalidate || some(existingErrors) ?
+    return revalidate || some(existingErrors) ?
         validator(value) :
         []
 }
