@@ -21,15 +21,18 @@ export const authReducer = (state = getDefaultState(), action: AuthAction): Auth
                 value: { email: action.payload.email },
                 errors: { email: validate(action.payload.email, validateEmail, state.errors.email, action.payload.revalidate) }
             });
+
         case getType(authActions.passwordUpdated):
             return withValue(state, {
                 value: { password: action.payload.password },
                 errors: { password: validate(action.payload.password, validatePassword, state.errors.password, action.payload.revalidate) }
             });
+
         case getType(authActions.loginErrored):
             return action.payload.type == "generalFailure" ?
                 withValue(state, { generalFailure: action.payload }) :
                 withValue(state, { errors: action.payload.errors });
+
         case getType(authActions.loginInitiated):
             return withValue(state, {
                 generalFailure: undefined,
@@ -38,6 +41,7 @@ export const authReducer = (state = getDefaultState(), action: AuthAction): Auth
                     password: validatePassword(state.value.password || new Password("")),
                 }
             });
+
         default:
             return state;
     }

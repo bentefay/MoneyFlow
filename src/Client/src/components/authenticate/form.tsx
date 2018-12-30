@@ -9,6 +9,7 @@ import { minimumPasswordLength } from '../../store/auth/validation';
 import { valueOrDefault } from '../../store/shared/functions';
 import { Validation } from './validation';
 import { GeneralFailureView } from './generalFailureView';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export const c = {
     form: css({
@@ -56,7 +57,7 @@ interface Actions {
 }
 
 const PasswordDescription = ({ password }: { password: Password | null }) => {
-    if (password === null)
+    if (password === null || password.value.length == 0)
         return <React.Fragment>Your password needs to be <b>12 or more</b> letters, numbers or symbols</React.Fragment>;
 
     const remainingCharactersRequired = minimumPasswordLength - password.value.length;
@@ -91,7 +92,7 @@ const form = ({ value: { email, password }, errors, generalFailure, updateUserna
         <GeneralFailureView value={generalFailure} />
 
         <button className={`pure-button ${c.button}`} onClick={event => { submit(); event.preventDefault(); }}>
-            Sign in or create account
+            <FontAwesomeIcon fixedWidth icon="unlock" /> Sign in or create account
       </button>
     </form>
 );
