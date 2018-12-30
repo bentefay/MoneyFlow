@@ -103,7 +103,7 @@ class DetailedError extends React.Component<DetailedErrorProps, DetailedErrorSta
                 <Popper open={this.state.open} anchorEl={this.state.anchorElement} placement="top" transition>
                     {({ TransitionProps }) => (
                         <Fade {...TransitionProps} timeout={350}>
-                            <Paper style={{ maxWidth: "50%" }}>
+                            <Paper style={{ maxWidth: "50vw" }}>
                                 <code className={c.error}>{JSON.stringify(this.props.error, undefined, 4)}</code>
                             </Paper>
                         </Fade>
