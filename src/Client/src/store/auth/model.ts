@@ -5,7 +5,8 @@ export type LoginError = GeneralFailure | Invalid<AuthStateValue> | Unit;
 export interface AuthState extends Readonly<{
     value: AuthStateValue,
     errors: ValidationErrors<AuthStateValue>,
-    generalFailure?: GeneralFailure
+    generalFailure?: GeneralFailure,
+    isLoading: boolean
 }> { }
 
 export interface AuthStateValue extends Readonly<{

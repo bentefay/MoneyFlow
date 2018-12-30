@@ -9,9 +9,11 @@ import { Validation } from './validation';
 import { GeneralFailureView } from './generalFailureView';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { ValidationErrors } from 'src/store/shared/models';
+import { Loading } from './loading';
 
 export const c = {
     form: css({
+        position: "relative",
         border: `1px solid ${color6}`,
         backgroundColor: color7,
         borderRadius: '5px',
@@ -69,8 +71,10 @@ const PasswordDescription = ({ password }: { password: Password | null }) => {
     return <React.Fragment></React.Fragment>;
 }
 
-const form = ({ value: { email, password }, errors, generalFailure, updateUsername, updatePassword, submit }: Props & Actions) => (
+const form = ({ value: { email, password }, errors, generalFailure, isLoading, updateUsername, updatePassword, submit }: Props & Actions) => (
     <form className={`pure-form pure-form-stacked ${c.form}`} noValidate>
+        <Loading isLoading={isLoading} />
+
         <label className={c.label}>Email address</label>
         <Validation errors={errors.email}>
             <input className={c.input} type="text" value={valueOrDefault(email, "")} formNoValidate
@@ -94,7 +98,7 @@ const form = ({ value: { email, password }, errors, generalFailure, updateUserna
             style={{ backgroundColor: isAuthStateValid(errors) ? color4 : color5 }}
             onClick={event => { submit(); event.preventDefault(); }}>
             <FontAwesomeIcon fixedWidth icon="unlock" /> Sign in or create account
-      </button>
+        </button>
     </form>
 );
 

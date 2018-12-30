@@ -10,6 +10,7 @@ const getDefaultState = (): AuthState => {
             email: null,
             password: null
         },
+        isLoading: false,
         errors: {}
     };
 }
@@ -30,12 +31,13 @@ export const authReducer = (state = getDefaultState(), action: AuthAction): Auth
 
         case getType(authActions.loginErrored):
             return action.payload.type == "generalFailure" ?
-                withValue(state, { generalFailure: action.payload }) :
-                withValue(state, { errors: action.payload.errors });
+                withValue(state, { generalFailure: action.payload, isLoading: false }) :
+                withValue(state, { errors: action.payload.errors, isLoading: false });
 
         case getType(authActions.loginInitiated):
             return withValue(state, {
                 generalFailure: undefined,
+                isLoading: true,
                 errors: {
                     email: validateEmail(state.value.email || new Email("")),
                     password: validatePassword(state.value.password || new Password("")),
