@@ -1,15 +1,14 @@
 import * as React from "react";
 import { css } from "emotion";
-import { color6, color7, color4 } from '../styles/palette.style';
+import { color6, color7, color4, color5 } from '../styles/palette.style';
 import { connect } from 'react-redux';
 import { RootState } from '../../store/store';
-import { emailUpdated, passwordUpdated, loginInitiated } from '../../store/auth/actions';
-import { Email, Password, AuthState } from '../../store/auth';
-import { minimumPasswordLength } from '../../store/auth/validation';
+import { Email, Password, AuthState, emailUpdated, passwordUpdated, loginInitiated, minimumPasswordLength, AuthStateValue } from '../../store/auth';
 import { valueOrDefault } from '../../store/shared/functions';
 import { Validation } from './validation';
 import { GeneralFailureView } from './generalFailureView';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { ValidationErrors } from 'src/store/shared/models';
 
 export const c = {
     form: css({
@@ -43,7 +42,6 @@ export const c = {
         marginTop: '10px',
         padding: '12px 0',
         width: '100%',
-        backgroundColor: color4,
         color: 'white'
     })
 };
@@ -83,7 +81,8 @@ const form = ({ value: { email, password }, errors, generalFailure, updateUserna
         <label className={c.label}>Password</label>
         <Validation errors={errors.password}>
             <input className={c.input} type="password" value={valueOrDefault(password, "")} formNoValidate
-                onChange={event => updatePassword(event.currentTarget.value, { revalidate: false })} />
+                onChange={event => updatePassword(event.currentTarget.value, { revalidate: false })}
+                onBlur={event => updatePassword(event.currentTarget.value, { revalidate: true })} />
         </Validation>
         <div className={c.inputDescription}>
             <PasswordDescription password={password} />
@@ -91,11 +90,18 @@ const form = ({ value: { email, password }, errors, generalFailure, updateUserna
 
         <GeneralFailureView value={generalFailure} />
 
-        <button className={`pure-button ${c.button}`} onClick={event => { submit(); event.preventDefault(); }}>
+        <button className={`pure-button ${c.button}`}
+            style={{ backgroundColor: isAuthStateValid(errors) ? color4 : color5 }}
+            onClick={event => { submit(); event.preventDefault(); }}>
             <FontAwesomeIcon fixedWidth icon="unlock" /> Sign in or create account
       </button>
     </form>
 );
+
+export function isAuthStateValid(errors: ValidationErrors<AuthStateValue>) {
+    return (errors.email == undefined || errors.email.length == 0) &&
+        (errors.password == undefined || errors.password.length == 0)
+}
 
 export const Form = connect(
     (state: RootState): Props => state.auth,
