@@ -1,6 +1,5 @@
 import { getType } from "typesafe-actions";
 import { AuthAction, AuthState, authActions } from '.';
-import { withValue } from '../shared/functions';
 import { validatePassword, validateEmail, validate } from './validation';
 import { Email, Password } from './model';
 
@@ -18,16 +17,18 @@ const getDefaultState = (): AuthState => {
 export const authReducer = (state = getDefaultState(), action: AuthAction): AuthState => {
     switch (action.type) {
         case getType(authActions.emailUpdated):
-            return withValue(state, {
-                value: { email: action.payload.email },
-                errors: { email: validate(action.payload.email, validateEmail, state.errors.email, action.payload.revalidate) }
-            });
+            return {
+                ...state,
+                value: { ...state.value, email: action.payload.email },
+                errors: { ...state.errors, email: validate(action.payload.email, validateEmail, state.errors.email, action.payload.revalidate) }
+            };
 
         case getType(authActions.passwordUpdated):
-            return withValue(state, {
-                value: { password: action.payload.password },
-                errors: { password: validate(action.payload.password, validatePassword, state.errors.password, action.payload.revalidate) }
-            });
+            return {
+                ...state,
+                value: { ...state.value, password: action.payload.password },
+                errors: { ...state.errors, password: validate(action.payload.password, validatePassword, state.errors.password, action.payload.revalidate) }
+            };
 
         case getType(authActions.loginErrored):
             return action.payload.type == "generalFailure" ?
