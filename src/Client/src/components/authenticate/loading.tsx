@@ -20,7 +20,7 @@ export const c = {
         backgroundColor: `${color1} !important`
     }),
     background: css({
-        backgroundColor: `${lighten(color1)} !important`
+        backgroundColor: `${lighten(0.5, color1)} !important`
     })
 };
 

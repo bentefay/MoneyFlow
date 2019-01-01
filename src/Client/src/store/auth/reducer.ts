@@ -31,18 +31,20 @@ export const authReducer = (state = getDefaultState(), action: AuthAction): Auth
 
         case getType(authActions.loginErrored):
             return action.payload.type == "generalFailure" ?
-                withValue(state, { generalFailure: action.payload, isLoading: false }) :
-                withValue(state, { errors: action.payload.errors, isLoading: false });
+                { ...state, generalFailure: action.payload, isLoading: false } :
+                { ...state, errors: action.payload.errors, isLoading: false };
 
         case getType(authActions.loginInitiated):
-            return withValue(state, {
+            const errors = {
+                email: validateEmail(state.value.email || new Email("")),
+                password: validatePassword(state.value.password || new Password("")),
+            };
+            return {
+                ...state,
                 generalFailure: undefined,
-                isLoading: true,
-                errors: {
-                    email: validateEmail(state.value.email || new Email("")),
-                    password: validatePassword(state.value.password || new Password("")),
-                }
-            });
+                isLoading: errors.email.length == 0 && errors.password.length == 0,
+                errors: errors
+            };
 
         default:
             return state;

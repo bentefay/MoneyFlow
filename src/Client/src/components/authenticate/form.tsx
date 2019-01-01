@@ -1,6 +1,6 @@
 import * as React from "react";
 import { css } from "emotion";
-import { color6, color7, color4, color5 } from '../styles/palette.style';
+import { color6, color7, color4 } from '../styles/palette.style';
 import { connect } from 'react-redux';
 import { RootState } from '../../store/store';
 import { Email, Password, AuthState, emailUpdated, passwordUpdated, loginInitiated, minimumPasswordLength, AuthStateValue } from '../../store/auth';
@@ -41,7 +41,7 @@ export const c = {
         marginBottom: '30px !important'
     }),
     button: css({
-        marginTop: '10px',
+        marginTop: '20px',
         padding: '12px 0',
         width: '100%',
         color: 'white'
@@ -58,7 +58,7 @@ interface Actions {
 
 const PasswordDescription = ({ password }: { password: Password | null }) => {
     if (password === null || password.value.length == 0)
-        return <React.Fragment>Your password needs to be <b>12 or more</b> letters, numbers or symbols</React.Fragment>;
+        return <React.Fragment>Must be <b>12 or more</b> letters, numbers or symbols</React.Fragment>;
 
     const remainingCharactersRequired = minimumPasswordLength - password.value.length;
 
@@ -68,7 +68,7 @@ const PasswordDescription = ({ password }: { password: Password | null }) => {
     if (remainingCharactersRequired == 1)
         return <React.Fragment>Just <b>1</b> more letter, number or symbol!</React.Fragment>;
 
-    return <React.Fragment></React.Fragment>;
+    return <React.Fragment>Great password!</React.Fragment>;
 }
 
 const form = ({ value: { email, password }, errors, generalFailure, isLoading, updateUsername, updatePassword, submit }: Props & Actions) => (
@@ -95,14 +95,15 @@ const form = ({ value: { email, password }, errors, generalFailure, isLoading, u
         <GeneralFailureView value={generalFailure} />
 
         <button className={`pure-button ${c.button}`}
-            style={{ backgroundColor: isAuthStateValid(errors) ? color4 : color5 }}
+            style={{ backgroundColor: color4 }}
+            disabled={!isAuthStateValid(errors)}
             onClick={event => { submit(); event.preventDefault(); }}>
             <FontAwesomeIcon fixedWidth icon="unlock" /> Sign in or create account
         </button>
     </form>
 );
 
-export function isAuthStateValid(errors: ValidationErrors<AuthStateValue>) {
+function isAuthStateValid(errors: ValidationErrors<AuthStateValue>) {
     return (errors.email == undefined || errors.email.length == 0) &&
         (errors.password == undefined || errors.password.length == 0)
 }
