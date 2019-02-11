@@ -4,14 +4,14 @@ using LanguageExt;
 using LanguageExt.UnsafeValueAccess;
 using Newtonsoft.Json;
 
-namespace Web.Utils.Serialization
+namespace Web.Utils.Serialization.Converters
 {
     public class OptionJsonConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
             return objectType.IsGenericType
-                   && objectType.GetGenericTypeDefinition() == typeof(Option<>);
+                && objectType.GetGenericTypeDefinition() == typeof(Option<>);
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -21,7 +21,7 @@ namespace Web.Utils.Serialization
             typeof(OptionJsonConverter)
                 .GetMethod(nameof(WriteJson), BindingFlags.Static | BindingFlags.NonPublic)
                 .MakeGenericMethod(wrappedType)
-                .Invoke(null, new [] { writer, serializer, value });
+                .Invoke(null, new[] { writer, serializer, value });
         }
 
         private static void WriteJson<T>(JsonWriter writer, JsonSerializer serializer, Option<T> option)
@@ -37,11 +37,13 @@ namespace Web.Utils.Serialization
             var wrappedType = objectType.GetGenericArguments()[0];
 
             return typeof(OptionJsonConverter)
-                   .GetMethod(
-                       wrappedType.IsValueType ? nameof(ReadJsonValueType) : nameof(ReadJson),
-                       BindingFlags.Static | BindingFlags.NonPublic)
-                   .MakeGenericMethod(wrappedType)
-                   .Invoke(null, new object[] { reader, serializer });
+                .GetMethod(
+                    wrappedType.IsValueType ?
+                        nameof(ReadJsonValueType) :
+                        nameof(ReadJson),
+                    BindingFlags.Static | BindingFlags.NonPublic)
+                .MakeGenericMethod(wrappedType)
+                .Invoke(null, new object[] { reader, serializer });
         }
 
         private static Option<T> ReadJsonValueType<T>(JsonReader reader, JsonSerializer serializer) where T : struct =>
