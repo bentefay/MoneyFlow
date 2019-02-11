@@ -6,7 +6,7 @@ import { colorInvalid2, colorInvalid1 } from '../styles/palette.style';
 import Popper from '@material-ui/core/Popper';
 import Fade from '@material-ui/core/Fade';
 import Paper from '@material-ui/core/Paper';
-import { lighten, transparentize } from 'polished';
+import { transparentize } from 'polished';
 
 export const c = {
     invalidControl: css({
@@ -18,7 +18,7 @@ export const c = {
         padding: "0",
         margin: "0",
         fontSize: "80%",
-        color: lighten(0.4, colorInvalid1)
+        color: colorInvalid1
     }),
     invalidMessage: css({})
 };
@@ -35,7 +35,7 @@ export const Validation = ({ errors, children: child }: { errors: ReadonlyArray<
             <Popper open={hasErrors} anchorEl={() => childRef.current!} placement="top-end" transition>
                 {({ TransitionProps }) => (
                     <Fade {...TransitionProps} timeout={{ enter: 350, exit: 0 }}>
-                        <Paper elevation={4} style={{ maxWidth: "50vw", padding: "8px", background: transparentize(0.05, "#616161") }}>
+                        <Paper elevation={0} style={{ maxWidth: "50vw", padding: "8px", background: transparentize(1, "white") }}>
                             {
                                 errors ?
                                     <ul className={c.invalidMessages}>

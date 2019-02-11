@@ -7,19 +7,19 @@ export const minimumPasswordLength = 12;
 
 export function validateEmail(email: Email): ValidationError[] {
     if (email.value.length == 0)
-        return ["We need an email to uniquely identify your account"];
+        return ["We need an email to identify your account"];
 
     const value = email.value;
 
     const errors = flatten([
-        !includes(value, "@") ? ['missing an @'] : [],
-        !includes(value, ".") ? ['missing a .'] : [],
-        value.length < 5 ? ["less than 5 characters"] : [],
-        !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value) ? ["not of the form a@b.cd"] : []
+        !includes(value, "@") ? [`Emails should contain an @`] : [],
+        !includes(value, ".") ? [`Emails should contain a .`] : [],
+        value.length < 5 ? ["Emails should be longer than 5 characters"] : [],
+        !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value) ? ["Emails should look like steve@web.com"] : []
     ]);
 
     if (errors.length > 0)
-        return [`That's not an email (it's ${errors[0]})`];
+        return [errors[0]];
 
     return [];
 }

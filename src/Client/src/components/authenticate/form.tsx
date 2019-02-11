@@ -75,7 +75,7 @@ const form = ({ value: { email, password }, errors, generalFailure, isLoading, u
     <form className={`pure-form pure-form-stacked ${c.form}`} noValidate>
         <Loading isLoading={isLoading} />
 
-        <label className={c.label}>Email address</label>
+        <label className={c.label}>Email</label>
         <Validation errors={errors.email}>
             <input className={c.input} type="text" value={valueOrDefault(email, "")} formNoValidate
                 onChange={event => updateUsername(event.currentTarget.value, { revalidate: false })}
