@@ -4,7 +4,7 @@ using Web.Types.Errors;
 
 namespace Web.Functions
 {
-    public static class Json
+    public static class JsonFunctions
     {
         public static Either<JsonDeserializationError, T> Deserialize<T>(string json, JsonSerializerSettings settings)
         {

@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Text;
 using LanguageExt;
-using Web.Functions;
+using Web.Types;
+using Web.Types.Dtos;
 using Web.Types.Errors;
 using Web.Utils.Extensions;
 using Web.Utils.Serialization.Serializers;
+using static Web.Utils.Extensions.Cast;
 
-namespace Web.Controllers
+namespace Web.Functions
 {
-    public static class Authorization
+    public static class AuthorizationFunctions
     {      
-        public static Either<IError, SaltAuthorization> ParseSaltAuthorization(string authorization)
+        public static Either<IError, Authorization> ParseAuthorization(string authorization)
         {
             if (authorization == null)
                 return new MissingAuthorizationHeader();
@@ -24,9 +26,11 @@ namespace Web.Controllers
             
             var json = Encoding.UTF8.GetString(Convert.FromBase64String(base64Json));
             
-            return Json
-                .Deserialize<SaltAuthorization>(json, ApiSerializers.Instance)
-                .Left(Cast.To<IError>());
+            return 
+                from dto in JsonFunctions.Deserialize<AuthorizationDto>(json, ApiSerializers.Instance).Left(To<IError>())
+                from email in Email.Create(dto.Email).Left(To<IError>())
+                from password in HashedPassword.Create(dto.HashedPassword).Left(To<IError>())
+                select new Authorization(email, password);
         }
     }
 }
