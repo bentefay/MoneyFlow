@@ -3,7 +3,7 @@ import { mergeMap, filter, mergeAll, withLatestFrom } from 'rxjs/operators';
 import { authActions, AuthAction, Email, Password, EncryptedVault, LoginError, AuthStateValue } from '.';
 import { isActionOf } from 'typesafe-actions';
 import { RootState } from '../store';
-import { hash } from "bcryptjs";
+import bcrypt from "bcryptjs";
 import * as t from 'io-ts';
 import * as taskEither from 'fp-ts/lib/TaskEither';
 import { TaskEither } from 'fp-ts/lib/TaskEither';
@@ -13,6 +13,10 @@ import { loginErrored, userAccountNotFound, loginSucceeded } from './actions';
 import { identity } from 'fp-ts/lib/function';
 import { isEmpty } from 'lodash';
 import { apiBaseUrl } from '../../config';
+
+const { hash } = bcrypt;
+
+(window as any).bcrypt = bcrypt;
 
 export function login(action: Observable<AuthAction>, state: Observable<RootState>): Observable<AuthAction> {
     return action.pipe(
