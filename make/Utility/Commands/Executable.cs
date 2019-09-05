@@ -10,17 +10,22 @@ namespace Make.Utility.Commands
 {
     public static class Executable
     {
-        public static async Task<string> RunToString(params string[] command)
+        public static Task<string> RunAsString(params string[] command) =>
+            RunAsString(null, command);
+
+        public static async Task<string> RunAsString(ExecutionOptions options, params string[] command)
         {
-            return await Run(command, new ExecutionOptions(redirectStreams: true))
+            options = options ?? new ExecutionOptions();
+
+            return await Run(command, options.With(redirectStreams: true))
                 .Match(
                     result => string.Join(Environment.NewLine, result.Output),
                     _ => "");
         }
 
-        public static EitherAsync<Error, Unit> RunToEither(params string[] command) => RunToEither(null, command);
+        public static EitherAsync<Error, Unit> RunAsEither(params string[] command) => RunAsEither(null, command);
 
-        public static EitherAsync<Error, Unit> RunToEither(ExecutionOptions options, params string[] command)
+        public static EitherAsync<Error, Unit> RunAsEither(ExecutionOptions options, params string[] command)
         {
             options = options ?? new ExecutionOptions();
 
@@ -31,14 +36,14 @@ namespace Make.Utility.Commands
                     Utilities.Log(executionArguments.ToString(options));
                     return Run(executionArguments, options.With(redirectStreams: false));
                 })
-                .Bind(result => 
+                .Bind(result =>
                     result.ExitCode == 0 ?
                         Prelude.Right<Error, Unit>(Prelude.unit) :
                         Error.Create($"'{result.ExecutionArguments.ToString(options)}'\n\n=> exit code '{result.ExitCode}'"));
         }
 
-        private static EitherAsync<Error, ExecutionResult> Run(
-            string[] command,             
+        public static EitherAsync<Error, ExecutionResult> Run(
+            string[] command,
             ExecutionOptions options)
         {
             return ExecutionArguments.Resolve(command)
@@ -47,12 +52,12 @@ namespace Make.Utility.Commands
 
         // Reference: https://github.com/jamesmanning/RunProcessAsTask/blob/master/src/RunProcessAsTask/ProcessEx.cs#L27
 
-        private static async Task<Either<Error, ExecutionResult>> Run(
-            ExecutionArguments executionArguments, 
+        public static async Task<Either<Error, ExecutionResult>> Run(
+            ExecutionArguments executionArguments,
             ExecutionOptions options = null)
         {
             options = options ?? new ExecutionOptions();
-            
+
             var processStartInfo = new ProcessStartInfo(executionArguments.Exe, executionArguments.Arguments)
             {
                 UseShellExecute = false,
@@ -75,7 +80,7 @@ namespace Make.Utility.Commands
             {
                 var standardOutputValue = await standardOutput.ConfigureAwait(false);
                 var standardErrorValue = await standardError.ConfigureAwait(false);
-                
+
                 taskCompletionSource.TrySetResult(
                     new ExecutionResult(
                         executionArguments,
@@ -108,7 +113,8 @@ namespace Make.Utility.Commands
                 {
                     if (!process.Start())
                     {
-                        taskCompletionSource.TrySetResult(Error.Create($"Could not start command '{executionArguments}'"));
+                        taskCompletionSource.TrySetResult(
+                            Error.Create($"Could not start command '{executionArguments}' from working directory '{options.WorkingDirectory}'"));
                     }
                     else if (options.RedirectStreams)
                     {
@@ -118,7 +124,8 @@ namespace Make.Utility.Commands
                 }
                 catch (Exception e)
                 {
-                    taskCompletionSource.TrySetResult(Error.Create($"Error while running command '{executionArguments}': {e.Message}", e));
+                    taskCompletionSource.TrySetResult(
+                        Error.Create($"Error while running command '{executionArguments}' from working directory '{options.WorkingDirectory}': {e.Message}", e));
                 }
 
                 return await taskCompletionSource.Task.ConfigureAwait(false);

@@ -27,11 +27,11 @@ namespace Make.Utility.Commands.Executables
 
         public string ToString(ExecutionOptions options)
         {
-            return !string.IsNullOrWhiteSpace(options.WorkingDirectory) ? 
-                $"[{options.WorkingDirectory}] {ToString()}" : 
+            return !string.IsNullOrWhiteSpace(options.WorkingDirectory) ?
+                $"[{options.WorkingDirectory}] {ToString()}" :
                 $"{ToString()}";
         }
-        
+
         public static EitherAsync<Error, ExecutionArguments> Resolve(params string[] command)
         {
             var commandTokens = command
