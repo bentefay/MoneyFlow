@@ -40,45 +40,49 @@ namespace Make.Utility.Commands.Executables
 
             if (!commandTokens.Any())
                 return Error.Create($"Could not resolve empty command");
-            
-            var exe = commandTokens
+
+            var executable = commandTokens
                 .First()
                 .Trim();
-            
+
             var arguments = commandTokens
                 .Skip(1)
                 .Select(a => a.Trim())
                 .Join(" ");
 
-            return ResolveExePath(exe)
-                .Map(exeAbsolutePath => new ExecutionArguments($"\"{exeAbsolutePath}\"", arguments));
+            return ResolveExecutablePath(executable)
+                .Map(exeAbsolutePath => exeAbsolutePath.Contains(" ") ? $"\"{exeAbsolutePath}\"" : exeAbsolutePath)
+                .Map(exeAbsolutePath => new ExecutionArguments(exeAbsolutePath, arguments));
         }
 
-        private static EitherAsync<Error, string> ResolveExePath(string exe)
+        private static EitherAsync<Error, string> ResolveExecutablePath(string executable)
         {
             try
             {
-                var favouredExtensions = FavouredExtensions().Concat(new[] {""});
-                var exePaths = Path.HasExtension(exe)
-                    ? new[] {exe}
-                    : favouredExtensions.Select(extension =>
-                        string.IsNullOrEmpty(extension) ? exe : Path.ChangeExtension(exe, extension));
+                var defaultExtensions = GetDefaultExtensions().Concat(new[] {""});
+                var exePaths = Path.HasExtension(executable)
+                    ? new[] {executable}
+                    : defaultExtensions.Select(extension =>
+                        string.IsNullOrEmpty(extension) ? executable : Path.ChangeExtension(executable, extension));
 
-                var basePathsToSearch = Path.IsPathRooted(exe) ? new[] {""} : new[] {""}.Concat(GetEnvironmentPaths());
+                var basePathsToSearch = Path.IsPathRooted(executable) ?
+                    new[] {""} :
+                    new[] {""}.Concat(GetEnvironmentPaths());
 
-                var exeAbsolutePaths = basePathsToSearch
-                    .SelectMany(basePath => exePaths.Select(exePath => string.IsNullOrEmpty(basePath) ? exePath : Path.Combine(basePath, exePath)));
-                    
-                var exeAbsolutePath = exeAbsolutePaths
+                var executableAbsolutePaths = basePathsToSearch
+                    .SelectMany(basePath => exePaths.Select(exePath => string.IsNullOrEmpty(basePath) ? exePath : Path.Combine(basePath, exePath)))
+                    .ToList();
+
+                var executableAbsolutePath = executableAbsolutePaths
                     .FirstOrDefault(File.Exists);
 
-                return string.IsNullOrEmpty(exeAbsolutePath)
-                    ? Prelude.LeftAsync<Error, string>(Task.FromResult(CouldNotFindExe(exe, exeAbsolutePaths)))
-                    : exeAbsolutePath;
+                return string.IsNullOrEmpty(executableAbsolutePath)
+                    ? Prelude.LeftAsync<Error, string>(Task.FromResult(CouldNotFindExe(executable, executableAbsolutePaths)))
+                    : executableAbsolutePath;
             }
             catch (Exception e)
             {
-                return Error.Create($"Error while trying to resolve location of '{exe}'", e);
+                return Error.Create($"Error while trying to resolve location of '{executable}'", e);
             }
         }
 
@@ -88,16 +92,15 @@ namespace Make.Utility.Commands.Executables
                                 $"Searched the following locations:{Environment.NewLine}{string.Join(Environment.NewLine, exeAbsolutePaths)}");
         }
 
-        private static string[] GetEnvironmentPaths()
+        private static IReadOnlyList<string> GetEnvironmentPaths()
         {
             var pathEnv = Environment.GetEnvironmentVariable("PATH");
-            return pathEnv == null ? new string[0] : pathEnv.Split(';');
+            return pathEnv == null ? new string[0] : pathEnv.Split(Path.PathSeparator);
         }
 
-        private static string[] FavouredExtensions()
-        {
-            return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? new[] {".exe", ".cmd"} : new string[] { };
-        }
-
+        private static IReadOnlyList<string> GetDefaultExtensions() =>
+            RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
+                new[] {".exe", ".cmd"} :
+                new [] { ".sh" };
     }
 }

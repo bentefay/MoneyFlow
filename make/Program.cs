@@ -28,7 +28,7 @@ namespace Make
                 LogSection("PRESSED CTRL+C. EXITING...", ConsoleColor.Red);
                 cancel.Cancel();
             };
-                        
+
             return new CommandLineApplication
                 {
                     Name = "make",
