@@ -2,6 +2,7 @@ import { createStandardAction } from "typesafe-actions";
 import { GeneralFailure, Invalid } from '../shared/models';
 import { Email, Password, EncryptedVault, AuthStateValue } from '.';
 
+export const toggleAuthView = createStandardAction("TOGGLE_AUTH_VIEW_REQUESTED")();
 export const emailUpdated = createStandardAction("USERNAME_UPDATED")<{ email: Email, revalidate: boolean }>();
 export const passwordUpdated = createStandardAction("PASSWORD_UPDATED")<{ password: Password, revalidate: boolean }>();
 export const loginInitiated = createStandardAction("LOGIN_INITIATED")();

@@ -2,7 +2,13 @@ import { GeneralFailure, Unit, ValidationErrors, Invalid } from '../shared/model
 
 export type LoginError = GeneralFailure | Invalid<AuthStateValue> | Unit;
 
+export enum AuthView {
+    logIn,
+    createAccount
+}
+
 export interface AuthState extends Readonly<{
+    view: AuthView,
     value: AuthStateValue,
     errors: ValidationErrors<AuthStateValue>,
     generalFailure?: GeneralFailure,

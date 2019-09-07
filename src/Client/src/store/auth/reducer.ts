@@ -1,10 +1,11 @@
 import { getType } from "typesafe-actions";
 import { AuthAction, AuthState, authActions } from '.';
 import { validatePassword, validateEmail, validate } from './validation';
-import { Email, Password } from './model';
+import { Email, Password, AuthView } from './model';
 
 const getDefaultState = (): AuthState => {
     return {
+        view: AuthView.logIn,
         value: {
             email: null,
             password: null
@@ -16,6 +17,12 @@ const getDefaultState = (): AuthState => {
 
 export const authReducer = (state = getDefaultState(), action: AuthAction): AuthState => {
     switch (action.type) {
+        case getType(authActions.toggleAuthView):
+            return {
+                ...state,
+                view: state.view == AuthView.logIn ? AuthView.createAccount : AuthView.logIn
+            };
+
         case getType(authActions.emailUpdated):
             return {
                 ...state,

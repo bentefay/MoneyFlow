@@ -1,20 +1,12 @@
 import { createStore, applyMiddleware, compose } from "redux";
 import { createEpicMiddleware, combineEpics } from "redux-observable";
-import { combineReducers } from "redux";
-import { routerReducer } from "react-router-redux";
 import { StateType } from "typesafe-actions";
-import { vaultReducer } from "./vault/reducer";
-import { authReducer } from './auth/reducer';
 import logger from 'redux-logger';
 import { login } from './auth';
+import { rootReducer } from './reducer';
 
 const rootEpic = combineEpics(login);
 
-const rootReducer = combineReducers({
-  router: routerReducer,
-  vault: vaultReducer,
-  auth: authReducer
-});
 
 const epicMiddleware = createEpicMiddleware();
 const middlewares = [epicMiddleware, logger];
@@ -23,6 +15,13 @@ const initialState = {};
 
 export const store = createStore(rootReducer, initialState, enhancer);
 
-epicMiddleware.run(rootEpic as any)
+epicMiddleware.run(rootEpic as any);
+
+if (module.hot) {
+    module.hot.accept("./reducer", () => {
+        const nextRootReducer = require("./reducer");
+        store.replaceReducer(nextRootReducer);
+    });
+}
 
 export type RootState = StateType<typeof rootReducer>;
