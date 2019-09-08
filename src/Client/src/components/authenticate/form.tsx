@@ -1,6 +1,6 @@
 import * as React from "react";
 import { css } from "emotion";
-import { color6, color7, color4 } from '../styles/palette.style';
+import { color6, color7, color4, color1 } from '../styles/palette.style';
 import { connect } from 'react-redux';
 import { RootState } from '../../store/store';
 import { Email, Password, AuthState, emailUpdated, passwordUpdated, loginInitiated, minimumPasswordLength, AuthStateValue, AuthView, toggleAuthView } from '../../store/auth';
@@ -105,7 +105,7 @@ const form = ({ value: { email, password }, errors, generalFailure, isLoading, t
         {
             view == AuthView.createAccount ?
                 <>
-                    <div className={c.createAccountHeading}>Let's create an <span style={{ color: "#00abe3" }}>account!</span></div>
+                    <div className={c.createAccountHeading}>Let's create an <span style={{ color: color1 }}>account!</span></div>
                 </> :
                 null
         }
