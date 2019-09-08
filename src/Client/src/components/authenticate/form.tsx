@@ -10,8 +10,10 @@ import { GeneralFailureView } from './generalFailureView';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { ValidationErrors } from 'src/store/shared/models';
 import { Loading } from './loading';
+import useMeasure from "use-measure";
+import { useSpring, animated } from 'react-spring'
 
-export const s = {
+export const common = {
     button: css({
         marginTop: '20px',
         padding: '12px 0',
@@ -21,6 +23,8 @@ export const s = {
 }
 
 export const c = {
+    formContainer: css({
+    }),
     form: css({
         position: "relative",
         border: `1px solid ${color6}`,
@@ -56,20 +60,20 @@ export const c = {
     signIn: css({
         color: 'white',
         backgroundColor: color4
-    }, s.button),
+    }, common.button),
     signUp: css({
         fontSize: "90%",
         backgroundColor: color7,
         textDecorationLine: "underline",
         color: "#888"
-    }, s.button),
+    }, common.button),
     createAccountHeading: css({
-        marginBottom: "20px",
-        fontSize: "120%"
+        marginBottom: "10px",
+        fontSize: "90%",
     }),
     createAccountDescription: css({
         fontSize: "80%",
-        margin: "30px 0",
+        marginBottom: "30px",
         color: "#888"
     }),
 };
@@ -98,64 +102,71 @@ const PasswordDescription = ({ password, loggingIn }: { password: Password | nul
     return loggingIn ? null : <>Great password!</>;
 }
 
-const form = ({ value: { email, password }, errors, generalFailure, isLoading, toggleAuthView, updateUsername, updatePassword, submit, view }: Props & Actions) => (
-    <form className={`pure-form pure-form-stacked ${c.form}`} noValidate>
-        <Loading isLoading={isLoading} />
+const form = ({ value: { email, password }, errors, generalFailure, isLoading, toggleAuthView, updateUsername, updatePassword, submit, view }: Props & Actions) => {
+    const nodeRef = React.useRef<HTMLFormElement>(null);
+    const measurement = useMeasure(nodeRef);
+    const props = useSpring({ height: measurement.height });
 
-        {
-            view == AuthView.createAccount ?
-                <>
-                    <div className={c.createAccountHeading}>Let's create an <span style={{ color: color1 }}>account!</span></div>
-                </> :
-                null
-        }
+    return <animated.div style={props} className={c.formContainer}>
+        <form className={`pure-form pure-form-stacked ${c.form}`} noValidate ref={nodeRef}>
+            <Loading isLoading={isLoading} />
 
-        <label className={c.label}>Email</label>
-        <Validation errors={errors.email}>
-            <input className={c.input} type="text" value={valueOrDefault(email, "")} formNoValidate
-                onChange={event => updateUsername(event.currentTarget.value, { revalidate: false })}
-                onBlur={event => updateUsername(event.currentTarget.value, { revalidate: true })} />
-        </Validation>
+            {
+                view == AuthView.createAccount ?
+                    <>
+                        <div className={c.createAccountHeading}>Lets create an <span style={{ color: color1 }}>account!</span></div>
+                        <div className={c.createAccountDescription}>Just don't forget your password - we can't retrieve it for you.</div>
+                    </> :
+                    null
+            }
 
-        <label className={c.label}>Password</label>
-        <Validation errors={errors.password}>
-            <input className={c.input} type="password" value={valueOrDefault(password, "")} formNoValidate
-                onChange={event => updatePassword(event.currentTarget.value, { revalidate: false })}
-                onBlur={event => updatePassword(event.currentTarget.value, { revalidate: true })} />
-        </Validation>
-        {
-            (password != null && password.value != "") || view == AuthView.createAccount ?
-                <div className={c.inputDescription}>
-                    <PasswordDescription password={password} loggingIn={view == AuthView.logIn} />
-                </div> :
-                null
-        }
+            <label className={c.label}>Email</label>
+            <Validation errors={errors.email}>
+                <input className={c.input} type="text" value={valueOrDefault(email, "")} formNoValidate
+                    onChange={event => updateUsername(event.currentTarget.value, { revalidate: false })}
+                    onBlur={event => updateUsername(event.currentTarget.value, { revalidate: true })} />
+            </Validation>
 
-        <GeneralFailureView value={generalFailure} />
+            <label className={c.label}>Password</label>
+            <Validation errors={errors.password}>
+                <input className={c.input} type="password" value={valueOrDefault(password, "")} formNoValidate
+                    onChange={event => updatePassword(event.currentTarget.value, { revalidate: false })}
+                    onBlur={event => updatePassword(event.currentTarget.value, { revalidate: true })} />
+            </Validation>
+            {
+                (password != null && password.value != "") || view == AuthView.createAccount ?
+                    <div className={c.inputDescription}>
+                        <PasswordDescription password={password} loggingIn={view == AuthView.logIn} />
+                    </div> :
+                    null
+            }
 
-        <div className={c.buttonRow}>
-            <a className={`${c.signUp}`}
-                onClick={event => { toggleAuthView(); event.preventDefault(); }}>
-                {
-                    view == AuthView.logIn ?
-                        <>Create an account</> :
-                        <>Log in to an account</>
-                }
+            <GeneralFailureView value={generalFailure} />
 
-            </a>
+            <div className={c.buttonRow}>
+                <a className={`${c.signUp}`}
+                    onClick={event => { toggleAuthView(); event.preventDefault(); }}>
+                    {
+                        view == AuthView.logIn ?
+                            <>Create an account</> :
+                            <>Log in to an account</>
+                    }
 
-            <button className={`pure-button ${c.signIn}`} disabled={!isAuthStateValid(errors)}
-                onClick={event => { submit(); event.preventDefault(); }}>
-                {
-                    view == AuthView.logIn ?
-                        <><FontAwesomeIcon fixedWidth icon="unlock" /> Sign in</> :
-                        <><FontAwesomeIcon fixedWidth icon="plus" /> Create</>
-                }
-            </button>
-        </div>
+                </a>
 
-    </form>
-);
+                <button className={`pure-button ${c.signIn}`} disabled={!isAuthStateValid(errors)}
+                    onClick={event => { submit(); event.preventDefault(); }}>
+                    {
+                        view == AuthView.logIn ?
+                            <><FontAwesomeIcon fixedWidth icon="unlock" /> Sign in</> :
+                            <><FontAwesomeIcon fixedWidth icon="plus" /> Create</>
+                    }
+                </button>
+            </div>
+
+        </form>
+    </animated.div>
+};
 
 function isAuthStateValid(errors: ValidationErrors<AuthStateValue>) {
     return (errors.email == undefined || errors.email.length == 0) &&

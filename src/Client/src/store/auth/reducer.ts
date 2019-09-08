@@ -20,7 +20,8 @@ export const authReducer = (state = getDefaultState(), action: AuthAction): Auth
         case getType(authActions.toggleAuthView):
             return {
                 ...state,
-                view: state.view == AuthView.logIn ? AuthView.createAccount : AuthView.logIn
+                view: state.view == AuthView.logIn ? AuthView.createAccount : AuthView.logIn,
+                errors: {}
             };
 
         case getType(authActions.emailUpdated):

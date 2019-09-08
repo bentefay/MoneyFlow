@@ -35,10 +35,12 @@
         "react-router": "5.0.1",
         "react-router-dom": "5.0.1",
         "react-router-redux": "4.0.8",
+        "react-spring": "^8.0.27",
         "redux-logger": "3.0.6",
         "redux-observable": "1.1.0",
         "rxjs": "6.5.3",
         "tslib": "1.10.0",
-        "typesafe-actions": "4.4.2"
+        "typesafe-actions": "4.4.2",
+        "use-measure": "0.2.2"
     }
 }

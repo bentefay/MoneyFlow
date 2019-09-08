@@ -12,13 +12,21 @@ export const c = {
         alignItems: "center",
         justifyContent: "center",
         fontSize: "1.2em"
+    }),
+    content: css({
+        display: "flex",
+        flexFlow: "nowrap column",
+        alignItems: "center",
+        justifyContent: "center"
     })
 }
 
 export const Authenticate = () => (
-    <div className={c.account}>
+    <div className={c.account} >
         <Background />
-        <Brand />
-        <Form />
+        <div className={c.content}>
+            <Brand />
+            <Form />
+        </div>
     </div>
 );
