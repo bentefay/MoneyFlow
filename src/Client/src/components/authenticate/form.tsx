@@ -1,6 +1,6 @@
 import * as React from "react";
 import { css } from "emotion";
-import { color6, color7, color4, color1 } from '../styles/palette.style';
+import { color6, color7, color4 } from '../styles/palette.style';
 import { connect } from 'react-redux';
 import { RootState } from '../../store/store';
 import { Email, Password, AuthState, emailUpdated, passwordUpdated, loginInitiated, minimumPasswordLength, AuthStateValue, AuthView, toggleAuthView } from '../../store/auth';
@@ -41,7 +41,7 @@ export const c = {
         transition: "height 2s"
     }),
     label: css({
-        fontWeight: 500
+        fontWeight: 400
     }),
     inputDescription: css({
         fontSize: "80%",
@@ -57,19 +57,27 @@ export const c = {
     buttonRow: css({
         display: "flex"
     }),
-    signIn: css({
+    submitButton: css({
         color: 'white',
-        backgroundColor: color4
+        backgroundColor: color4,
+        fontSize: "80%",
+        letterSpacing: "1.2",
+        textTransform: "uppercase"
     }, common.button),
-    signUp: css({
+    submitButtonIcon: css({
+        marginRight: "0.5em",
+        marginLeft: "-0.5em"
+    }),
+    alternateActionButton: css({
         fontSize: "90%",
         backgroundColor: color7,
         textDecorationLine: "underline",
         color: "#888"
     }, common.button),
     createAccountHeading: css({
-        marginBottom: "10px",
-        fontSize: "90%",
+        marginBottom: "20px",
+        fontSize: "110%",
+        fontWeight: 500
     }),
     createAccountDescription: css({
         fontSize: "80%",
@@ -103,19 +111,16 @@ const PasswordDescription = ({ password, loggingIn }: { password: Password | nul
 }
 
 const form = ({ value: { email, password }, errors, generalFailure, isLoading, toggleAuthView, updateUsername, updatePassword, submit, view }: Props & Actions) => {
-    const nodeRef = React.useRef<HTMLFormElement>(null);
-    const measurement = useMeasure(nodeRef);
-    const props = useSpring({ height: measurement.height });
 
-    return <animated.div style={props} className={c.formContainer}>
-        <form className={`pure-form pure-form-stacked ${c.form}`} noValidate ref={nodeRef}>
+    return (
+        <form className={`pure-form pure-form-stacked ${c.form}`} noValidate>
             <Loading isLoading={isLoading} />
 
             {
                 view == AuthView.createAccount ?
                     <>
-                        <div className={c.createAccountHeading}>Lets create an <span style={{ color: color1 }}>account!</span></div>
-                        <div className={c.createAccountDescription}>Just don't forget your password - we can't retrieve it for you.</div>
+                        <div className={c.createAccountHeading}>Create Account</div>
+                        <div className={c.createAccountDescription}>We do not ever see your password, so we cannot reset it for you.</div>
                     </> :
                     null
             }
@@ -144,28 +149,28 @@ const form = ({ value: { email, password }, errors, generalFailure, isLoading, t
             <GeneralFailureView value={generalFailure} />
 
             <div className={c.buttonRow}>
-                <a className={`${c.signUp}`}
+                <a className={`${c.alternateActionButton}`}
                     onClick={event => { toggleAuthView(); event.preventDefault(); }}>
                     {
                         view == AuthView.logIn ?
-                            <>Create an account</> :
-                            <>Log in to an account</>
+                            <>Create account</> :
+                            <>Log in to account</>
                     }
 
                 </a>
 
-                <button className={`pure-button ${c.signIn}`} disabled={!isAuthStateValid(errors)}
+                <button className={`pure-button ${c.submitButton}`} disabled={!isAuthStateValid(errors)}
                     onClick={event => { submit(); event.preventDefault(); }}>
                     {
                         view == AuthView.logIn ?
-                            <><FontAwesomeIcon fixedWidth icon="unlock" /> Sign in</> :
-                            <><FontAwesomeIcon fixedWidth icon="plus" /> Create</>
+                            <><FontAwesomeIcon fixedWidth icon="unlock" size="sm" className={c.submitButtonIcon} /> Sign in</> :
+                            <><FontAwesomeIcon fixedWidth icon="user-plus" size="sm" className={c.submitButtonIcon} /> Create</>
                     }
                 </button>
             </div>
 
         </form>
-    </animated.div>
+    )
 };
 
 function isAuthStateValid(errors: ValidationErrors<AuthStateValue>) {

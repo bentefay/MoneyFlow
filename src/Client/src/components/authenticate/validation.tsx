@@ -24,7 +24,7 @@ export const c = {
 };
 
 export const Validation = ({ errors, children: child }: { errors: ReadonlyArray<ValidationError> | undefined, children: React.ReactElement<any> }) => {
-    const childRef = React.createRef<HTMLElement>();
+    const childRef = React.useRef<HTMLElement>(null);
     const hasErrors = !isEmpty(errors);
     const props = hasErrors ?
         { className: `${child.props.className} ${c.invalidControl}`, ref: childRef } :

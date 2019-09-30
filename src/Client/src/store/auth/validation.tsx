@@ -7,7 +7,7 @@ export const minimumPasswordLength = 12;
 
 export function validateEmail(email: Email): ValidationError[] {
     if (email.value.length == 0)
-        return ["We need an email to identify your account"];
+        return ["An email is needed to identify your account"];
 
     const value = email.value;
 

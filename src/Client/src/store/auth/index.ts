@@ -7,5 +7,4 @@ export * from "./actions";
 export * from "./model";
 export * from "./reducer";
 export * from "./epics";
-export * from "./selectors";
 export * from "./validation";
