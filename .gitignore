@@ -1,6 +1,6 @@
 **/node_modules/**
 data/
-bin/
+*/**/bin/
 obj/
 .vscode/
 .idea/
