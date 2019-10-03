@@ -1,6 +1,6 @@
 import { Observable, from, of, empty } from 'rxjs';
 import { mergeMap, filter, mergeAll, withLatestFrom } from 'rxjs/operators';
-import { authActions, AuthAction, Email, Password, EncryptedVault, LoginError, AuthStateValue } from '.';
+import { authActions, AuthAction, Email, Password, EncryptedVault, LoginError, UserCredentials } from '.';
 import { isActionOf } from 'typesafe-actions';
 import { RootState } from '../store';
 import bcrypt from "bcryptjs";
@@ -23,8 +23,8 @@ export function login(action: Observable<AuthAction>, state: Observable<RootStat
         filter(isActionOf(authActions.loginInitiated)),
         withLatestFrom(state),
         mergeMap(([_, state]) =>
-            state.auth.value.email != null && state.auth.value.password != null && isEmpty(state.auth.errors.email) && isEmpty(state.auth.errors.password) ?
-                of({ email: state.auth.value.email, password: state.auth.value.password }) :
+            state.auth.credentials.email != null && state.auth.credentials.password != null && isEmpty(state.auth.errors.email) && isEmpty(state.auth.errors.password) ?
+                of({ email: state.auth.credentials.email, password: state.auth.credentials.password }) :
                 empty()),
         mergeMap(({ email, password }) => {
             return from(
@@ -75,7 +75,7 @@ function getVault(email: Email, hashedPassword: HashedPassword): TaskEither<Logi
         {
             match: ({ status }) => status == 400,
             validator: GetVaultValidationErrorResponse,
-            chain: ({ validationErrors }) => taskEither.asLeft(validationFailure<AuthStateValue>({ errors: validationErrors }))
+            chain: ({ validationErrors }) => taskEither.asLeft(validationFailure<UserCredentials>({ errors: validationErrors }))
         }]
     )
 }
@@ -113,7 +113,7 @@ function getSalt(email: Email): TaskEither<LoginError, PasswordSalt | null> {
         {
             match: ({ status }) => status == 400,
             validator: GetSaltValidationErrorResponse,
-            chain: ({ validationErrors }) => taskEither.asLeft(validationFailure<AuthStateValue>({ errors: validationErrors }))
+            chain: ({ validationErrors }) => taskEither.asLeft(validationFailure<UserCredentials>({ errors: validationErrors }))
         }]);
 }
 

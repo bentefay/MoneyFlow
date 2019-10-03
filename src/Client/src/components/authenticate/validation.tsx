@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ValidationError } from '../../store/shared/models';
+import { FormError, FormState, ChangeType, EventWithValue, OnChange } from '../../store/shared/models';
 import { isString, isEmpty } from 'lodash';
 import { css } from 'emotion';
 import { colorInvalid2, colorInvalid1 } from '../styles/palette.style';
@@ -23,7 +23,19 @@ export const c = {
     invalidMessage: css({})
 };
 
-export const Validation = ({ errors, children: child }: { errors: ReadonlyArray<ValidationError> | undefined, children: React.ReactElement<any> }) => {
+export const renderFormField = <TState, TKey extends keyof FormState<TState>>(
+    state: FormState<TState>, 
+    key: TKey, 
+    onChange: OnChange<TState, TKey>, 
+    render: (field: { onChange: (event: EventWithValue<TState[TKey]>) => void, onBlur: (event: EventWithValue<TState[TKey]>) => void, value: TState[TKey] }) => React.ReactElement<any>) => {
+    return (
+        <FormErrors errors={state[key].errors}>
+            {render({ onChange: onChange(key, "change"), onBlur: onChange(key, "blur"), value: state[key].value })}
+        </FormErrors>
+    );
+}
+
+export const FormErrors = ({ errors, children: child }: { errors: ReadonlyArray<FormError> | null, children: React.ReactElement<any> }) => {
     const childRef = React.useRef<HTMLElement>(null);
     const hasErrors = !isEmpty(errors);
     const props = hasErrors ?

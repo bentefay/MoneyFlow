@@ -2,16 +2,14 @@ import * as React from "react";
 import { css } from "emotion";
 import { color6, color7, color4 } from '../styles/palette.style';
 import { connect } from 'react-redux';
+import _ from 'lodash';
 import { RootState } from '../../store/store';
-import { Email, Password, AuthState, emailUpdated, passwordUpdated, loginInitiated, minimumPasswordLength, AuthStateValue, AuthView, toggleAuthView } from '../../store/auth';
-import { valueOrDefault } from '../../store/shared/functions';
-import { Validation } from './validation';
+import { AuthState, loginInitiated, minimumPasswordLength, UserCredentials, createAccountToggled, Email, Password, validateEmail, validatePassword } from '../../store/auth';
+import { renderFormField } from './validation';
 import { GeneralFailureView } from './generalFailureView';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { ValidationErrors } from 'src/store/shared/models';
+import { formField, useFormState, FormStateValidator, FormState } from '../../store/shared/models';
 import { Loading } from './loading';
-import useMeasure from "use-measure";
-import { useSpring, animated } from 'react-spring'
 
 export const common = {
     button: css({
@@ -89,17 +87,15 @@ export const c = {
 type Props = AuthState
 
 interface Actions {
-    updateUsername(value: string, options: { revalidate: boolean }): void;
-    updatePassword(value: string, options: { revalidate: boolean }): void;
-    submit(): void;
-    toggleAuthView(): void;
+    onLoginInitiated(options: { credentials: UserCredentials, create: boolean }): void;
+    onCreateAccountToggled(options: { createAccount: boolean }): void;
 }
 
-const PasswordDescription = ({ password, loggingIn }: { password: Password | null, loggingIn: boolean }) => {
-    if (password === null || password.value.length == 0)
+const PasswordDescription = ({ password, loggingIn }: { password: string | null, loggingIn: boolean }) => {
+    if (password === null || password.length == 0)
         return <>Must be <b>12 or more</b> letters, numbers or symbols</>;
 
-    const remainingCharactersRequired = minimumPasswordLength - password.value.length;
+    const remainingCharactersRequired = minimumPasswordLength - password.length;
 
     if (remainingCharactersRequired > 1)
         return <>Just <b>{remainingCharactersRequired}</b> more letters, numbers or symbols</>;
@@ -110,38 +106,60 @@ const PasswordDescription = ({ password, loggingIn }: { password: Password | nul
     return loggingIn ? null : <>Great password!</>;
 }
 
-const form = ({ value: { email, password }, errors, generalFailure, isLoading, toggleAuthView, updateUsername, updatePassword, submit, view }: Props & Actions) => {
+type AuthForm = { email: string | null, password: string | null };
+
+const defaultForm : FormState<AuthForm> = {
+    email: formField(null), 
+    password: formField(null) 
+};
+
+const formValidator : FormStateValidator<AuthForm> = state => {
+    return {
+        email: state.email.touched ? validateEmail(state.email.value) : undefined,
+        password: state.password.touched ? validatePassword(state.password.value) : undefined
+    };
+};
+
+const form = ({ createAccount, generalFailure, isLoading, onCreateAccountToggled, onLoginInitiated }: Props & Actions) => {
+    const  { state, onChange, onSubmit, isValid, reset } = useFormState<AuthForm>(
+        () => defaultForm, 
+        formValidator,
+        state => onLoginInitiated({ 
+            credentials: { 
+                email: new Email(state.email!), 
+                password: new Password(state.password!) 
+            }, 
+            create: createAccount 
+        }));
+
+    const { password } = state;
 
     return (
         <form className={`pure-form pure-form-stacked ${c.form}`} noValidate>
             <Loading isLoading={isLoading} />
 
             {
-                view == AuthView.createAccount ?
+                createAccount ?
                     <>
                         <div className={c.createAccountHeading}>Create Account</div>
-                        <div className={c.createAccountDescription}>We do not ever see your password, so we cannot reset it for you.</div>
+                        <div className={c.createAccountDescription}>Your account is private. We never see your password, or your data.</div>
                     </> :
                     null
             }
 
             <label className={c.label}>Email</label>
-            <Validation errors={errors.email}>
-                <input className={c.input} type="text" value={valueOrDefault(email, "")} formNoValidate
-                    onChange={event => updateUsername(event.currentTarget.value, { revalidate: false })}
-                    onBlur={event => updateUsername(event.currentTarget.value, { revalidate: true })} />
-            </Validation>
+            {renderFormField(state, "email", onChange, ({ onChange, onBlur, value }) => 
+                <input className={c.input} type="text" value={value || ""} formNoValidate onChange={onChange} onBlur={onBlur} />
+            )}
 
             <label className={c.label}>Password</label>
-            <Validation errors={errors.password}>
-                <input className={c.input} type="password" value={valueOrDefault(password, "")} formNoValidate
-                    onChange={event => updatePassword(event.currentTarget.value, { revalidate: false })}
-                    onBlur={event => updatePassword(event.currentTarget.value, { revalidate: true })} />
-            </Validation>
+            {renderFormField(state, "password", onChange, ({ onChange, onBlur, value }) => 
+                <input className={c.input} type="password" value={value || ""} formNoValidate onChange={onChange} onBlur={onBlur} />
+            )}
             {
-                (password != null && password.value != "") || view == AuthView.createAccount ?
+                (password.value != null && password.value != "") || createAccount ?
                     <div className={c.inputDescription}>
-                        <PasswordDescription password={password} loggingIn={view == AuthView.logIn} />
+                        <PasswordDescription password={password.value} loggingIn={!createAccount} />
                     </div> :
                     null
             }
@@ -150,21 +168,20 @@ const form = ({ value: { email, password }, errors, generalFailure, isLoading, t
 
             <div className={c.buttonRow}>
                 <a className={`${c.alternateActionButton}`}
-                    onClick={event => { toggleAuthView(); event.preventDefault(); }}>
+                    onClick={event => { reset(); onCreateAccountToggled({ createAccount: !createAccount }); event.preventDefault(); }}>
                     {
-                        view == AuthView.logIn ?
-                            <>Create account</> :
-                            <>Log in to account</>
+                        createAccount ?
+                            <>Log in to account</> :
+                            <>Create account</>
                     }
 
                 </a>
 
-                <button className={`pure-button ${c.submitButton}`} disabled={!isAuthStateValid(errors)}
-                    onClick={event => { submit(); event.preventDefault(); }}>
+                <button className={`pure-button ${c.submitButton}`} disabled={!isValid} onClick={event => { onSubmit(); event.preventDefault(); }}>
                     {
-                        view == AuthView.logIn ?
-                            <><FontAwesomeIcon fixedWidth icon="unlock" size="sm" className={c.submitButtonIcon} /> Sign in</> :
-                            <><FontAwesomeIcon fixedWidth icon="user-plus" size="sm" className={c.submitButtonIcon} /> Create</>
+                        createAccount ?
+                            <><FontAwesomeIcon fixedWidth icon="user-plus" size="sm" className={c.submitButtonIcon} /> Create</> :
+                            <><FontAwesomeIcon fixedWidth icon="unlock" size="sm" className={c.submitButtonIcon} /> Sign in</>
                     }
                 </button>
             </div>
@@ -173,17 +190,10 @@ const form = ({ value: { email, password }, errors, generalFailure, isLoading, t
     )
 };
 
-function isAuthStateValid(errors: ValidationErrors<AuthStateValue>) {
-    return (errors.email == undefined || errors.email.length == 0) &&
-        (errors.password == undefined || errors.password.length == 0)
-}
-
 export const Form = connect(
     (state: RootState): Props => state.auth,
     (dispatch): Actions => ({
-        updateUsername: (value, options) => dispatch(emailUpdated({ email: new Email(value), revalidate: options.revalidate })),
-        updatePassword: (value, options) => dispatch(passwordUpdated({ password: new Password(value), revalidate: options.revalidate })),
-        submit: () => dispatch(loginInitiated()),
-        toggleAuthView: () => dispatch(toggleAuthView())
+        onLoginInitiated: options => dispatch(loginInitiated(options)),
+        onCreateAccountToggled: options => dispatch(createAccountToggled(options))
     })
 )(form);

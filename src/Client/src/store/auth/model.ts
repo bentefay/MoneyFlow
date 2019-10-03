@@ -1,23 +1,17 @@
-import { GeneralFailure, Unit, ValidationErrors, Invalid } from '../shared/models';
+import { GeneralFailure, Unit, Invalid } from '../shared/models';
 
-export type LoginError = GeneralFailure | Invalid<AuthStateValue> | Unit;
-
-export enum AuthView {
-    logIn,
-    createAccount
-}
+export type LoginError = GeneralFailure | Invalid<UserCredentials> | Unit;
 
 export interface AuthState extends Readonly<{
-    view: AuthView,
-    value: AuthStateValue,
-    errors: ValidationErrors<AuthStateValue>,
+    createAccount: boolean,
+    credentials: UserCredentials | null,
     generalFailure?: GeneralFailure,
     isLoading: boolean
 }> { }
 
-export interface AuthStateValue extends Readonly<{
-    email: Email | null,
-    password: Password | null
+export interface UserCredentials extends Readonly<{
+    email: Email,
+    password: Password
 }> { }
 
 export class Email {
