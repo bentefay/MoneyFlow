@@ -1,6 +1,4 @@
-import { GeneralFailure, Unit, Invalid } from '../shared/models';
-
-export type LoginError = GeneralFailure | Invalid<UserCredentials> | Unit;
+import { GeneralFailure } from '../shared/models';
 
 export interface AuthState extends Readonly<{
     createAccount: boolean,

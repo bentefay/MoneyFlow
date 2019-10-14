@@ -1,21 +1,18 @@
 import { createStore, applyMiddleware, compose } from "redux";
-import { createEpicMiddleware, combineEpics } from "redux-observable";
 import { StateType } from "typesafe-actions";
 import logger from 'redux-logger';
 import { login } from './auth';
 import { rootReducer } from './reducer';
+import createSagaMiddleware from 'redux-saga'
 
-const rootEpic = combineEpics(login);
-
-
-const epicMiddleware = createEpicMiddleware();
-const middlewares = [epicMiddleware, logger];
+const sagaMiddleware = createSagaMiddleware()
+const middlewares = [sagaMiddleware, logger];
 const enhancer = compose(applyMiddleware(...middlewares));
 const initialState = {};
 
 export const store = createStore(rootReducer, initialState, enhancer);
 
-epicMiddleware.run(rootEpic as any);
+sagaMiddleware.run(login);
 
 if (module.hot) {
     module.hot.accept("./reducer", () => {

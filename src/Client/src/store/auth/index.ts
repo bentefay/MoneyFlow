@@ -6,5 +6,5 @@ export type AuthAction = ActionType<typeof authActions>;
 export * from "./actions";
 export * from "./model";
 export * from "./reducer";
-export * from "./epics";
+export * from "./sagas";
 export * from "./validation";
