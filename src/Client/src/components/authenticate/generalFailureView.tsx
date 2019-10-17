@@ -60,7 +60,7 @@ export const GeneralFailureView = ({ value }: { value: GeneralFailure | undefine
                 <div className={c.solutions.container}>
                     <div className={c.solutions.title}>Possible Solutions</div>
                     <ul className={c.solutions.list}>
-                        {value.possibleSolutions.map(solution => <li>{solution}</li>)}
+                        {value.possibleSolutions.map(solution => <li key={solution}>{solution}</li>)}
                     </ul>
                 </div>
                 : null}
