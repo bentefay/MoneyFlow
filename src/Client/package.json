@@ -43,5 +43,8 @@
         "tslib": "1.10.0",
         "typesafe-actions": "4.4.2",
         "use-measure": "0.2.2"
+    },
+    "alias": {
+        "react-dom": "@hot-loader/react-dom"
     }
 }
