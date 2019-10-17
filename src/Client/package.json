@@ -9,6 +9,8 @@
         "@types/react-router": "5.1.2",
         "@types/react-router-dom": "5.1.0",
         "@types/react-router-redux": "5.0.18",
+        "babel-core": "^6.26.3",
+        "babel-preset-env": "^1.7.0",
         "enzyme": "3.10.0",
         "enzyme-adapter-react-16": "1.15.1",
         "jest": "24.9.0",
