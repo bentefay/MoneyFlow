@@ -2,7 +2,7 @@ import { GeneralFailure } from '../shared/models';
 
 export interface AuthState extends Readonly<{
     createAccount: boolean,
-    credentials: UserCredentials | null,
+    credentials?: UserCredentials,
     generalFailure?: GeneralFailure,
     isLoading: boolean
 }> { }

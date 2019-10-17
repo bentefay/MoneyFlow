@@ -4,7 +4,6 @@ import { AuthAction, AuthState, authActions } from '.';
 const getDefaultState = (): AuthState => {
     return {
         createAccount: false,
-        credentials: null,
         isLoading: false
     };
 }
@@ -14,6 +13,7 @@ export const authReducer = (state = getDefaultState(), action: AuthAction): Auth
         case getType(authActions.createAccountToggled):
             return {
                 ...state,
+                generalFailure: undefined,
                 createAccount: action.payload.createAccount
             };
 
