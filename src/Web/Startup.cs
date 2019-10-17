@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 using Web.Utils;
 using Web.Utils.Serialization.Serializers;
@@ -12,11 +12,10 @@ namespace Web
 {
     public class Startup
     {
-        private readonly ILogger _logger;
+        private readonly ILogger _logger = Log.Logger;
 
-        public Startup(IConfiguration configuration, ILogger logger)
+        public Startup(IConfiguration configuration)
         {
-            _logger = logger;
             Configuration = configuration;
         }
 
@@ -25,17 +24,16 @@ namespace Web
         public void ConfigureServices(IServiceCollection services)
         {
             TinyTypeTypeConverter.ScanForAndRegisterTinyTypeTypeConverters(typeof(Startup));
-            
+
             services
-                .AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                .AddJsonOptions(setup => setup
+                .AddControllers()
+                .AddNewtonsoftJson(setup => setup
                     .SerializerSettings
                     .ConfigureForApiControllers(_logger));
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-        {          
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -50,7 +48,7 @@ namespace Web
                 .UseDefaultFiles()
                 .UseStaticFiles()
                 .UseHttpsRedirection()
-                .UseMvc();
+                .UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
 }

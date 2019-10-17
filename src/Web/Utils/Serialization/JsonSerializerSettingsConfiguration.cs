@@ -8,7 +8,7 @@ using Web.Utils.Serialization.Resolvers;
 namespace Web.Utils.Serialization
 {
     public static class JsonSerializerSettingsConfiguration
-    {       
+    {
         public static JsonSerializerSettings ConfigureResolverWithCamelCase(this JsonSerializerSettings settings)
         {
             settings.ContractResolver = new ContractResolver(settings, ConfigurePropertyConverters.All)
@@ -16,12 +16,6 @@ namespace Web.Utils.Serialization
                 NamingStrategy = new CamelCaseNamingStrategy()
             };
 
-            return settings;
-        }
-
-        public static JsonSerializerSettings ConfigureLanguageExt(this JsonSerializerSettings settings)
-        {
-            settings.Converters.Add(new OptionJsonConverter());
             return settings;
         }
 
