@@ -35,6 +35,8 @@ as you normally would, then either:
 
 Clone this repository then:
 
+- `dotnet user-secrets -p src/Web init` 
+- `dotnet user-secrets -p src/Web set "StorageConnectionString" ""` 
 - `m run server` (watch run server)
 - `m run client` (watch run client)
 - `m test server` (watch test server)

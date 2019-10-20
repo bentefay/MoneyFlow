@@ -14,7 +14,7 @@ namespace Web.Functions
             }
             catch (JsonReaderException e)
             {
-                return new JsonDeserializationError(typeof(T), json, e.Path, e.LineNumber, e.LinePosition, e.Message);
+                return new JsonDeserializationError(typeof(T), json, e.Path, e.LineNumber, e.LinePosition, e);
             }
         }
         
@@ -27,7 +27,7 @@ namespace Web.Functions
             }
             catch (JsonWriterException e)
             {
-                return new JsonSerializationError(typeof(T), value, e.Path, e.Message);
+                return new JsonSerializationError(typeof(T), value, e.Path, e);
             }
         }
     }

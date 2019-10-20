@@ -2,26 +2,18 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Serilog;
-using Web.Utils.Serialization.Converters;
-using Web.Utils.Serialization.Resolvers;
 
 namespace Web.Utils.Serialization
 {
     public static class JsonSerializerSettingsConfiguration
     {
-        public static JsonSerializerSettings ConfigureResolverWithCamelCase(this JsonSerializerSettings settings)
+        public static JsonSerializerSettings ConfigureCamelCase(this JsonSerializerSettings settings)
         {
-            settings.ContractResolver = new ContractResolver(settings, ConfigurePropertyConverters.All)
+            settings.ContractResolver = new DefaultContractResolver
             {
                 NamingStrategy = new CamelCaseNamingStrategy()
             };
 
-            return settings;
-        }
-
-        public static JsonSerializerSettings ConfigureTinyTypes(this JsonSerializerSettings settings)
-        {
-            settings.Converters.Add(new TinyTypeJsonConverter());
             return settings;
         }
 
@@ -61,26 +53,9 @@ namespace Web.Utils.Serialization
             return settings;
         }
 
-        public static JsonSerializerSettings IgnoreNulls(this JsonSerializerSettings settings)
-        {
-            settings.NullValueHandling = NullValueHandling.Ignore;
-            return settings;
-        }
-
         public static JsonSerializerSettings ConfigureEnumsAsString(this JsonSerializerSettings settings)
         {
             settings.Converters.Add(new StringEnumConverter());
-            return settings;
-        }
-
-        public static JsonSerializerSettings ConfigureSumTypes(this JsonSerializerSettings settings)
-        {
-            return settings;
-        }
-
-        public static JsonSerializerSettings ConfigureExceptionConverter(this JsonSerializerSettings settings)
-        {
-            settings.Converters.Add(new ExceptionConverter());
             return settings;
         }
     }

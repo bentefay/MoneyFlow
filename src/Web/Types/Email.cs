@@ -4,7 +4,7 @@ using Web.Types.Errors;
 
 namespace Web.Types
 {
-    public struct Email : ITinyType<string>
+    public class Email : TinyType<Email, string>
     {
         private static readonly Regex _email = new Regex(@"^[^\s@]+@[^\s@]+\.[^\s@]{2,}$");
         
@@ -13,11 +13,8 @@ namespace Web.Types
                 Prelude.Right(new Email(value)) :
                 Prelude.Left<InvalidEmail, Email>(new InvalidEmail(value));
 
-        private Email(string value)
+        private Email(string value) : base(value)
         {
-            Value = value;
         }
-
-        public string Value { get; }
     }
 }

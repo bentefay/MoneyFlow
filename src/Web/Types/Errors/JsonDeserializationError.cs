@@ -11,24 +11,24 @@ namespace Web.Types.Errors
         public string Path { get; }
         public int LineNumber { get; }
         public int LinePosition { get; }
-        public string Message { get; }
+        public Exception Exception { get; }
 
-        public JsonDeserializationError(Type type, string json, string path, int lineNumber, int linePosition, string message)
+        public JsonDeserializationError(Type type, string json, string path, int lineNumber, int linePosition, Exception exception)
         {
             Type = type;
             Json = json;
             Path = path;
             LineNumber = lineNumber;
             LinePosition = linePosition;
-            Message = message;
+            Exception = exception;
         }
 
-        public string GetDescription() => GetDescription(Type, Path, Json, LineNumber, LinePosition, Message);
+        public string GetDescription() => GetDescription(Type, Path, Json, LineNumber, LinePosition, Exception);
 
-        public static string GetDescription(Type type, string path, string json, int lineNumber, int linePosition, string message)
+        public static string GetDescription(Type type, string path, string json, int lineNumber, int linePosition, Exception exception)
         {
             var annotatedJson = AnnotateJson(json, lineNumber, linePosition);
-            return $"Deserialization error for object of type '{type?.Name}' at path '{path}' ({lineNumber},{linePosition}):\n{message}\n\n{annotatedJson}'";
+            return $"Deserialization error for object of type '{type?.Name}' at path '{path}' ({lineNumber},{linePosition}):\n{exception.Message}\n\n{annotatedJson}'";
         }
 
         private static string AnnotateJson(string json, int lineNumber, int linePosition)

@@ -6,7 +6,6 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using Web.Utils;
 using Web.Utils.Serialization.Serializers;
-using Web.Utils.Serialization.TypeConverters;
 
 namespace Web
 {
@@ -23,8 +22,6 @@ namespace Web
 
         public void ConfigureServices(IServiceCollection services)
         {
-            TinyTypeTypeConverter.ScanForAndRegisterTinyTypeTypeConverters(typeof(Startup));
-
             services
                 .AddControllers()
                 .AddNewtonsoftJson(setup => setup

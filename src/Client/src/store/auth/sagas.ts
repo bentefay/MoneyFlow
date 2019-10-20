@@ -43,8 +43,8 @@ const GetVaultSuccessResponse = t.type({
 
 function createVault(email: Email, hashedPassword: HashedPassword): TaskEither<GeneralFailure | Aborted, EncryptedVault> {
     return fetchJson(
-        `${apiBaseUrl}/api/vault`,
-        { headers: authHeader({ email: email.value, password: hashedPassword.value }) },
+        `${apiBaseUrl}/api/vault/new`,
+        { headers: authHeader({ email: email.value, password: hashedPassword.value }), method: "put" },
         "Creating your account",
         [{
             match: ({ status }) => status == 200,

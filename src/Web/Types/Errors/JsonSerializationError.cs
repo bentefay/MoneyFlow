@@ -7,17 +7,17 @@ namespace Web.Types.Errors
         public Type Type { get; }
         public object Value { get; }
         public string Path { get; }
-        public string Message { get; }
+        public Exception Exception { get; }
 
-        public JsonSerializationError(Type type, object value, string path, string message)
+        public JsonSerializationError(Type type, object value, string path, Exception exception)
         {
             Type = type;
             Value = value;
             Path = path;
-            Message = message;
+            Exception = exception;
         }
 
         public string GetDescription() => 
-            $"Serialization error for object of type '{Type?.Name}' at path '{Path}':\n{Message}";
+            $"Serialization error for object of type '{Type?.Name}' at path '{Path}':\n{Exception.Message}";
     }
 }

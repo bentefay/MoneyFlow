@@ -8,10 +8,7 @@ namespace Web.Utils.Serialization.Serializers
 
         public static JsonSerializerSettings ConfigureForApi(this JsonSerializerSettings settings) =>
             settings
-                .ConfigureResolverWithCamelCase()
-                .ConfigureTinyTypes()
-                .ConfigureSumTypes()
-                .ConfigureExceptionConverter()
+                .ConfigureCamelCase()
                 .ConfigureEnumsAsString();
     }
 }
