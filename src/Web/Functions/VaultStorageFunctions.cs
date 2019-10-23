@@ -16,43 +16,17 @@ namespace Web.Functions
     {
         private static EitherAsync<IError, VaultIndex> CreateVault(VaultIndex vaultIndex, StorageConnectionString connectionString)
         {
-            return PreludeExt.CreateEitherAsync(async () =>
-            {
-                if (!CloudStorageAccount.TryParse(connectionString.Value, out var account))
-                    return new InvalidCloudStorageConnectionString();
-
-                var path = $"{vaultIndex.Email.Value}/index";
-
-                try
-                {
-                    var serviceClient = account.CreateCloudBlobClient();
-                    var container = serviceClient.GetContainerReference("vaults");
-                    var cloudBlob = (CloudBlockBlob) await container.GetBlobReferenceFromServerAsync(path);
-                    if (cloudBlob.Exists())
-                    {
-                        var json = await cloudBlob.DownloadTextAsync();
-                        return (
-                            from dto in JsonFunctions.Deserialize<VaultIndexDto>(json, ApiSerializers.Instance).Left(Cast.To<IError>())
-                            from email in Email.Create(dto.Email).Left(Cast.To<IError>())
-                            let salt = new PasswordSalt(dto.PasswordSalt)
-                            let etag = new StorageConcurrencyLock(cloudBlob.Properties.ETag)
-                            from password in DoubleHashedPassword.Create(dto.Password).Left(Cast.To<IError>())
-                            select new VaultIndex(email, salt, password, etag)
-                        );
-                    }
-                    else
-                    {
-                        return Prelude.Right<VaultIndex?>(null);
-                    }
-                }
-                catch (Exception e)
-                {
-                    return new CloudStorageError(e, $"reading vault summary from {path}");
-                }
-            });
+            return
+                from cloudBlob in StorageFunctions.GetBlob("vault", $"{vaultIndex.Email.Value}/index", connectionString)
+                from maybeJson in 
+                from vaultIndex in maybeJson
+                    .Map(json => CreateVaultIndex(json, cloudBlob.Properties.ETag))
+                    .Sequence()
+                    .ToAsync()
+                select vaultIndex;
         }
 
-        private static EitherAsync<IError, Option<VaultIndex>> GetVaultIndex(Email email, StorageConnectionString connectionString)
+        public static EitherAsync<IError, Option<VaultIndex>> GetVaultIndex(Email email, StorageConnectionString connectionString)
         {
             return
                     from cloudBlob in StorageFunctions.GetBlob("vault", $"{email.Value}/index", connectionString)

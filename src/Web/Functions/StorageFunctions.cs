@@ -46,5 +46,37 @@ namespace Web.Functions
                     }
                 });
         }
+        
+        public static EitherAsync<IError, BlobLeaseId> AcquireBlobLease(CloudBlockBlob blob)
+        {
+            var leaseTime = TimeSpan.FromSeconds(1);
+            return PreludeExt.CreateEitherAsync<IError, BlobLeaseId>(
+                async () => {
+                    try
+                    {
+                        return new BlobLeaseId(await blob.AcquireLeaseAsync(leaseTime));
+                    }
+                    catch (Exception e)
+                    {
+                        return new CloudStorageError(e, $"acquiring blob lease {blob.StorageUri}");
+                    }
+                });
+        }
+        
+        public static EitherAsync<IError, Unit> AcquireBlobLease(CloudBlockBlob blob, BlobLeaseId leaseId)
+        {
+            return PreludeExt.CreateEitherAsync<IError, Unit>(
+                async () => {
+                    try
+                    {
+                        await blob.ReleaseLeaseAsync(AccessCondition.GenerateLeaseCondition(leaseId.Value));
+                        return Prelude.unit;
+                    }
+                    catch (Exception e)
+                    {
+                        return new CloudStorageError(e, $"releasing blob lease {blob.StorageUri}");
+                    }
+                });
+        }
     }
 }
