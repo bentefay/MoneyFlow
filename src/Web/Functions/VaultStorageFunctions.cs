@@ -7,7 +7,6 @@ using Microsoft.Azure.Storage.Blob;
 using Web.Types;
 using Web.Types.Dtos;
 using Web.Types.Errors;
-using Web.Utils.Extensions;
 using Web.Utils.Serialization.Serializers;
 
 namespace Web.Functions
@@ -17,10 +16,12 @@ namespace Web.Functions
         private static EitherAsync<IError, VaultIndex> CreateVault(VaultIndex vaultIndex, StorageConnectionString connectionString)
         {
             return
-                from cloudBlob in StorageFunctions.GetBlob("vault", $"{vaultIndex.Email.Value}/index", connectionString)
-                from maybeJson in 
+                from blob in BlobFunctions.Get("vault", $"{vaultIndex.Email.Value}/index", connectionString)
+                from _ in BlobFunctions.Exists(blob).Bind(exists => exists ?
+                    Prelude.LeftAsync<IError, Unit>(new VaultAlreadyExists(vaultIndex.Email)) :
+                    Prelude.unit)
                 from vaultIndex in maybeJson
-                    .Map(json => CreateVaultIndex(json, cloudBlob.Properties.ETag))
+                    .Map(json => CreateVaultIndex(json, blob.Properties.ETag))
                     .Sequence()
                     .ToAsync()
                 select vaultIndex;
@@ -29,10 +30,10 @@ namespace Web.Functions
         public static EitherAsync<IError, Option<VaultIndex>> GetVaultIndex(Email email, StorageConnectionString connectionString)
         {
             return
-                    from cloudBlob in StorageFunctions.GetBlob("vault", $"{email.Value}/index", connectionString)
-                    from maybeJson in StorageFunctions.GetBlobText(cloudBlob)
+                    from blob in BlobFunctions.Get("vault", $"{email.Value}/index", connectionString)
+                    from maybeJson in BlobFunctions.GetText(blob)
                     from vaultIndex in maybeJson
-                        .Map(json => CreateVaultIndex(json, cloudBlob.Properties.ETag))
+                        .Map(json => CreateVaultIndex(json, blob.Properties.ETag))
                         .Sequence()
                         .ToAsync()
                     select vaultIndex;

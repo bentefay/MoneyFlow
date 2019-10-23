@@ -8,9 +8,9 @@ using Web.Utils.Extensions;
 
 namespace Web.Functions
 {
-    public static class StorageFunctions
+    public static class BlobFunctions
     {
-        public static EitherAsync<IError, CloudBlockBlob> GetBlob(string containerName, string path, StorageConnectionString connectionString)
+        public static EitherAsync<IError, CloudBlockBlob> Get(string containerName, string path, StorageConnectionString connectionString)
         {
             return PreludeExt.CreateEitherAsync<IError, CloudBlockBlob>(async () =>
             {
@@ -26,14 +26,14 @@ namespace Web.Functions
                 }
                 catch (Exception e)
                 {
-                    return new CloudStorageError(e, $"reading cloud blob from {path}");
+                    return new CloudStorageError(e, $"reading blob from {path}");
                 }
             });
         }
 
-        public static EitherAsync<IError, Option<string>> GetBlobText(CloudBlockBlob blob)
+        public static EitherAsync<IError, Option<string>> GetText(CloudBlockBlob blob)
         {
-            return PreludeExt.CreateEitherAsync(
+            return PreludeExt.CreateEitherAsync<IError, Option<string>>(
                 async () => {
                     try
                     {
@@ -42,12 +42,43 @@ namespace Web.Functions
                     }
                     catch (Exception e)
                     {
-                        return Prelude.Left<IError, Option<string>>(new CloudStorageError(e, $"reading cloud blob text from {blob.StorageUri}"));
+                        return new CloudStorageError(e, $"reading text from blob {blob.StorageUri}");
                     }
                 });
         }
-        
-        public static EitherAsync<IError, BlobLeaseId> AcquireBlobLease(CloudBlockBlob blob)
+
+        public static EitherAsync<IError, Unit> SetText(CloudBlockBlob blob, string text, AccessCondition? accessCondition = null)
+        {
+            return PreludeExt.CreateEitherAsync<IError, Unit>(
+                async () => {
+                    try
+                    {
+                        await blob.UploadTextAsync(text, null, accessCondition, null, null);
+                        return Prelude.unit;
+                    }
+                    catch (Exception e)
+                    {
+                        return new CloudStorageError(e, $"reading text from blob {blob.StorageUri}");
+                    }
+                });
+        }
+
+        public static EitherAsync<IError, bool> Exists(CloudBlockBlob blob)
+        {
+            return PreludeExt.CreateEitherAsync<IError, bool>(
+                async () => {
+                    try
+                    {
+                        return await blob.ExistsAsync();
+                    }
+                    catch (Exception e)
+                    {
+                        return new CloudStorageError(e, $"checking if blob exists {blob.StorageUri}");
+                    }
+                });
+        }
+
+        public static EitherAsync<IError, BlobLeaseId> AcquireLease(CloudBlockBlob blob)
         {
             var leaseTime = TimeSpan.FromSeconds(1);
             return PreludeExt.CreateEitherAsync<IError, BlobLeaseId>(
@@ -58,12 +89,12 @@ namespace Web.Functions
                     }
                     catch (Exception e)
                     {
-                        return new CloudStorageError(e, $"acquiring blob lease {blob.StorageUri}");
+                        return new CloudStorageError(e, $"acquiring lease on blob {blob.StorageUri}");
                     }
                 });
         }
-        
-        public static EitherAsync<IError, Unit> AcquireBlobLease(CloudBlockBlob blob, BlobLeaseId leaseId)
+
+        public static EitherAsync<IError, Unit> ReleaseLease(CloudBlockBlob blob, BlobLeaseId leaseId)
         {
             return PreludeExt.CreateEitherAsync<IError, Unit>(
                 async () => {
@@ -74,7 +105,7 @@ namespace Web.Functions
                     }
                     catch (Exception e)
                     {
-                        return new CloudStorageError(e, $"releasing blob lease {blob.StorageUri}");
+                        return new CloudStorageError(e, $"releasing lease {leaseId.Value} on blob {blob.StorageUri}");
                     }
                 });
         }
