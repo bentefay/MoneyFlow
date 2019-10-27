@@ -12,7 +12,7 @@ namespace Web.Functions
         private static EitherAsync<IError, Unit> CreateVault(VaultIndex vaultIndex, StorageConnectionString connectionString)
         {
             return
-                from blob in BlobFunctions.Get("vault", $"{vaultIndex.Email.Value}/index", connectionString)
+                from blob in BlobFunctions.Get("vaults", $"{vaultIndex.Email.Value}/index", connectionString)
                 from _ in BlobFunctions.Exists(blob)
                     .Bind(exists => exists ?
                         Prelude.LeftAsync<IError, Unit>(new VaultAlreadyExists(vaultIndex.Email)) :
@@ -25,7 +25,7 @@ namespace Web.Functions
         public static EitherAsync<IError, Option<VaultIndex>> GetVaultIndex(Email email, StorageConnectionString connectionString)
         {
             return
-                    from blob in BlobFunctions.Get("vault", $"{email.Value}/index", connectionString)
+                    from blob in BlobFunctions.Get("vaults", $"{email.Value}/index", connectionString)
                     from maybeJson in BlobFunctions.GetText(blob)
                     from vaultIndex in maybeJson
                         .Map(json => DeserializeVaultIndex(json, blob.Properties.ETag))
