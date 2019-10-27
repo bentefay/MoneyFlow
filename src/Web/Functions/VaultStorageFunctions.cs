@@ -1,9 +1,5 @@
-using System;
-using System.IO;
 using LanguageExt;
 using Web.Utils.Extensions;
-using Microsoft.Azure.Storage;
-using Microsoft.Azure.Storage.Blob;
 using Web.Types;
 using Web.Types.Dtos;
 using Web.Types.Errors;
@@ -13,18 +9,17 @@ namespace Web.Functions
 {
     public class VaultStorageFunctions
     {
-        private static EitherAsync<IError, VaultIndex> CreateVault(VaultIndex vaultIndex, StorageConnectionString connectionString)
+        private static EitherAsync<IError, Unit> CreateVault(VaultIndex vaultIndex, StorageConnectionString connectionString)
         {
             return
                 from blob in BlobFunctions.Get("vault", $"{vaultIndex.Email.Value}/index", connectionString)
-                from _ in BlobFunctions.Exists(blob).Bind(exists => exists ?
-                    Prelude.LeftAsync<IError, Unit>(new VaultAlreadyExists(vaultIndex.Email)) :
-                    Prelude.unit)
-                from vaultIndex in maybeJson
-                    .Map(json => CreateVaultIndex(json, blob.Properties.ETag))
-                    .Sequence()
-                    .ToAsync()
-                select vaultIndex;
+                from _ in BlobFunctions.Exists(blob)
+                    .Bind(exists => exists ?
+                        Prelude.LeftAsync<IError, Unit>(new VaultAlreadyExists(vaultIndex.Email)) :
+                        Prelude.unit)
+                from json in SerializeVaultIndex(vaultIndex).ToAsync()
+                from __ in BlobFunctions.SetText(blob, json)
+                select Prelude.unit;
         }
 
         public static EitherAsync<IError, Option<VaultIndex>> GetVaultIndex(Email email, StorageConnectionString connectionString)
@@ -33,13 +28,23 @@ namespace Web.Functions
                     from blob in BlobFunctions.Get("vault", $"{email.Value}/index", connectionString)
                     from maybeJson in BlobFunctions.GetText(blob)
                     from vaultIndex in maybeJson
-                        .Map(json => CreateVaultIndex(json, blob.Properties.ETag))
+                        .Map(json => DeserializeVaultIndex(json, blob.Properties.ETag))
                         .Sequence()
                         .ToAsync()
                     select vaultIndex;
         }
 
-        private static Either<IError, VaultIndex> CreateVaultIndex(string json, string etag)
+        private static Either<IError, string> SerializeVaultIndex(VaultIndex vaultIndex)
+        {
+            var dto = new VaultIndexDto(
+                email: vaultIndex.Email.Value,
+                passwordSalt: vaultIndex.PasswordSalt.Value,
+                password:  vaultIndex.Password.Value);
+
+            return JsonFunctions.Serialize(dto, ApiSerializers.Instance).Left(Cast.To<IError>());
+        }
+
+        private static Either<IError, VaultIndex> DeserializeVaultIndex(string json, string etag)
         {
             return
                 from dto in JsonFunctions.Deserialize<VaultIndexDto>(json, ApiSerializers.Instance).Left(Cast.To<IError>())

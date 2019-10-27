@@ -1,4 +1,5 @@
-﻿using LanguageExt;
+﻿using System.Reflection.Metadata;
+using LanguageExt;
 using Newtonsoft.Json;
 using Web.Types.Errors;
 
@@ -9,7 +10,7 @@ namespace Web.Functions
         public static Either<JsonDeserializationError, T> Deserialize<T>(string json, JsonSerializerSettings settings)
         {
             try
-            {               
+            {
                 return JsonConvert.DeserializeObject<T>(json, settings);
             }
             catch (JsonReaderException e)
@@ -18,12 +19,11 @@ namespace Web.Functions
             }
         }
         
-        public static Either<JsonSerializationError, Unit> Serialize<T>(T value, JsonSerializerSettings settings)
+        public static Either<JsonSerializationError, string> Serialize<T>(T value, JsonSerializerSettings settings)
         {
             try
             {               
-                JsonConvert.SerializeObject(value, settings);
-                return Prelude.unit;
+                return JsonConvert.SerializeObject(value, settings);
             }
             catch (JsonWriterException e)
             {

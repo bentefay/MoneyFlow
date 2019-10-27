@@ -7,9 +7,6 @@ namespace Web.Utils.Extensions
     {
         public static string WithMaxLength(this string @this, int maxLength, string terminator = "...")
         {
-            if (@this == null)
-                return @this;
-
             return @this.Length > maxLength ?
                 @this.Substring(0, maxLength) + terminator :
                 @this;

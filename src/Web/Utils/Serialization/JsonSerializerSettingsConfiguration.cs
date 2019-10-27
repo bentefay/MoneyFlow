@@ -26,7 +26,7 @@ namespace Web.Utils.Serialization
             {
                 var errorContext = args?.ErrorContext;
                 string Nls(int n) => new string('\n', n);
-                string ValueOrPlaceholder(object value) => value?.ToString() ?? "<value not present>";
+                string ValueOrPlaceholder(object? value) => value?.ToString() ?? "<value not present>";
 
                 var message =
                     $"Json.net threw an error during serialization/deserialization.{Nls(2)}" +

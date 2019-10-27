@@ -26,7 +26,7 @@ namespace Web.Types
             return EqualityComparer<TValue>.Default.Equals(Value, other);
         }
 
-        public override bool Equals(object obj) => (obj is T o && Equals(o)) || (obj is TValue v && Equals(v));
+        public override bool Equals(object? obj) => (obj is T o && Equals(o)) || (obj is TValue v && Equals(v));
 
         public override int GetHashCode() => EqualityComparer<TValue>.Default.GetHashCode(Value);
 
@@ -38,6 +38,6 @@ namespace Web.Types
 
         public static bool operator !=(TinyType<T, TValue> left, TValue right) => !Equals(left, right);
 
-        public override string ToString() => Value.ToString();
+        public override string ToString() => $"{Value}";
     }
 }

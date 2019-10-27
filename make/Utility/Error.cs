@@ -14,9 +14,9 @@ namespace Make.Utility
             Exception = exception;
         }
 
-        public static Error Create(string reason, Exception e = null)
+        public static Error Create(string reason, Exception? e = null)
         {
-            return new Error(reason, e);
+            return new Error(reason, Prelude.Optional(e!));
         }
     }
 }

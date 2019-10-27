@@ -13,9 +13,9 @@ namespace Make.Utility.Commands
         public static Task<string> RunAsString(params string[] command) =>
             RunAsString(null, command);
 
-        public static async Task<string> RunAsString(ExecutionOptions options, params string[] command)
+        public static async Task<string> RunAsString(ExecutionOptions? options, params string[] command)
         {
-            options = options ?? new ExecutionOptions();
+            options ??= new ExecutionOptions();
 
             return await Run(command, options.With(redirectStreams: true))
                 .Match(
@@ -25,9 +25,9 @@ namespace Make.Utility.Commands
 
         public static EitherAsync<Error, Unit> RunAsEither(params string[] command) => RunAsEither(null, command);
 
-        public static EitherAsync<Error, Unit> RunAsEither(ExecutionOptions options, params string[] command)
+        public static EitherAsync<Error, Unit> RunAsEither(ExecutionOptions? options, params string[] command)
         {
-            options = options ?? new ExecutionOptions();
+            options ??= new ExecutionOptions();
 
             return ExecutionArguments.Resolve(command)
                 .Bind(executionArguments =>
@@ -54,9 +54,9 @@ namespace Make.Utility.Commands
 
         public static async Task<Either<Error, ExecutionResult>> Run(
             ExecutionArguments executionArguments,
-            ExecutionOptions options = null)
+            ExecutionOptions? options = null)
         {
-            options = options ?? new ExecutionOptions();
+            options ??= new ExecutionOptions();
 
             var processStartInfo = new ProcessStartInfo(executionArguments.Exe, executionArguments.Arguments)
             {

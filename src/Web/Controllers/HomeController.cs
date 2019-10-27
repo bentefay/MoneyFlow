@@ -9,7 +9,6 @@ namespace Web.Controllers
     {
         [HttpGet("/api/vault")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(400, Type = typeof(AuthValidationErrors))]
         public ActionResult<GetSaltResponse> GetVault([FromHeader] string authorization)
         {
             AuthorizationFunctions
@@ -20,7 +19,6 @@ namespace Web.Controllers
         
         [HttpPut("/api/vault/new")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(400, Type = typeof(AuthValidationErrors))]
         public ActionResult<GetSaltResponse> PutVault([FromHeader] string authorization)
         {
             AuthorizationFunctions

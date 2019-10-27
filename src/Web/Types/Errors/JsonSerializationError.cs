@@ -5,11 +5,11 @@ namespace Web.Types.Errors
     public class JsonSerializationError : IError
     {
         public Type Type { get; }
-        public object Value { get; }
+        public object? Value { get; }
         public string Path { get; }
         public Exception Exception { get; }
 
-        public JsonSerializationError(Type type, object value, string path, Exception exception)
+        public JsonSerializationError(Type type, object? value, string path, Exception exception)
         {
             Type = type;
             Value = value;
