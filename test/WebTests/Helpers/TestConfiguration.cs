@@ -5,7 +5,7 @@ using Web.Types;
 
 namespace WebTests.Helpers
 {
-    public static class ConfigurationFunctions
+    public static class TestConfiguration
     {
         public static StorageConnectionString GetStorageConnectionString() =>
             new ConfigurationBuilder()
