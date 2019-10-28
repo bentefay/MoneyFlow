@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
 using Xunit;
+using ConfigurationFunctions = WebTests.Helpers.ConfigurationFunctions;
 
 namespace WebTests
 {
@@ -11,9 +12,9 @@ namespace WebTests
         [Fact]
         public async Task Test()
         {
-            var connectionString = "";
-
-            if (!CloudStorageAccount.TryParse(connectionString, out var account))
+            var connectionString = ConfigurationFunctions.GetStorageConnectionString();
+            
+            if (!CloudStorageAccount.TryParse(connectionString.Value, out var account))
                 throw new InvalidOperationException("Connection string not valid");
 
             var serviceClient = account.CreateCloudBlobClient();
