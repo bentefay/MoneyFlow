@@ -19,7 +19,7 @@ namespace Web.Controllers
         
         [HttpPut("/api/vault/new")]
         [ProducesResponseType(200)]
-        public ActionResult<GetSaltResponse> PutVault([FromHeader] string authorization)
+        public ActionResult<GetSaltResponse> CreateVault([FromHeader] string authorization)
         {
             AuthorizationFunctions
                 .ParseAuthorization(authorization);

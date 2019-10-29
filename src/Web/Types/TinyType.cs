@@ -34,10 +34,6 @@ namespace Web.Types
 
         public static bool operator !=(TinyType<T, TValue> left, TinyType<T, TValue> right) => !Equals(left, right);
 
-        public static bool operator ==(TinyType<T, TValue> left, TValue right) => Equals(left, right);
-
-        public static bool operator !=(TinyType<T, TValue> left, TValue right) => !Equals(left, right);
-
         public override string ToString() => $"{Value}";
     }
 }

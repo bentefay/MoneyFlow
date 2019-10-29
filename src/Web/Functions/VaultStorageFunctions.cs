@@ -9,32 +9,40 @@ namespace Web.Functions
 {
     public class VaultStorageFunctions
     {
-        private static EitherAsync<IError, Unit> CreateVault(VaultIndex vaultIndex, StorageConnectionString connectionString)
+        private static readonly string _container = "vaults";
+        private static string GetIndexPath(Email email) => $"{email.Value}/index";
+        
+        private static EitherAsync<IError, Unit> SaveNewVaultIndex(NewVaultIndex vaultIndex, StorageConnectionString connectionString)
         {
             return
-                from blob in BlobFunctions.Get("vaults", $"{vaultIndex.Email.Value}/index", connectionString)
-                from _ in BlobFunctions.Exists(blob)
-                    .Bind(exists => exists ?
-                        Prelude.LeftAsync<IError, Unit>(new VaultAlreadyExists(vaultIndex.Email)) :
-                        Prelude.unit)
+                from blob in StorageFunctions.GetBlob(_container, GetIndexPath(vaultIndex.Email), connectionString).ToAsync()
                 from json in SerializeVaultIndex(vaultIndex).ToAsync()
-                from __ in BlobFunctions.SetText(blob, json)
+                from _ in StorageFunctions.SetBlobText(blob, json)
+                select Prelude.unit;
+        }
+        
+        private static EitherAsync<IError, Unit> UpdateVaultIndex(VaultIndex vaultIndex, StorageConnectionString connectionString)
+        {
+            return
+                from blob in StorageFunctions.GetBlob(_container, GetIndexPath(vaultIndex.Email), connectionString).ToAsync()
+                from json in SerializeVaultIndex(vaultIndex).ToAsync()
+                from _ in StorageFunctions.SetBlobText(blob, json, vaultIndex.ETag)
                 select Prelude.unit;
         }
 
-        public static EitherAsync<IError, Option<VaultIndex>> GetVaultIndex(Email email, StorageConnectionString connectionString)
+        public static EitherAsync<IError, Option<VaultIndex>> LoadVaultIndex(Email email, StorageConnectionString connectionString)
         {
             return
-                    from blob in BlobFunctions.Get("vaults", $"{email.Value}/index", connectionString)
-                    from maybeJson in BlobFunctions.GetText(blob)
+                    from blob in StorageFunctions.GetBlob(_container, GetIndexPath(email), connectionString).ToAsync()
+                    from maybeJson in StorageFunctions.GetBlobText(blob)
                     from vaultIndex in maybeJson
-                        .Map(json => DeserializeVaultIndex(json, blob.Properties.ETag))
+                        .Map(json => DeserializeVaultIndex(json.Text, json.ETag))
                         .Sequence()
                         .ToAsync()
                     select vaultIndex;
         }
 
-        private static Either<IError, string> SerializeVaultIndex(VaultIndex vaultIndex)
+        private static Either<IError, string> SerializeVaultIndex(NewVaultIndex vaultIndex)
         {
             var dto = new VaultIndexDto(
                 email: vaultIndex.Email.Value,
@@ -44,15 +52,14 @@ namespace Web.Functions
             return JsonFunctions.Serialize(dto, ApiSerializers.Instance).Left(Cast.To<IError>());
         }
 
-        private static Either<IError, VaultIndex> DeserializeVaultIndex(string json, string etag)
+        private static Either<IError, VaultIndex> DeserializeVaultIndex(string json, StorageETag eTag)
         {
             return
                 from dto in JsonFunctions.Deserialize<VaultIndexDto>(json, ApiSerializers.Instance).Left(Cast.To<IError>())
                 from email in Email.Create(dto.Email).Left(Cast.To<IError>())
                 let salt = new PasswordSalt(dto.PasswordSalt)
-                let concurrencyLock = new StorageConcurrencyLock(etag)
                 from password in DoubleHashedPassword.Create(dto.Password).Left(Cast.To<IError>())
-                select new VaultIndex(email, salt, password, concurrencyLock);
+                select new VaultIndex(email, salt, password, eTag);
         }
     }
 }
