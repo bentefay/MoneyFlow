@@ -7,7 +7,7 @@ namespace Web.Functions
 {
     public static class Base64Functions
     {
-        public static Either<Base64DecodeError, string> DecodeBase64(string base64Json)
+        public static Either<Base64DecodeError, string> DecodeBase64ToString(string base64Json)
         {
             try
             {

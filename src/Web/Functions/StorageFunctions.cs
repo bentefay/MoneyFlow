@@ -58,23 +58,25 @@ namespace Web.Functions
                 async () => {
                     try
                     {
-                        var accessCondition = eTag == null ? 
-                            AccessCondition.GenerateIfNotExistsCondition() : 
+                        var accessCondition = eTag == null ?
+                            AccessCondition.GenerateIfNotExistsCondition() :
                             AccessCondition.GenerateIfMatchCondition(eTag.Value);
 
                         await blob.UploadTextAsync(text, null, accessCondition, null, null);
 
                         return Prelude.unit;
                     }
-                    catch (StorageException e) when (
-                        e.RequestInformation.ErrorCode == BlobErrorCodeStrings.BlobAlreadyExists || 
-                        e.RequestInformation.ErrorCode == StorageErrorCodeStrings.ConditionNotMet)
+                    catch (StorageException e) when (e.RequestInformation.ErrorCode == BlobErrorCodeStrings.BlobAlreadyExists)
                     {
-                        return e.RequestInformation.ErrorCode == BlobErrorCodeStrings.BlobAlreadyExists;
+                        return new BlobAlreadyExistsError(e, $"writing text to blob {blob.StorageUri}");
+                    }
+                    catch (StorageException e) when (e.RequestInformation.ErrorCode == StorageErrorCodeStrings.ConditionNotMet)
+                    {
+                        return new BlobETagIncorrect(e, $"writing text to blob {blob.StorageUri}");
                     }
                     catch (Exception e)
                     {
-                        return new CloudStorageError(e, $"writing text from blob {blob.StorageUri}");
+                        return new CloudStorageError(e, $"writing text to blob {blob.StorageUri}");
                     }
                 });
         }

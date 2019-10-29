@@ -23,13 +23,13 @@ namespace Web.Functions
             var base64Json = tokens[1];
 
             return
-                from json in Base64Functions.DecodeBase64(base64Json).Left(To<IError>())
+                from json in Base64Functions.DecodeBase64ToString(base64Json).Left(To<IError>())
                 from dto in JsonFunctions.Deserialize<AuthorizationDto>(json, ApiSerializers.Instance).Left(To<IError>())
                 from email in Email.Create(dto.Email).Left(To<IError>())
                 from password in HashedPassword.Create(dto.HashedPassword).Left(To<IError>())
                 select new Authorization(email, password);
         }
 
-      
+
     }
 }

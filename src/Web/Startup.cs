@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using Web.Functions;
 using Web.Utils;
 using Web.Utils.Serialization.Serializers;
 
@@ -23,6 +24,7 @@ namespace Web
         public void ConfigureServices(IServiceCollection services)
         {
             services
+                .AddSingleton(Configuration.GetStorageConnectionString())
                 .AddControllers()
                 .AddNewtonsoftJson(setup => setup
                     .SerializerSettings

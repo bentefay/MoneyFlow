@@ -27,25 +27,21 @@ namespace Web.Types.Errors
                 $"HttpStatusCode: {e.RequestInformation.HttpStatusCode}\n" +
                 $"HttpStatusMessage: {e.RequestInformation.HttpStatusMessage}\n" :
                 _exception.Message;
-            
+
             return $"Error while {_action}: {message}";
         }
     }
 
     internal class BlobAlreadyExistsError : CloudStorageError
     {
-        public BlobAlreadyExistsError(StorageException exception, StorageUri storageUri) : base(
-            exception, 
-            $"writing text from blob {storageUri} as {exception.RequestInformation.ErrorCode}")
+        public BlobAlreadyExistsError(StorageException exception, string action) : base(exception, action)
         {
         }
     }
-    
+
     internal class BlobETagIncorrect : CloudStorageError
     {
-        public BlobETagIncorrect(StorageException exception, StorageUri storageUri) : base(
-            exception, 
-            $"writing text from blob {storageUri} as {exception.RequestInformation.ErrorCode}")
+        public BlobETagIncorrect(StorageException exception, string action) : base(exception, action)
         {
         }
     }
