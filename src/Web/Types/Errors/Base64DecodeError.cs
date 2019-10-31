@@ -2,7 +2,7 @@ using System;
 
 namespace Web.Types.Errors
 {
-    public class Base64DecodeError : IError
+    public class Base64DecodeError : IError, IParseAuthorizationErrors
     {
         private readonly string _base64;
         private readonly Exception _error;

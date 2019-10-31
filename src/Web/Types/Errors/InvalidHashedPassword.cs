@@ -1,6 +1,8 @@
-﻿namespace Web.Types.Errors
+﻿using Web.Functions;
+
+namespace Web.Types.Errors
 {
-    public class InvalidHashedPassword : IError 
+    public class InvalidHashedPassword : IError, IGetBlobTextErrors, IDeserializeVaultIndexErrors, IParseAuthorizationErrors
     {
         private readonly string _hashedPassword;
 

@@ -1,6 +1,6 @@
 ﻿namespace Web.Types.Errors
 {
-    public class BearerTokenMalformed : IError
+    public class BearerTokenMalformed : IError, IParseAuthorizationErrors
     {
         private readonly string _authorizationHeader;
 

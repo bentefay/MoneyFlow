@@ -34,16 +34,16 @@ namespace Web.Controllers
 
     public static class VaultFunctions
     {
-        public static EitherAsync<IError, VaultDto> GetVault(string authorizationHeader, StorageConnectionString connectionString)
+        public static EitherAsync<IGetVaultErrors, VaultDto> GetVault(string authorizationHeader, StorageConnectionString connectionString)
         {
-            from authorization in AuthorizationFunctions.ParseAuthorization(authorizationHeader).ToAsync()
-            from vaultIndex in VaultStorageFunctions.LoadVaultIndex(authorization.Email, connectionString)
+            from authorization in AuthorizationFunctions.ParseAuthorization(authorizationHeader).ToAsync().Left(Cast.To<IGetVaultErrors>())
+            from vaultIndex in VaultStorageFunctions.LoadVaultIndex(authorization.Email, connectionString).Left(Cast.To<IGetVaultErrors>())
             from _ in AssertVaultAccess(authorization, vaultIndex)
 
 
         }
 
-        public static Either<IError, Unit> AssertVaultAccess(Authorization authorization, VaultIndex vaultIndex)
+        public static Either<IAssertVaultAccessErrors, Unit> AssertVaultAccess(Authorization authorization, VaultIndex vaultIndex)
         {
             return
                 from password in CryptoFunctions.HashPassword(authorization.Password, vaultIndex.PasswordSalt).Left(Cast.To<IError>())

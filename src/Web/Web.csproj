@@ -14,6 +14,8 @@
     <Content Update="Client\**\*" CopyToPublishDirectory="false" />
   </ItemGroup>
   <ItemGroup>
+    <DotNetCliToolReference Include="dotnet-codegen" Version="0.6.1" />
+    <PackageReference Include="CSharpDiscriminatedUnion" Version="1.0.2" />
     <PackageReference Include="LanguageExt.Core" Version="3.3.29" />
     <PackageReference Include="Microsoft.Azure.Storage.Blob" Version="11.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />

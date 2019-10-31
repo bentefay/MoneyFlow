@@ -12,7 +12,7 @@ namespace Web.Functions
 {
     public static class StorageFunctions
     {
-        public static Either<IError, CloudBlockBlob> GetBlob(string containerName, string path, StorageConnectionString connectionString)
+        public static Either<IGetBlobErrors, CloudBlockBlob> GetBlob(string containerName, string path, StorageConnectionString connectionString)
         {
             if (!CloudStorageAccount.TryParse(connectionString.Value, out var account))
                 return new InvalidCloudStorageConnectionString();
@@ -26,19 +26,19 @@ namespace Web.Functions
             }
             catch (Exception e)
             {
-                return new CloudStorageError(e, $"reading blob from {path}");
+                return new GeneralStorageError(e, $"reading blob from {path}");
             }
         }
 
-        public static EitherAsync<IError, Option<StorageText>> GetBlobText(CloudBlockBlob blob)
+        public static EitherAsync<IGetBlobTextErrors, Option<StorageText>> GetBlobText(CloudBlockBlob blob)
         {
-            return PreludeExt.CreateEitherAsync<IError, Option<StorageText>>(
+            return PreludeExt.CreateEitherAsync<IGetBlobTextErrors, Option<StorageText>>(
                 async () => {
                     try
                     {
                         var text = await blob.DownloadTextAsync();
                         return StorageETag.Create(blob.Properties.ETag)
-                            .Left(Cast.To<IError>())
+                            .Left(Cast.To<IGetBlobTextErrors>())
                             .Map(etag => Prelude.Some(new StorageText(text, etag)));
                     }
                     catch (StorageException e) when (e.RequestInformation.ErrorCode == BlobErrorCodeStrings.BlobNotFound)
@@ -47,14 +47,15 @@ namespace Web.Functions
                     }
                     catch (Exception e)
                     {
-                        return new CloudStorageError(e, $"reading text from blob {blob.StorageUri}");
+                        return new GeneralStorageError(e, $"reading text from blob {blob.StorageUri}");
                     }
                 });
         }
+        
 
-        public static EitherAsync<IError, Unit> SetBlobText(CloudBlockBlob blob, string text, StorageETag? eTag = null)
+        public static EitherAsync<ISetBlobTextErrors, Unit> SetBlobText(CloudBlockBlob blob, string text, StorageETag? eTag = null)
         {
-            return PreludeExt.CreateEitherAsync<IError, Unit>(
+            return PreludeExt.CreateEitherAsync<ISetBlobTextErrors, Unit>(
                 async () => {
                     try
                     {
@@ -76,9 +77,10 @@ namespace Web.Functions
                     }
                     catch (Exception e)
                     {
-                        return new CloudStorageError(e, $"writing text to blob {blob.StorageUri}");
+                        return new GeneralStorageError(e, $"writing text to blob {blob.StorageUri}");
                     }
                 });
         }
+
     }
 }

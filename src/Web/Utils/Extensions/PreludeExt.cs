@@ -16,6 +16,12 @@ namespace Web.Utils.Extensions
         {
             return @this.MapLeft(left => (TL2)left);
         }
+        
+        public static EitherAsync<TL2, TR> Left<TL1, TL2, TR>(this EitherAsync<TL1, TR> @this, Cast<TL2> to) where TL1 : TL2
+        {
+            return @this.MapLeft(left => (TL2)left);
+        }
+
 
         public static EitherAsync<TL, TR> CreateEitherAsync<TL, TR>(this Func<Task<Either<TL, TR>>> @this)
         {

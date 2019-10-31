@@ -1,14 +1,15 @@
 using System;
 using Microsoft.Azure.Storage;
+using Web.Functions;
 
 namespace Web.Types.Errors
 {
-    internal class CloudStorageError : IError
+    internal class StorageError : IError
     {
         private readonly Exception _exception;
         private readonly string _action;
 
-        public CloudStorageError(Exception exception, string action)
+        protected StorageError(Exception exception, string action)
         {
             _exception = exception;
             _action = action;
@@ -31,15 +32,22 @@ namespace Web.Types.Errors
             return $"Error while {_action}: {message}";
         }
     }
+    
+    internal class GeneralStorageError : StorageError, ISetBlobTextErrors, IGetBlobTextErrors, IGetBlobErrors
+    {
+        public GeneralStorageError(Exception exception, string action) : base(exception, action)
+        {
+        }
+    }
 
-    internal class BlobAlreadyExistsError : CloudStorageError
+    internal class BlobAlreadyExistsError : StorageError, ISetBlobTextErrors
     {
         public BlobAlreadyExistsError(StorageException exception, string action) : base(exception, action)
         {
         }
     }
 
-    internal class BlobETagIncorrect : CloudStorageError
+    internal class BlobETagIncorrect : StorageError, ISetBlobTextErrors
     {
         public BlobETagIncorrect(StorageException exception, string action) : base(exception, action)
         {

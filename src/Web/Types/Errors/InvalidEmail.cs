@@ -1,6 +1,6 @@
 ﻿namespace Web.Types.Errors
 {
-    public class InvalidEmail : IError 
+    public class InvalidEmail : IError, IDeserializeVaultIndexErrors, IParseAuthorizationErrors
     {
         private readonly string _email;
 
