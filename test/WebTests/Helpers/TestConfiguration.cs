@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Web;
 using Web.Functions;
 using Web.Types;
+using Web.Types.Values;
 
 namespace WebTests.Helpers
 {

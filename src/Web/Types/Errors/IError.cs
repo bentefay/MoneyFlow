@@ -1,16 +1,23 @@
 ﻿
+using System;
+
 namespace Web.Types.Errors
 {
     public interface IError
     {
         string GetDescription();
     }
-    
-    public interface IUpdateVaultIndexErrors {}
 
-    public interface IGetBlobErrors : IUpdateVaultIndexErrors, ILoadVaultIndexErrors, ISaveNewVaultIndexErrors {}
+    public interface IErrorWithException : IError
+    {
+        Exception Exception { get; }
+    }
+
+    public interface IUpdateVaultIndexErrors : IUpdateVaultErrors {}
+
+    public interface IGetBlobErrors : IUpdateVaultIndexErrors, ILoadVaultIndexErrors, ISaveNewVaultIndexErrors, ILoadVaultErrors {}
         
-    public interface IGetBlobTextErrors : ILoadVaultIndexErrors {}
+    public interface IGetBlobTextErrors : ILoadVaultIndexErrors, ILoadVaultErrors {}
         
     public interface ISetBlobTextErrors : IUpdateVaultIndexErrors, ISaveNewVaultIndexErrors {}
     
@@ -18,13 +25,27 @@ namespace Web.Types.Errors
     
     public interface IDeserializeVaultIndexErrors : ILoadVaultIndexErrors {}
     
-    public interface ILoadVaultIndexErrors : IGetVaultErrors {}
+    public interface IUpdateVaultRequestToVaultErrors : IUpdateVaultErrors {}
     
-    public interface ISaveNewVaultIndexErrors {}
+    public interface ISerializeVaultErrors : IUpdateVaultIndexErrors {}
+    
+    public interface IDeserializeVaultErrors : ILoadVaultErrors {}
+    
+    public interface ILoadVaultIndexErrors : IGetVaultErrors, IUpdateVaultErrors {}
+    
+    public interface ILoadVaultErrors : IGetVaultErrors {}
+    
+    public interface ISaveNewVaultIndexErrors : ICreateVaultErrors {}
     
     public interface IGetVaultErrors {}
     
-    public interface IAssertVaultAccessErrors : IGetVaultErrors {}
+    public interface ICreateVaultErrors {}
     
-    public interface IParseAuthorizationErrors : IGetVaultErrors {}
+    public interface IUpdateVaultErrors {}
+    
+    public interface IAssertVaultAccessErrors : IGetVaultErrors, IUpdateVaultErrors {}
+    
+    public interface IParseAuthorizationErrors : IGetVaultErrors, ICreateVaultErrors, IUpdateVaultErrors {}
+    
+    public interface ICreateVaultIndexErrors : ICreateVaultErrors {}
 }

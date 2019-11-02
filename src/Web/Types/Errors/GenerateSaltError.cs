@@ -2,7 +2,7 @@ using System;
 
 namespace Web.Types.Errors
 {
-    public class GenerateSaltError : IError
+    public class GenerateSaltError : IError, ICreateVaultIndexErrors
     {
         private readonly Exception _error;
 

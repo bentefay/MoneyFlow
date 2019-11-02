@@ -2,17 +2,17 @@ using System;
 
 namespace Web.Types.Errors
 {
-    public class Base64DecodeError : IError, IParseAuthorizationErrors
+    public class Base64DecodeError : IErrorWithException, IParseAuthorizationErrors
     {
-        private readonly string _base64;
-        private readonly Exception _error;
+        public string Base64 { get; }
+        public Exception Exception { get; }
 
         public Base64DecodeError(string base64, Exception error)
         {
-            _base64 = base64;
-            _error = error;
+            Base64 = base64;
+            Exception = error;
         }
         
-        public string GetDescription() => $"Could not decode base64 string '{_base64}' as it was invalid: {_error.Message}";
+        public string GetDescription() => $"Could not decode base64 string '{Base64}' as it was invalid: {Exception.Message}";
     }
 }

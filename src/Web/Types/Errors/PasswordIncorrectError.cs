@@ -1,6 +1,8 @@
+using Web.Types.Values;
+
 namespace Web.Types.Errors
 {
-    public class PasswordIncorrectError : IError
+    public class PasswordIncorrectError : IAssertVaultAccessErrors
     {
         private readonly Email _email;
 

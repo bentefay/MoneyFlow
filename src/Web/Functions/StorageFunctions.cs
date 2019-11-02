@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using LanguageExt;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
@@ -6,6 +7,7 @@ using Microsoft.Azure.Storage.Blob.Protocol;
 using Microsoft.Azure.Storage.Shared.Protocol;
 using Web.Types;
 using Web.Types.Errors;
+using Web.Types.Values;
 using Web.Utils.Extensions;
 
 namespace Web.Functions
@@ -52,7 +54,6 @@ namespace Web.Functions
                 });
         }
         
-
         public static EitherAsync<ISetBlobTextErrors, Unit> SetBlobText(CloudBlockBlob blob, string text, StorageETag? eTag = null)
         {
             return PreludeExt.CreateEitherAsync<ISetBlobTextErrors, Unit>(

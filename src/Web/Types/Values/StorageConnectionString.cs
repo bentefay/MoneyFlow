@@ -1,4 +1,4 @@
-namespace Web.Types
+namespace Web.Types.Values
 {
     public class StorageConnectionString : TinyType<StorageConnectionString, string>
     {

@@ -1,67 +1,71 @@
 using LanguageExt;
 using Web.Utils.Extensions;
 using Web.Types;
-using Web.Types.Dtos;
 using Web.Types.Errors;
-using Web.Utils.Serialization.Serializers;
+using Web.Types.Values;
 
 namespace Web.Functions
 {
-    public class VaultStorageFunctions
+    public static class VaultStorageFunctions
     {
-        private static readonly string _container = "vaults";
+        private const string Container = "vaults";
         private static string GetIndexPath(Email email) => $"{email.Value}/index";
+        private static string GetVaultPath(UserId userId) => $"{userId.Value}/vault";
         
-        private static EitherAsync<ISaveNewVaultIndexErrors, Unit> SaveNewVaultIndex(NewVaultIndex vaultIndex, StorageConnectionString connectionString)
+        public static EitherAsync<ISaveNewVaultIndexErrors, Unit> CreateVaultIndex(VaultIndex vaultIndex, StorageConnectionString connectionString)
         {
             return
-                from blob in StorageFunctions.GetBlob(_container, GetIndexPath(vaultIndex.Email), connectionString).ToAsync().Left(Cast.To<ISaveNewVaultIndexErrors>())
-                from json in SerializeVaultIndex(vaultIndex).ToAsync().Left(Cast.To<ISaveNewVaultIndexErrors>())
+                from blob in StorageFunctions.GetBlob(Container, GetIndexPath(vaultIndex.Email), connectionString).ToAsync().Left(Cast.To<ISaveNewVaultIndexErrors>())
+                from json in SerializationFunctions.SerializeVaultIndex(vaultIndex).ToAsync().Left(Cast.To<ISaveNewVaultIndexErrors>())
                 from _ in StorageFunctions.SetBlobText(blob, json).Left(Cast.To<ISaveNewVaultIndexErrors>())
                 select Prelude.unit;
         }
         
-        private static EitherAsync<IUpdateVaultIndexErrors, Unit> UpdateVaultIndex(VaultIndex vaultIndex, StorageConnectionString connectionString)
+        public static EitherAsync<IUpdateVaultIndexErrors, Unit> UpdateVaultIndex(TaggedVaultIndex vaultIndex, StorageConnectionString connectionString)
         {
             return
-                from blob in StorageFunctions.GetBlob(_container, GetIndexPath(vaultIndex.Email), connectionString).ToAsync().Left(Cast.To<IUpdateVaultIndexErrors>())
-                from json in SerializeVaultIndex(vaultIndex).ToAsync().Left(Cast.To<IUpdateVaultIndexErrors>())
+                from blob in StorageFunctions.GetBlob(Container, GetIndexPath(vaultIndex.Email), connectionString).ToAsync().Left(Cast.To<IUpdateVaultIndexErrors>())
+                from json in SerializationFunctions.SerializeVaultIndex(vaultIndex).ToAsync().Left(Cast.To<IUpdateVaultIndexErrors>())
                 from _ in StorageFunctions.SetBlobText(blob, json, vaultIndex.ETag).Left(Cast.To<IUpdateVaultIndexErrors>())
                 select Prelude.unit;
         }
 
-
-        public static EitherAsync<ILoadVaultIndexErrors, Option<VaultIndex>> LoadVaultIndex(Email email, StorageConnectionString connectionString)
+        public static EitherAsync<ILoadVaultIndexErrors, Option<TaggedVaultIndex>> LoadVaultIndex(Email email, StorageConnectionString connectionString)
         {
             return
-                    from blob in StorageFunctions.GetBlob(_container, GetIndexPath(email), connectionString).ToAsync().Left(Cast.To<ILoadVaultIndexErrors>())
-                    from maybeJson in StorageFunctions.GetBlobText(blob).Left(Cast.To<ILoadVaultIndexErrors>())
-                    from vaultIndex in maybeJson
-                        .Map(json => DeserializeVaultIndex(json.Text, json.ETag))
-                        .Sequence()
-                        .ToAsync()
-                        .Left(Cast.To<ILoadVaultIndexErrors>())
-                    select vaultIndex;
+                from blob in StorageFunctions.GetBlob(Container, GetIndexPath(email), connectionString).ToAsync().Left(Cast.To<ILoadVaultIndexErrors>())
+                from maybeJson in StorageFunctions.GetBlobText(blob).Left(Cast.To<ILoadVaultIndexErrors>())
+                from vaultIndex in maybeJson
+                    .Map(json => SerializationFunctions.DeserializeVaultIndex(json.Text, json.ETag))
+                    .Sequence()
+                    .ToAsync()
+                    .Left(Cast.To<ILoadVaultIndexErrors>())
+                select vaultIndex;
         }
-
-        private static Either<ISerializeVaultIndexErrors, string> SerializeVaultIndex(NewVaultIndex vaultIndex)
-        {
-            var dto = new VaultIndexDto(
-                email: vaultIndex.Email.Value,
-                passwordSalt: vaultIndex.PasswordSalt.Value,
-                password:  vaultIndex.Password.Value);
-
-            return JsonFunctions.Serialize(dto, ApiSerializers.Instance).Left(Cast.To<ISerializeVaultIndexErrors>());
-        }
-
-        private static Either<IDeserializeVaultIndexErrors, VaultIndex> DeserializeVaultIndex(string json, StorageETag eTag)
+        
+        
+        public static EitherAsync<ILoadVaultErrors, Option<TaggedVault>> LoadVault(UserId userId, StorageConnectionString connectionString)
         {
             return
-                from dto in JsonFunctions.Deserialize<VaultIndexDto>(json, ApiSerializers.Instance).Left(Cast.To<IDeserializeVaultIndexErrors>())
-                from email in Email.Create(dto.Email).Left(Cast.To<IDeserializeVaultIndexErrors>())
-                let salt = new PasswordSalt(dto.PasswordSalt)
-                from password in DoubleHashedPassword.Create(dto.Password).Left(Cast.To<IDeserializeVaultIndexErrors>())
-                select new VaultIndex(email, salt, password, eTag);
+                from blob in StorageFunctions.GetBlob(Container, GetVaultPath(userId), connectionString).ToAsync().Left(Cast.To<ILoadVaultErrors>())
+                from maybeData in StorageFunctions.GetBlobText(blob).Left(Cast.To<ILoadVaultErrors>())
+                from vault in maybeData
+                    .Map(data => SerializationFunctions.DeserializeVault(data.Text, userId, data.ETag))
+                    .Sequence()
+                    .ToAsync()
+                    .Left(Cast.To<ILoadVaultErrors>())
+                select vault;
         }
+        
+        public static EitherAsync<IUpdateVaultErrors, Unit> UpdateVault(Vault vault, StorageConnectionString connectionString)
+        {
+            return
+                from blob in StorageFunctions.GetBlob(Container, GetVaultPath(vault.UserId), connectionString).ToAsync().Left(Cast.To<IUpdateVaultErrors>())
+                from data in SerializationFunctions.SerializeVault(vault).ToAsync().Left(Cast.To<IUpdateVaultErrors>())
+                from _ in StorageFunctions.SetBlobText(blob, data, vault.GetETag()).Left(Cast.To<IUpdateVaultErrors>())
+                select Prelude.unit;
+        }
+
+
     }
 }

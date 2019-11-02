@@ -2,13 +2,13 @@
 {
     public class BearerTokenMalformed : IError, IParseAuthorizationErrors
     {
-        private readonly string _authorizationHeader;
+        public string AuthorizationHeader { get; }
 
         public BearerTokenMalformed(string authorizationHeader)
         {
-            _authorizationHeader = authorizationHeader;
+            AuthorizationHeader = authorizationHeader;
         }
         
-        public string GetDescription() => $"Expected header Authorization: Bearer <Authorization> but got 'Authorization: {_authorizationHeader}'";
+        public string GetDescription() => $"Expected header Authorization: Bearer <Authorization> but got 'Authorization: {AuthorizationHeader}'";
     }
 }

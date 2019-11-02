@@ -4,20 +4,20 @@ using Web.Functions;
 
 namespace Web.Types.Errors
 {
-    internal class StorageError : IError
+    internal class StorageError : IError, IErrorWithException
     {
-        private readonly Exception _exception;
+        public Exception Exception { get; }
         private readonly string _action;
 
         protected StorageError(Exception exception, string action)
         {
-            _exception = exception;
+            Exception = exception;
             _action = action;
         }
 
         public string GetDescription()
         {
-            var message = _exception is StorageException e ?
+            var message = Exception is StorageException e ?
                 $"{e.Message}\n\nRequest information\n" +
                 $"ETag: {e.RequestInformation.Etag}\n" +
                 $"ErrorCode: {e.RequestInformation.ErrorCode}\n" +
@@ -27,7 +27,7 @@ namespace Web.Types.Errors
                 $"ExtendedErrorMessage: {e.RequestInformation.ExtendedErrorInformation.ErrorMessage}\n" +
                 $"HttpStatusCode: {e.RequestInformation.HttpStatusCode}\n" +
                 $"HttpStatusMessage: {e.RequestInformation.HttpStatusMessage}\n" :
-                _exception.Message;
+                Exception.Message;
 
             return $"Error while {_action}: {message}";
         }

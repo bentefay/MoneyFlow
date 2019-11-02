@@ -2,15 +2,15 @@ using System;
 
 namespace Web.Types.Errors
 {
-    public class HashPasswordError : IError
+    public class HashPasswordError : IErrorWithException, IAssertVaultAccessErrors, ICreateVaultIndexErrors
     {
-        private readonly Exception _error;
+        public Exception Exception { get; }
 
-        public HashPasswordError(Exception error)
+        public HashPasswordError(Exception exception)
         {
-            _error = error;
+            Exception = exception;
         }
 
-        public string GetDescription() => $"Failed to hash password: {_error.Message}";
+        public string GetDescription() => $"Failed to hash password: {Exception.Message}";
     }
 }

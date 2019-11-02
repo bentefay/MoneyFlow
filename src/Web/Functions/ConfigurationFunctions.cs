@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Web.Types;
+using Web.Types.Values;
 
 namespace Web.Functions
 {

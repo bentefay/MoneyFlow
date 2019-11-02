@@ -1,4 +1,4 @@
-﻿namespace Web.Types.Dtos
+﻿namespace Web.Types.Dtos.Storage
 {
     public class AuthorizationDto
     {

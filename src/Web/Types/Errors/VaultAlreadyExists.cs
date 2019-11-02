@@ -1,3 +1,5 @@
+using Web.Types.Values;
+
 namespace Web.Types.Errors
 {
     public class VaultAlreadyExists : IError

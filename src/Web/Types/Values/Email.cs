@@ -2,7 +2,7 @@
 using LanguageExt;
 using Web.Types.Errors;
 
-namespace Web.Types
+namespace Web.Types.Values
 {
     public class Email : TinyType<Email, string>
     {

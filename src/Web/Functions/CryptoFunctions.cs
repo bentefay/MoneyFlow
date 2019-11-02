@@ -5,6 +5,7 @@ using LanguageExt;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Web.Types;
 using Web.Types.Errors;
+using Web.Types.Values;
 
 namespace Web.Functions
 {

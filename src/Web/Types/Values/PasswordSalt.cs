@@ -1,4 +1,4 @@
-namespace Web.Types
+namespace Web.Types.Values
 {
     public class PasswordSalt : TinyType<PasswordSalt, string>
     {

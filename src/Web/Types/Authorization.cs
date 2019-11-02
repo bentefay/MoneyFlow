@@ -1,4 +1,6 @@
-﻿namespace Web.Types
+﻿using Web.Types.Values;
+
+namespace Web.Types
 {
     public class Authorization
     {

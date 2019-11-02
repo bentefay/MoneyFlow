@@ -1,7 +1,7 @@
 ﻿using LanguageExt;
 using Web.Types.Errors;
 
-namespace Web.Types
+namespace Web.Types.Values
 {
     public class HashedPassword : TinyType<HashedPassword, string>
     {

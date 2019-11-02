@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Web.Types
+namespace Web.Types.Values
 {
     public class TinyType<T, TValue> : IEquatable<T> where T : TinyType<T, TValue>
     {
