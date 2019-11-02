@@ -2,6 +2,6 @@
 {
     public class BearerTokenMissing : IError, IParseAuthorizationErrors
     {
-        public string GetDescription() => "Expected header Authorization: Bearer <Authorization>";
+        public string GetDescription() => "Expected header 'Authorization: Bearer <Authorization>'";
     }
 }

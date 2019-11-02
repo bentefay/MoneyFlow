@@ -29,7 +29,7 @@ namespace Web.Functions
                     .Bind(maybeVaultIndex =>
                         maybeVaultIndex.Match(
                             Some: Prelude.RightAsync<IUpdateVaultErrors, VaultIndex>,
-                            None: () => Prelude.LeftAsync<IUpdateVaultErrors, VaultIndex>(new UserDoesNotExistError(authorization.Email))))
+                            None: () => Prelude.LeftAsync<IUpdateVaultErrors, VaultIndex>(new VaultIndexDoesNotExist(authorization.Email))))
                 from _ in AssertVaultAccess(authorization, vaultIndex).ToAsync().Left(Cast.To<IUpdateVaultErrors>())
                 from __ in vaultIndex.UserId != vault.UserId ? 
                     Prelude.LeftAsync<IUpdateVaultErrors, Unit>(new UserIdMismatchError(authorization.Email, vault.UserId, vaultIndex.UserId)) : 
@@ -46,7 +46,7 @@ namespace Web.Functions
                     .Bind(maybeVaultIndex =>
                         maybeVaultIndex.Match(
                             Some: Prelude.RightAsync<IGetVaultErrors, VaultIndex>,
-                            None: () => Prelude.LeftAsync<IGetVaultErrors, VaultIndex>(new UserDoesNotExistError(authorization.Email))))
+                            None: () => Prelude.LeftAsync<IGetVaultErrors, VaultIndex>(new VaultIndexDoesNotExist(authorization.Email))))
                 from _ in AssertVaultAccess(authorization, vaultIndex).ToAsync().Left(Cast.To<IGetVaultErrors>())
                 from vault in VaultStorageFunctions.LoadVault(vaultIndex.UserId, connectionString).Left(Cast.To<IGetVaultErrors>())
                     .Bind(maybeVault =>

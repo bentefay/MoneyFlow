@@ -25,7 +25,8 @@ namespace Web
         {
             services
                 .AddSingleton(Configuration.GetStorageConnectionString())
-                .AddControllers()
+                .AddControllers(builder => 
+                    builder.Filters.Add<SerilogMvcLoggingAttribute>())
                 .AddNewtonsoftJson(setup => setup
                     .SerializerSettings
                     .ConfigureForApiControllers(_logger));
@@ -43,10 +44,10 @@ namespace Web
             }
 
             app
-                .UseMiddleware<SerilogMiddleware>()
                 .UseDefaultFiles()
                 .UseStaticFiles()
                 .UseHttpsRedirection()
+                .UseSerilogRequestLogging()
                 .UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }

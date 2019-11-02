@@ -20,7 +20,7 @@ namespace Web.Functions
             var tokens = authorization.Split(" ");
 
             if (tokens.Length != 2 || tokens[0] != "Bearer")
-                return new BearerTokenMalformed(authorization);
+                return new MalformedBearerToken(authorization);
 
             var base64Json = tokens[1];
 

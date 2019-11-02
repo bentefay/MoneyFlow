@@ -5,14 +5,14 @@ namespace Web.Types.Errors
 {
     public class EmailIncorrectError : IError, IAssertVaultAccessErrors
     {
-        private readonly Email _email;
+        public Email Email { get; }
 
         public EmailIncorrectError(Email email)
         {
-            _email = email;
+            Email = email;
         }
 
-        public string GetDescription() => $" '{_email}' was incorrect";
+        public string GetDescription() => $" '{Email}' was incorrect";
     }
     
     

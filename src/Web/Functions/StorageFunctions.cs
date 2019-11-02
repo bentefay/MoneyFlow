@@ -17,7 +17,7 @@ namespace Web.Functions
         public static Either<IGetBlobErrors, CloudBlockBlob> GetBlob(string containerName, string path, StorageConnectionString connectionString)
         {
             if (!CloudStorageAccount.TryParse(connectionString.Value, out var account))
-                return new InvalidCloudStorageConnectionString();
+                return new MalformedCloudStorageConnectionString();
 
             try
             {

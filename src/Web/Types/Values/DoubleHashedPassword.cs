@@ -5,10 +5,10 @@ namespace Web.Types.Values
 {
     public class DoubleHashedPassword : TinyType<DoubleHashedPassword, string>
     {
-        public static Either<InvalidHashedPassword, DoubleHashedPassword> Create(string value) => 
+        public static Either<MalformedPassword, DoubleHashedPassword> Create(string value) => 
             !string.IsNullOrWhiteSpace(value) ?
                 Prelude.Right<DoubleHashedPassword>(new DoubleHashedPassword(value)) :
-                Prelude.Left<InvalidHashedPassword, DoubleHashedPassword>(new InvalidHashedPassword(value));
+                Prelude.Left<MalformedPassword, DoubleHashedPassword>(new MalformedPassword(value));
 
         public DoubleHashedPassword(string value) : base(value)
         {

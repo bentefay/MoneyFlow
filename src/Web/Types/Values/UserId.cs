@@ -6,10 +6,10 @@ namespace Web.Types.Values
 {
     public class UserId : TinyType<UserId, Guid>
     {
-        public static Either<InvalidUserId, UserId> Create(string value) => 
+        public static Either<MalformedUserId, UserId> Create(string value) => 
             !string.IsNullOrWhiteSpace(value) && Guid.TryParse(value, out var guid) ?
                 Prelude.Right<UserId>(new UserId(guid)) :
-                Prelude.Left<InvalidUserId, UserId>(new InvalidUserId(value));
+                Prelude.Left<MalformedUserId, UserId>(new MalformedUserId(value));
 
         public static UserId Create()
         {

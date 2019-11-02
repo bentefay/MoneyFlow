@@ -4,13 +4,13 @@ namespace Web.Types.Errors
 {
     public class PasswordIncorrectError : IAssertVaultAccessErrors
     {
-        private readonly Email _email;
+        public Email Email { get; }
 
         public PasswordIncorrectError(Email email)
         {
-            _email = email;
+            Email = email;
         }
 
-        public string GetDescription() => $"Password was incorrect for email '{_email}'";
+        public string GetDescription() => $"Password was incorrect for email '{Email}'";
     }
 }

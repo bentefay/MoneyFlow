@@ -37,11 +37,11 @@ namespace Web.Types.Errors
     
     public interface ISaveNewVaultIndexErrors : ICreateVaultErrors {}
     
-    public interface IGetVaultErrors {}
+    public interface IGetVaultErrors : IError {}
     
-    public interface ICreateVaultErrors {}
+    public interface ICreateVaultErrors : IError {}
     
-    public interface IUpdateVaultErrors {}
+    public interface IUpdateVaultErrors : IError {}
     
     public interface IAssertVaultAccessErrors : IGetVaultErrors, IUpdateVaultErrors {}
     

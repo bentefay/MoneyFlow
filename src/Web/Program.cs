@@ -29,7 +29,6 @@ namespace Web
             catch (Exception ex)
             {
                 Log.Fatal(ex, "Host terminated unexpectedly");
-
                 return 1;
             }
             finally
@@ -42,11 +41,11 @@ namespace Web
         public static IHostBuilder CreateWebHostBuilder(string[] args) =>
             Host
                 .CreateDefaultBuilder(args)
+                .UseSerilog()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder
-                        .UseStartup<Startup>()
-                        .UseSerilog();
+                        .UseStartup<Startup>();
                 });
     }
 }

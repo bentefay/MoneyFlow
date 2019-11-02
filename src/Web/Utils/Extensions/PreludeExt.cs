@@ -7,6 +7,15 @@ namespace Web.Utils.Extensions
 {
     public static class PreludeExt
     {
+        public static EitherAsync<TL, TR> DoLeft<TL, TR>(this EitherAsync<TL, TR> @this, Action<TL> f)
+        {
+            return @this.MapLeft(x =>
+            {
+                f(x);
+                return x;
+            });
+        }
+        
         public static EitherAsync<TL, TR2> BindEitherAsync<TL, TR, TR2>(this EitherAsync<TL, TR> @this, Func<TR, Task<Either<TL, TR2>>> func)
         {
             return @this.Bind(x => func(x).ToAsync());
