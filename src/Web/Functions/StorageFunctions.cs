@@ -60,7 +60,7 @@ namespace Web.Functions
                 async () => {
                     try
                     {
-                        var accessCondition = eTag == null ?
+                        var accessCondition = eTag! == null! ?
                             AccessCondition.GenerateIfNotExistsCondition() :
                             AccessCondition.GenerateIfMatchCondition(eTag.Value);
 
@@ -70,11 +70,11 @@ namespace Web.Functions
                     }
                     catch (StorageException e) when (e.RequestInformation.ErrorCode == BlobErrorCodeStrings.BlobAlreadyExists)
                     {
-                        return new BlobAlreadyExistsError(e, $"writing text to blob {blob.StorageUri}");
+                        return new CouldNotCreateBlobBecauseItAlreadyExistsError(e, $"writing text to blob {blob.StorageUri}");
                     }
                     catch (StorageException e) when (e.RequestInformation.ErrorCode == StorageErrorCodeStrings.ConditionNotMet)
                     {
-                        return new BlobETagIncorrect(e, $"writing text to blob {blob.StorageUri}");
+                        return new CouldNotUpdateBlobBecauseTheETagHasChanged(e, $"writing text to blob {blob.StorageUri}");
                     }
                     catch (Exception e)
                     {

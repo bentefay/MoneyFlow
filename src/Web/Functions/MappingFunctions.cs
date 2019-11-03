@@ -47,7 +47,10 @@ namespace Web.Functions
             return 
                 from userId in UserId.Create(request.UserId).Left(Cast.To<IUpdateVaultRequestToVaultErrors>())
                 let content = new Base64EncodedEncryptedVault(request.Content)
-                from maybeEtag in Prelude.Optional(request.ETag).Map(StorageETag.Create).Sequence().Left(Cast.To<IUpdateVaultRequestToVaultErrors>())
+                from maybeEtag in Prelude.Optional(request.ETag!)
+                    .Map(StorageETag.Create)
+                    .Sequence()
+                    .Left(Cast.To<IUpdateVaultRequestToVaultErrors>())
                 select maybeEtag.Match(
                     Some: eTag => new TaggedVault(userId, content, eTag),
                     None: () => new Vault(userId, content));

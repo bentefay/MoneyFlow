@@ -4,7 +4,7 @@ using Web.Functions;
 
 namespace Web.Types.Errors
 {
-    internal class StorageError : IError, IErrorWithException
+    public class StorageError : IError, IErrorWithException
     {
         public Exception Exception { get; }
         private readonly string _action;
@@ -33,23 +33,23 @@ namespace Web.Types.Errors
         }
     }
     
-    internal class GeneralStorageError : StorageError, ISetBlobTextErrors, IGetBlobTextErrors, IGetBlobErrors
+    public class GeneralStorageError : StorageError, ISetBlobTextErrors, IGetBlobTextErrors, IGetBlobErrors
     {
         public GeneralStorageError(Exception exception, string action) : base(exception, action)
         {
         }
     }
 
-    internal class BlobAlreadyExistsError : StorageError, ISetBlobTextErrors
+    public class CouldNotCreateBlobBecauseItAlreadyExistsError : StorageError, ISetBlobTextErrors
     {
-        public BlobAlreadyExistsError(StorageException exception, string action) : base(exception, action)
+        public CouldNotCreateBlobBecauseItAlreadyExistsError(StorageException exception, string action) : base(exception, action)
         {
         }
     }
 
-    internal class BlobETagIncorrect : StorageError, ISetBlobTextErrors
+    public class CouldNotUpdateBlobBecauseTheETagHasChanged : StorageError, ISetBlobTextErrors
     {
-        public BlobETagIncorrect(StorageException exception, string action) : base(exception, action)
+        public CouldNotUpdateBlobBecauseTheETagHasChanged(StorageException exception, string action) : base(exception, action)
         {
         }
     }
