@@ -1,4 +1,4 @@
-import { authActions, AuthAction, Email, EncryptedVault } from '.';
+import { authActions, AuthAction, Email, CreateVaultResponse } from '.';
 import { isActionOf } from 'typesafe-actions';
 import { takeLatest, put } from 'redux-saga/effects'
 import { pipe } from 'fp-ts/lib/pipeable'
@@ -41,7 +41,7 @@ const GetVaultSuccessResponse = t.type({
     data: t.string
 });
 
-function createVault(email: Email, hashedPassword: HashedPassword): TaskEither<GeneralFailure | Aborted, EncryptedVault> {
+function createVault(email: Email, hashedPassword: HashedPassword): TaskEither<GeneralFailure | Aborted, CreateVaultResponse> {
     return fetchJson(
         `${apiBaseUrl}/api/vault/new`,
         { headers: authHeader({ email: email.value, password: hashedPassword.value }), method: "put" },
@@ -49,12 +49,12 @@ function createVault(email: Email, hashedPassword: HashedPassword): TaskEither<G
         [{
             match: ({ status }) => status == 200,
             validator: GetVaultSuccessResponse,
-            chain: ({ data }) => taskEither.right(new EncryptedVault(data))
+            chain: ({ data }) => taskEither.right(new CreateVaultResponse(data))
         }]
     )
 }
 
-function getVault(email: Email, hashedPassword: HashedPassword): TaskEither<GeneralFailure | Aborted, EncryptedVault> {
+function getVault(email: Email, hashedPassword: HashedPassword): TaskEither<GeneralFailure | Aborted, CreateVaultResponse> {
     return fetchJson(
         `${apiBaseUrl}/api/vault`,
         { headers: authHeader({ email: email.value, password: hashedPassword.value }) },
@@ -62,7 +62,7 @@ function getVault(email: Email, hashedPassword: HashedPassword): TaskEither<Gene
         [{
             match: ({ status }) => status == 200,
             validator: GetVaultSuccessResponse,
-            chain: ({ data }) => taskEither.right(new EncryptedVault(data))
+            chain: ({ data }) => taskEither.right(new CreateVaultResponse(data))
         }]
     )
 }

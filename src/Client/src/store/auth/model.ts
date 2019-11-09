@@ -14,15 +14,21 @@ export interface UserCredentials extends Readonly<{
 
 export class Email {
     public type = Email;
-    constructor(public readonly value: string) { }
+    constructor(
+        public readonly value: string
+    ) { }
 }
 
 export class Password {
     public type = Password;
-    constructor(public readonly value: string) { }
+    constructor(
+        public readonly value: string
+    ) { }
 }
 
-export class EncryptedVault {
-    public type = EncryptedVault;
-    constructor(public readonly value: string) { }
+export class CreateVaultResponse {
+    public type = CreateVaultResponse;
+    constructor(
+        public readonly userId: string
+    ) { }
 }

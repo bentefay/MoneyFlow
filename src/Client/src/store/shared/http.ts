@@ -7,7 +7,7 @@ import * as taskEither from 'fp-ts/lib/TaskEither';
 import { TaskEither } from 'fp-ts/lib/TaskEither';
 import { pipe } from 'fp-ts/lib/pipeable'
 
-export const aborted = Symbol("unit");
+export const aborted = Symbol("Aborted");
 
 export type Aborted = typeof aborted;
 

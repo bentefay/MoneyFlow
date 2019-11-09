@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -32,32 +33,29 @@ namespace Web.Controllers
                 .DoLeft(LoggerFunctions.LogControllerError(_logger))
                 .Match<ActionResult<GetVaultResponse>>(
                     Right: vaultResponse => Ok(vaultResponse),
-                    Left: error => {
-                        switch (error)
-                        {
-                            case BearerTokenMissing _:
-                            case MalformedBearerToken _:
-                            case MalformedEmail _:
-                            case MalformedPassword _:
-                            case Base64DecodeError _:
-                            case JsonDeserializationError _:
-                                return BadRequest(error.GetDescription());
-                            case EmailIncorrectError _:
-                            case PasswordIncorrectError _:
-                            case VaultIndexDoesNotExist _:
-                                return Unauthorized("Either your email or password are incorrect, or no user exists with that email");
-                            case GeneralStorageError _:
-                            case HashPasswordError _:
-                            case MalformedCloudStorageConnectionString _:
-                            case MalformedETag _:
-                            case MalformedUserId _:
-                            case UserIdMismatchError _:
-                            case VaultDoesNotExistError _:
-                                return StatusCode(StatusCodes.Status500InternalServerError);
-                            default:
-                                return StatusCode(StatusCodes.Status500InternalServerError);
-                        }
-                    });
+                    Left: error => error.Match(
+                        bearerTokenMissing: HandleBadRequest,
+                        malformedBearerToken: HandleBadRequest,
+                        malformedEmail: HandleBadRequest,
+                        malformedPassword: HandleBadRequest,
+                        base64Decode: HandleBadRequest,
+                        jsonDeserialization: HandleBadRequest,
+
+                        emailIncorrect: HandleUnauthorized,
+                        passwordIncorrect: HandleUnauthorized,
+                        vaultIndexDoesNotExist: HandleUnauthorized,
+
+                        generalStorage: HandleServerError,
+                        hashPassword: HandleServerError,
+                        malformedCloudStorageConnectionString: HandleServerError,
+                        malformedETag: HandleServerError,
+                        malformedUserId: HandleServerError,
+                        userIdMismatch: HandleServerError,
+                        vaultDoesNotExist: HandleServerError));
+
+            ActionResult HandleBadRequest(IError error) => BadRequest(error.GetDescription());
+            ActionResult HandleUnauthorized(IError _) => Unauthorized("Either your email or password are incorrect, or no user exists with that email");
+            ActionResult HandleServerError(IError _) => StatusCode(StatusCodes.Status500InternalServerError);
         }
 
         [HttpPut("/api/vault/new")]
@@ -71,31 +69,28 @@ namespace Web.Controllers
                 .DoLeft(LoggerFunctions.LogControllerError(_logger))
                 .Match<ActionResult<CreateVaultResponse>>(
                     Right: vaultResponse => CreatedAtAction("GetVault", vaultResponse),
-                    Left: error => {
-                        switch (error)
-                        {
-                            case BearerTokenMissing _:
-                            case MalformedBearerToken _:
-                            case MalformedEmail _:
-                            case MalformedPassword _:
-                            case Base64DecodeError _:
-                                return BadRequest(error.GetDescription());
-                            case CouldNotCreateBlobBecauseItAlreadyExistsError _:
-                                return Conflict("An account with that email already exists");
-                            case CouldNotUpdateBlobBecauseTheETagHasChanged _:
-                            case GeneralStorageError _:
-                            case GenerateSaltError _:
-                            case HashPasswordError _:
-                            case JsonDeserializationError _:
-                            case JsonSerializationError _:
-                            case MalformedCloudStorageConnectionString _:
-                            case MalformedETag _:
-                                return StatusCode(StatusCodes.Status500InternalServerError);
-                            default: 
-                                return StatusCode(StatusCodes.Status500InternalServerError);
-                                
-                        }
-                    });
+                    Left: error => error.Match(
+                        bearerTokenMissing: HandleBadRequest,
+                        malformedBearerToken: HandleBadRequest,
+                        malformedEmail: HandleBadRequest,
+                        malformedPassword: HandleBadRequest,
+                        base64Decode: HandleBadRequest,
+
+                        couldNotCreateBlobBecauseItAlreadyExists: HandleConflict,
+
+                        couldNotUpdateBlobBecauseTheETagHasChanged: HandleServerError,
+                        generalStorage: HandleServerError,
+                        generateSalt: HandleServerError,
+                        hashPassword: HandleServerError,
+                        jsonDeserialization: HandleServerError,
+                        jsonSerialization: HandleServerError,
+                        malformedCloudStorageConnectionString: HandleServerError,
+                        malformedETag: HandleServerError
+                    ));
+            
+            ActionResult HandleBadRequest(IError error) => BadRequest(error.GetDescription());
+            ActionResult HandleConflict(IError _) => Conflict("An account with that email already exists");
+            ActionResult HandleServerError(IError _) => StatusCode(StatusCodes.Status500InternalServerError);
         }
         
         [HttpPut("/api/vault")]
@@ -110,39 +105,39 @@ namespace Web.Controllers
                 .DoLeft(LoggerFunctions.LogControllerError(_logger))
                 .Match<ActionResult>(
                     Right: vaultResponse => Ok(vaultResponse),
-                    Left: error => {
-                        switch (error)
-                        {
-                            case BearerTokenMissing _:
-                            case MalformedBearerToken _:
-                            case MalformedEmail _:
-                            case MalformedETag _:
-                            case MalformedPassword _:
-                            case Base64DecodeError _:
-                                return BadRequest(error.GetDescription());
-                            case VaultIndexDoesNotExist _:
-                            case EmailIncorrectError _:
-                            case PasswordIncorrectError _:
-                                return Unauthorized("Either your email or password are incorrect, or no user exists with that email");
-                            case CouldNotUpdateBlobBecauseTheETagHasChanged _:
-                                return Conflict("The version sent with your vault was not for the latest saved version of the vault. " +
-                                                OldVersionOfVaultError);
-                            case CouldNotCreateBlobBecauseItAlreadyExistsError _:
-                                return Conflict("No version was sent with your vault, but the vault already exists. " + 
-                                                OldVersionOfVaultError);
-                            case GeneralStorageError _:
-                            case HashPasswordError _:
-                            case JsonDeserializationError _:
-                            case JsonSerializationError _:
-                            case MalformedCloudStorageConnectionString _:
-                            case MalformedUserId _:
-                            case UserIdMismatchError _:
-                            case VaultDoesNotExistError _:
-                                return StatusCode(StatusCodes.Status500InternalServerError);
-                            default:
-                                return StatusCode(StatusCodes.Status500InternalServerError);
-                        }
-                    });
+                    Left: error => error.Match(
+                            bearerTokenMissing: HandleBadRequest,
+                            malformedBearerToken: HandleBadRequest,
+                            malformedEmail: HandleBadRequest,
+                            malformedETag: HandleBadRequest,
+                            malformedPassword: HandleBadRequest,
+                            base64Decode: HandleBadRequest,
+                            
+                            vaultIndexDoesNotExist: HandleUnauthorized,
+                            emailIncorrect: HandleUnauthorized,
+                            passwordIncorrect: HandleUnauthorized,
+                            
+                            couldNotUpdateBlobBecauseTheETagHasChanged: _ =>
+                                Conflict("The version sent with your vault was not for the latest saved version of the vault. " +
+                                                OldVersionOfVaultError),
+                            
+                            couldNotCreateBlobBecauseItAlreadyExists: _ =>
+                                Conflict("No version was sent with your vault, but the vault already exists. " + 
+                                                OldVersionOfVaultError),
+                            
+                            generalStorage: HandleServerError,
+                            hashPassword: HandleServerError,
+                            jsonDeserialization: HandleServerError,
+                            jsonSerialization: HandleServerError,
+                            malformedCloudStorageConnectionString: HandleServerError,
+                            malformedUserId: HandleServerError,
+                            userIdMismatch: HandleServerError,
+                            vaultDoesNotExist: HandleServerError
+                        ));
+                                
+            ActionResult HandleBadRequest(IError error) => BadRequest(error.GetDescription());
+            ActionResult HandleUnauthorized(IError error) => Unauthorized("Either your email or password are incorrect, or no user exists with that email");
+            ActionResult HandleServerError(IError _) => StatusCode(StatusCodes.Status500InternalServerError);
         }
 
         private const string OldVersionOfVaultError = "This means you were editing an old version. This usually happens when you were editing" +
