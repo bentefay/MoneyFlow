@@ -22,7 +22,10 @@ namespace Web.Controllers
         }
         
         [HttpGet("/api/vault")]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public Task<ActionResult<GetVaultResponse>> GetVault([FromHeader] string authorization, [FromServices] StorageConnectionString connectionString)
         {
             return VaultFunctions.GetVault(authorization, connectionString)
@@ -58,13 +61,16 @@ namespace Web.Controllers
         }
 
         [HttpPut("/api/vault/new")]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public Task<ActionResult<CreateVaultResponse>> CreateVault([FromHeader] string authorization, [FromServices] StorageConnectionString connectionString)
         {
             return VaultFunctions.CreateVault(authorization, connectionString)
                 .DoLeft(LoggerFunctions.LogControllerError(_logger))
                 .Match<ActionResult<CreateVaultResponse>>(
-                    Right: vaultResponse => Ok(vaultResponse),
+                    Right: vaultResponse => CreatedAtAction("GetVault", vaultResponse),
                     Left: error => {
                         switch (error)
                         {
@@ -93,7 +99,11 @@ namespace Web.Controllers
         }
         
         [HttpPut("/api/vault")]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public Task<ActionResult> UpdateVault([FromHeader] string authorization, [FromBody] UpdateVaultRequest request, [FromServices] StorageConnectionString connectionString)
         {
             return VaultFunctions.UpdateVault(authorization, request, connectionString)
