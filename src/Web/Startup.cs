@@ -48,6 +48,7 @@ namespace Web
                 .UseStaticFiles()
                 .UseHttpsRedirection()
                 .UseSerilogRequestLogging()
+                .UseRouting()
                 .UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
