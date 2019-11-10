@@ -21,42 +21,6 @@ namespace Web.Controllers
         {
             _logger = logger;
         }
-        
-        [HttpGet("/api/vault")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public Task<ActionResult<GetVaultResponse>> GetVault([FromHeader] string authorization, [FromServices] StorageConnectionString connectionString)
-        {
-            return VaultFunctions.GetVault(authorization, connectionString)
-                .DoLeft(LoggerFunctions.LogControllerError(_logger))
-                .Match<ActionResult<GetVaultResponse>>(
-                    Right: vaultResponse => Ok(vaultResponse),
-                    Left: error => error.Match(
-                        bearerTokenMissing: HandleBadRequest,
-                        malformedBearerToken: HandleBadRequest,
-                        malformedEmail: HandleBadRequest,
-                        malformedPassword: HandleBadRequest,
-                        base64Decode: HandleBadRequest,
-                        jsonDeserialization: HandleBadRequest,
-
-                        emailIncorrect: HandleUnauthorized,
-                        passwordIncorrect: HandleUnauthorized,
-                        vaultIndexDoesNotExist: HandleUnauthorized,
-
-                        generalStorage: HandleServerError,
-                        hashPassword: HandleServerError,
-                        malformedCloudStorageConnectionString: HandleServerError,
-                        malformedETag: HandleServerError,
-                        malformedUserId: HandleServerError,
-                        userIdMismatch: HandleServerError,
-                        vaultDoesNotExist: HandleServerError));
-
-            ActionResult HandleBadRequest(IError error) => BadRequest(error.GetDescription());
-            ActionResult HandleUnauthorized(IError _) => Unauthorized("Either your email or password are incorrect, or no user exists with that email");
-            ActionResult HandleServerError(IError _) => StatusCode(StatusCodes.Status500InternalServerError);
-        }
 
         [HttpPut("/api/vault/new")]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -75,9 +39,9 @@ namespace Web.Controllers
                         malformedEmail: HandleBadRequest,
                         malformedPassword: HandleBadRequest,
                         base64Decode: HandleBadRequest,
-
+                        
                         couldNotCreateBlobBecauseItAlreadyExists: HandleConflict,
-
+                        
                         couldNotUpdateBlobBecauseTheETagHasChanged: HandleServerError,
                         generalStorage: HandleServerError,
                         generateSalt: HandleServerError,
@@ -87,12 +51,48 @@ namespace Web.Controllers
                         malformedCloudStorageConnectionString: HandleServerError,
                         malformedETag: HandleServerError
                     ));
-            
+
             ActionResult HandleBadRequest(IError error) => BadRequest(error.GetDescription());
             ActionResult HandleConflict(IError _) => Conflict("An account with that email already exists");
             ActionResult HandleServerError(IError _) => StatusCode(StatusCodes.Status500InternalServerError);
         }
-        
+
+        [HttpGet("/api/vault")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public Task<ActionResult<GetVaultResponse>> GetVault([FromHeader] string authorization, [FromServices] StorageConnectionString connectionString)
+        {
+            return VaultFunctions.GetVault(authorization, connectionString)
+                .DoLeft(LoggerFunctions.LogControllerError(_logger))
+                .Match<ActionResult<GetVaultResponse>>(
+                    Right: vaultResponse => Ok(vaultResponse),
+                    Left: error => error.Match(
+                        bearerTokenMissing: HandleBadRequest,
+                        malformedBearerToken: HandleBadRequest,
+                        malformedEmail: HandleBadRequest,
+                        malformedPassword: HandleBadRequest,
+                        base64Decode: HandleBadRequest,
+                        jsonDeserialization: HandleBadRequest,
+                        
+                        emailIncorrect: HandleUnauthorized,
+                        passwordIncorrect: HandleUnauthorized,
+                        vaultIndexDoesNotExist: HandleUnauthorized,
+                        
+                        generalStorage: HandleServerError,
+                        hashPassword: HandleServerError,
+                        malformedCloudStorageConnectionString: HandleServerError,
+                        malformedETag: HandleServerError,
+                        malformedUserId: HandleServerError,
+                        userIdMismatch: HandleServerError,
+                        vaultDoesNotExist: HandleServerError));
+
+            ActionResult HandleBadRequest(IError error) => BadRequest(error.GetDescription());
+            ActionResult HandleUnauthorized(IError _) => Unauthorized("Either your email or password are incorrect, or no user exists with that email");
+            ActionResult HandleServerError(IError _) => StatusCode(StatusCodes.Status500InternalServerError);
+        }
+
         [HttpPut("/api/vault")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -106,42 +106,40 @@ namespace Web.Controllers
                 .Match<ActionResult>(
                     Right: vaultResponse => Ok(vaultResponse),
                     Left: error => error.Match(
-                            bearerTokenMissing: HandleBadRequest,
-                            malformedBearerToken: HandleBadRequest,
-                            malformedEmail: HandleBadRequest,
-                            malformedETag: HandleBadRequest,
-                            malformedPassword: HandleBadRequest,
-                            base64Decode: HandleBadRequest,
-                            
-                            vaultIndexDoesNotExist: HandleUnauthorized,
-                            emailIncorrect: HandleUnauthorized,
-                            passwordIncorrect: HandleUnauthorized,
-                            
-                            couldNotUpdateBlobBecauseTheETagHasChanged: _ =>
-                                Conflict("The version sent with your vault was not for the latest saved version of the vault. " +
-                                                OldVersionOfVaultError),
-                            
-                            couldNotCreateBlobBecauseItAlreadyExists: _ =>
-                                Conflict("No version was sent with your vault, but the vault already exists. " + 
-                                                OldVersionOfVaultError),
-                            
-                            generalStorage: HandleServerError,
-                            hashPassword: HandleServerError,
-                            jsonDeserialization: HandleServerError,
-                            jsonSerialization: HandleServerError,
-                            malformedCloudStorageConnectionString: HandleServerError,
-                            malformedUserId: HandleServerError,
-                            userIdMismatch: HandleServerError,
-                            vaultDoesNotExist: HandleServerError
-                        ));
-                                
+                        bearerTokenMissing: HandleBadRequest,
+                        malformedBearerToken: HandleBadRequest,
+                        malformedEmail: HandleBadRequest,
+                        malformedETag: HandleBadRequest,
+                        malformedPassword: HandleBadRequest,
+                        base64Decode: HandleBadRequest,
+                        
+                        vaultIndexDoesNotExist: HandleUnauthorized,
+                        emailIncorrect: HandleUnauthorized,
+                        passwordIncorrect: HandleUnauthorized,
+                        
+                        couldNotUpdateBlobBecauseTheETagHasChanged: _ =>
+                            Conflict("The version sent with your vault was not for the latest saved version of the vault. " + OldVersionOfVaultError()),
+                        
+                        couldNotCreateBlobBecauseItAlreadyExists: _ =>
+                            Conflict("No version was sent with your vault, but the vault already exists. " + OldVersionOfVaultError()),
+                        
+                        generalStorage: HandleServerError,
+                        hashPassword: HandleServerError,
+                        jsonDeserialization: HandleServerError,
+                        jsonSerialization: HandleServerError,
+                        malformedCloudStorageConnectionString: HandleServerError,
+                        malformedUserId: HandleServerError,
+                        userIdMismatch: HandleServerError,
+                        vaultDoesNotExist: HandleServerError
+                    ));
+
             ActionResult HandleBadRequest(IError error) => BadRequest(error.GetDescription());
             ActionResult HandleUnauthorized(IError error) => Unauthorized("Either your email or password are incorrect, or no user exists with that email");
             ActionResult HandleServerError(IError _) => StatusCode(StatusCodes.Status500InternalServerError);
-        }
 
-        private const string OldVersionOfVaultError = "This means you were editing an old version. This usually happens when you were editing" +
-                                                      "the vault in more than one browser at the same time. Refresh to get the " +
-                                                      "latest version. Unfortunately, this means you will lose your most recent changes. Sorry!";
+            string OldVersionOfVaultError() => "This means you were editing an old version. This usually happens when you were editing" +
+                                               "the vault in more than one browser at the same time. Refresh to get the " +
+                                               "latest version. Unfortunately, this means you will lose your most recent changes. Sorry!";
+        }
     }
 }

@@ -9,6 +9,7 @@ import {
 } from "redux-saga/effects";
 import { TaskEither } from 'fp-ts/lib/TaskEither';
 import { Either } from 'fp-ts/lib/Either';
+import { Task } from 'fp-ts/lib/Task';
 
 type SagaGenerator<RT> = Generator<Effect<any>, RT, any>;
 
@@ -28,6 +29,12 @@ export function* taskEitherAsGenerator<TL, TR>(
     taskEither: TaskEither<TL, TR>
 ): SagaGenerator<Either<TL, TR>> {
     return yield taskEither() as any;
+}
+
+export function* taskAsGenerator<T>(
+    task: Task<T>
+): SagaGenerator<T> {
+    return yield task() as any;
 }
 
 export function* promiseAsGenerator<T>(
