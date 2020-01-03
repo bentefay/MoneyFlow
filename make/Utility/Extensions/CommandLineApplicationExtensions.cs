@@ -10,14 +10,14 @@ namespace Make.Utility.Extensions
         {
             app.OnExecute(() =>
             {
-                app.ShowHelp();
+                app.ShowHelp(usePager: false);
                 return 1;
             });
         }
 
         public static CommandLineApplication WithExecute(this CommandLineApplication app, Func<Task<int>> f)
         {
-            app.OnExecute(f);
+            app.OnExecuteAsync(_ => f());
             return app;
         }
 
