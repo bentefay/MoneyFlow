@@ -4,7 +4,7 @@ using Web.Utils.Extensions;
 
 namespace Web.Types.Errors
 {
-    public class JsonDeserializationError : IErrorWithException, IDeserializeVaultIndexErrors, IParseAuthorizationErrors
+    public class JsonDeserializationError : IErrorWithException, IDeserializeUserErrors, IParseAuthorizationErrors
     {
         public Type Type { get; }
         public string Json { get; }

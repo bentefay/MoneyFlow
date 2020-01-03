@@ -3,9 +3,9 @@ using Web.Types.Values;
 
 namespace Web.Types
 {
-    public class VaultIndex : Record<VaultIndex>
+    public class User : Record<User>
     {
-        public VaultIndex(UserId userId, Email email, PasswordSalt passwordSalt, DoubleHashedPassword password)
+        public User(UserId userId, Email email, PasswordSalt passwordSalt, DoubleHashedPassword password)
         {
             UserId = userId;
             Email = email;
@@ -19,11 +19,11 @@ namespace Web.Types
         public DoubleHashedPassword Password { get; }
     }
 
-    public class TaggedVaultIndex : VaultIndex
+    public class TaggedUser : User
     {
         public StorageETag ETag { get; }
 
-        public TaggedVaultIndex(UserId userId, Email email, PasswordSalt passwordSalt, DoubleHashedPassword password, StorageETag eTag) : 
+        public TaggedUser(UserId userId, Email email, PasswordSalt passwordSalt, DoubleHashedPassword password, StorageETag eTag) : 
             base(userId, email, passwordSalt, password)
         {
             ETag = eTag;

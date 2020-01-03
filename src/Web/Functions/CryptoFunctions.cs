@@ -9,15 +9,15 @@ using Web.Types.Values;
 
 namespace Web.Functions
 {
-    public class CryptoFunctions
+    public static class CryptoFunctions
     {
-        private static int _bytes = 128 / 8;
+        private const int SaltLengthInBytes = 128 / 8;
 
-        public static Either<GenerateSaltError, PasswordSalt> CreatePasswordSalt()
+        public static Either<GeneratePasswordSaltError, PasswordSalt> GeneratePasswordSalt()
         {
             try
             {
-                var salt = new byte[_bytes];
+                var salt = new byte[SaltLengthInBytes];
                 using (var rng = RandomNumberGenerator.Create())
                 {
                     rng.GetBytes(salt);
@@ -27,7 +27,7 @@ namespace Web.Functions
             }
             catch (Exception e)
             {
-                return new GenerateSaltError(e);
+                return new GeneratePasswordSaltError(e);
             }
         }
 
@@ -42,7 +42,7 @@ namespace Web.Functions
                     salt: saltBytes,
                     prf: KeyDerivationPrf.HMACSHA1,
                     iterationCount: 10000,
-                    numBytesRequested: _bytes);
+                    numBytesRequested: SaltLengthInBytes);
 
                 var hashedPasswordChars = Convert.ToBase64String(hashedPasswordBytes);
 

@@ -2,7 +2,7 @@
 
 namespace Web.Types.Errors
 {
-    public class JsonSerializationError : IErrorWithException, ISerializeVaultIndexErrors
+    public class JsonSerializationError : IErrorWithException, ISerializeUserErrors
     {
         public Type Type { get; }
         public object? Value { get; }

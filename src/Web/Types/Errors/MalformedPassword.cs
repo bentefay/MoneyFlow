@@ -2,7 +2,7 @@
 
 namespace Web.Types.Errors
 {
-    public class MalformedPassword : IError, IGetBlobTextErrors, IDeserializeVaultIndexErrors, IParseAuthorizationErrors
+    public class MalformedPassword : IError, IGetBlobTextErrors, IDeserializeUserErrors, IParseAuthorizationErrors
     {
         public string HashedPassword { get; }
         

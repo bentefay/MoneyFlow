@@ -10,23 +10,23 @@ namespace Web.Functions
 {
     public static class MappingFunctions
     {
-        public static VaultIndexDto ToDto(VaultIndex vaultIndex)
+        public static UserDto ToDto(User user)
         {
-            return new VaultIndexDto(
-                userId: vaultIndex.UserId.Value.ToString(),
-                email: vaultIndex.Email.Value,
-                passwordSalt: vaultIndex.PasswordSalt.Value,
-                password:  vaultIndex.Password.Value);
+            return new UserDto(
+                userId: user.UserId.Value.ToString(),
+                email: user.Email.Value,
+                passwordSalt: user.PasswordSalt.Value,
+                password:  user.Password.Value);
         }
 
-        public static Either<IDeserializeVaultIndexErrors, TaggedVaultIndex> FromDto(VaultIndexDto dto, StorageETag eTag)
+        public static Either<IDeserializeUserErrors, TaggedUser> FromDto(UserDto dto, StorageETag eTag)
         {
             return
-                from userId in UserId.Create(dto.UserId).Left(Cast.To<IDeserializeVaultIndexErrors>())
-                from email in Email.Create(dto.Email).Left(Cast.To<IDeserializeVaultIndexErrors>())
+                from userId in UserId.Create(dto.UserId).Left(Cast.To<IDeserializeUserErrors>())
+                from email in Email.Create(dto.Email).Left(Cast.To<IDeserializeUserErrors>())
                 let salt = new PasswordSalt(dto.PasswordSalt)
-                from password in DoubleHashedPassword.Create(dto.Password).Left(Cast.To<IDeserializeVaultIndexErrors>())
-                select new TaggedVaultIndex(userId, email, salt, password, eTag);
+                from password in DoubleHashedPassword.Create(dto.Password).Left(Cast.To<IDeserializeUserErrors>())
+                select new TaggedUser(userId, email, salt, password, eTag);
         }
 
         public static GetVaultResponse ToDto(TaggedVault vault)
@@ -37,9 +37,9 @@ namespace Web.Functions
                 eTag: vault.ETag.Value);
         }
 
-        public static CreateVaultResponse ToDto(UserId userId)
+        public static CreateUserResponse ToDto(UserId userId)
         {
-            return new CreateVaultResponse(userId: userId.Value.ToString());
+            return new CreateUserResponse(userId: userId.Value.ToString());
         }
 
         public static Either<IUpdateVaultRequestToVaultErrors, Vault> FromDto(UpdateVaultRequest request)

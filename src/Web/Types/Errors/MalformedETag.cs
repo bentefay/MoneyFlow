@@ -1,6 +1,6 @@
 namespace Web.Types.Errors
 {
-    public class MalformedETag : IError, IGetBlobTextErrors, IDeserializeVaultIndexErrors, IParseAuthorizationErrors, IUpdateVaultRequestToVaultErrors
+    public class MalformedETag : IError, IGetBlobTextErrors, IDeserializeUserErrors, IParseAuthorizationErrors, IUpdateVaultRequestToVaultErrors
     {
         private readonly string _etag;
 

@@ -1,8 +1,8 @@
 namespace Web.Types.Dtos.Storage
 {
-    public class VaultIndexDto
+    public class UserDto
     {
-        public VaultIndexDto(string userId, string email, string passwordSalt, string password)
+        public UserDto(string userId, string email, string passwordSalt, string password)
         {
             UserId = userId;
             Email = email;

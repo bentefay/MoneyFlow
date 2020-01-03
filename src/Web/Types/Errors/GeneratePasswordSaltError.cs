@@ -2,11 +2,11 @@ using System;
 
 namespace Web.Types.Errors
 {
-    public class GenerateSaltError : IError, ICreateVaultIndexErrors
+    public class GeneratePasswordSaltError : IError, IBuilderUserErrors
     {
         private readonly Exception _error;
 
-        public GenerateSaltError(Exception error)
+        public GeneratePasswordSaltError(Exception error)
         {
             _error = error;
         }

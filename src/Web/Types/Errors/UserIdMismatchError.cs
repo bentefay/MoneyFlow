@@ -6,15 +6,15 @@ namespace Web.Types.Errors
     {
         private readonly Email _email;
         private readonly UserId _vaultUserId;
-        private readonly UserId _vaultIndexUserId;
+        private readonly UserId _userId;
 
-        public UserIdMismatchError(Email email, UserId vaultUserId, UserId vaultIndexUserId)
+        public UserIdMismatchError(Email email, UserId vaultUserId, UserId userId)
         {
             _email = email;
             _vaultUserId = vaultUserId;
-            _vaultIndexUserId = vaultIndexUserId;
+            _userId = userId;
         }
 
-        public string GetDescription() => $"For '{_email}' there was a mismatch between the vault user id {_vaultUserId} and the vault index user id {_vaultIndexUserId}";
+        public string GetDescription() => $"For '{_email}' there was a mismatch between the vault user id {_vaultUserId} and the user id {_userId}";
     }
 }

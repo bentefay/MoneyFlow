@@ -1,6 +1,4 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
@@ -13,25 +11,25 @@ using Web.Utils.Extensions;
 namespace Web.Controllers
 {
     [ApiController]
-    public class VaultController : ControllerBase
+    public class MainController : ControllerBase
     {
         private readonly ILogger _logger;
 
-        public VaultController(ILogger logger)
+        public MainController(ILogger logger)
         {
             _logger = logger;
         }
 
-        [HttpPut("/api/vault/new")]
+        [HttpPut("/api/users")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public Task<ActionResult<CreateVaultResponse>> CreateVault([FromHeader] string authorization, [FromServices] StorageConnectionString connectionString)
+        public Task<ActionResult<CreateUserResponse>> CreateUser([FromHeader] string authorization, [FromServices] StorageConnectionString connectionString)
         {
-            return VaultFunctions.CreateVault(authorization, connectionString)
+            return UserFunctions.CreateUser(authorization, connectionString)
                 .DoLeft(LoggerFunctions.LogControllerError(_logger))
-                .Match<ActionResult<CreateVaultResponse>>(
+                .Match<ActionResult<CreateUserResponse>>(
                     Right: vaultResponse => CreatedAtAction("GetVault", vaultResponse),
                     Left: error => error.Match(
                         bearerTokenMissing: HandleBadRequest,
@@ -57,7 +55,7 @@ namespace Web.Controllers
             ActionResult HandleServerError(IError _) => StatusCode(StatusCodes.Status500InternalServerError);
         }
 
-        [HttpGet("/api/vault")]
+        [HttpGet("/api/vaults")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -78,7 +76,7 @@ namespace Web.Controllers
                         
                         emailIncorrect: HandleUnauthorized,
                         passwordIncorrect: HandleUnauthorized,
-                        vaultIndexDoesNotExist: HandleUnauthorized,
+                        userDoesNotExist: HandleUnauthorized,
                         
                         generalStorage: HandleServerError,
                         hashPassword: HandleServerError,
@@ -93,7 +91,7 @@ namespace Web.Controllers
             ActionResult HandleServerError(IError _) => StatusCode(StatusCodes.Status500InternalServerError);
         }
 
-        [HttpPut("/api/vault")]
+        [HttpPut("/api/vaults")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -113,7 +111,7 @@ namespace Web.Controllers
                         malformedPassword: HandleBadRequest,
                         base64Decode: HandleBadRequest,
                         
-                        vaultIndexDoesNotExist: HandleUnauthorized,
+                        userDoesNotExist: HandleUnauthorized,
                         emailIncorrect: HandleUnauthorized,
                         passwordIncorrect: HandleUnauthorized,
                         

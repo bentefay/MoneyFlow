@@ -1,6 +1,6 @@
 ﻿namespace Web.Types.Errors
 {
-    public class MalformedEmail : IError, IDeserializeVaultIndexErrors, IParseAuthorizationErrors
+    public class MalformedEmail : IError, IDeserializeUserErrors, IParseAuthorizationErrors
     {
         public string Email { get; }
 

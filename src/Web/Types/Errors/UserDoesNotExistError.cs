@@ -2,11 +2,11 @@ using Web.Types.Values;
 
 namespace Web.Types.Errors
 {
-    public class VaultIndexDoesNotExist : IAssertVaultAccessErrors, IUpdateVaultErrors
+    public class UserDoesNotExistError : IAssertVaultAccessErrors, IUpdateVaultErrors
     {
         public Email Email { get; }
 
-        public VaultIndexDoesNotExist(Email email)
+        public UserDoesNotExistError(Email email)
         {
             Email = email;
         }

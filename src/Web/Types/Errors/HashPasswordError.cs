@@ -2,7 +2,7 @@ using System;
 
 namespace Web.Types.Errors
 {
-    public class HashPasswordError : IErrorWithException, IAssertVaultAccessErrors, ICreateVaultIndexErrors
+    public class HashPasswordError : IErrorWithException, IAssertVaultAccessErrors, IBuilderUserErrors
     {
         public Exception Exception { get; }
 

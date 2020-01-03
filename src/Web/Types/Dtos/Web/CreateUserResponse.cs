@@ -1,10 +1,10 @@
 namespace Web.Types.Dtos.Web
 {
-    public class CreateVaultResponse
+    public class CreateUserResponse
     {
         public string UserId { get; }
 
-        public CreateVaultResponse(string userId)
+        public CreateUserResponse(string userId)
         {
             UserId = userId;
         }

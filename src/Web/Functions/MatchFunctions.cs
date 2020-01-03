@@ -7,7 +7,7 @@ namespace Web.Functions
     {
         public static T Match<T>(this IGetVaultErrors @this, Func<GeneralStorageError, T> generalStorage, Func<BearerTokenMissing, T> bearerTokenMissing,
             Func<MalformedPassword, T> malformedPassword, Func<MalformedETag, T> malformedETag, Func<MalformedBearerToken, T> malformedBearerToken,
-            Func<UserIdMismatchError, T> userIdMismatch, Func<JsonDeserializationError, T> jsonDeserialization, Func<VaultIndexDoesNotExist, T> vaultIndexDoesNotExist,
+            Func<UserIdMismatchError, T> userIdMismatch, Func<JsonDeserializationError, T> jsonDeserialization, Func<UserDoesNotExistError, T> userDoesNotExist,
             Func<PasswordIncorrectError, T> passwordIncorrect, Func<VaultDoesNotExistError, T> vaultDoesNotExist, Func<MalformedUserId, T> malformedUserId,
             Func<HashPasswordError, T> hashPassword, Func<MalformedEmail, T> malformedEmail, Func<EmailIncorrectError, T> emailIncorrect,
             Func<MalformedCloudStorageConnectionString, T> malformedCloudStorageConnectionString, Func<Base64DecodeError, T> base64Decode)
@@ -21,7 +21,7 @@ namespace Web.Functions
                 MalformedBearerToken e => malformedBearerToken(e),
                 UserIdMismatchError e => userIdMismatch(e),
                 JsonDeserializationError e => jsonDeserialization(e),
-                VaultIndexDoesNotExist e => vaultIndexDoesNotExist(e),
+                UserDoesNotExistError e => userDoesNotExist(e),
                 PasswordIncorrectError e => passwordIncorrect(e),
                 VaultDoesNotExistError e => vaultDoesNotExist(e),
                 MalformedUserId e => malformedUserId(e),
@@ -34,10 +34,10 @@ namespace Web.Functions
             };
         }
 
-        public static T Match<T>(this ICreateVaultErrors @this, Func<JsonDeserializationError, T> jsonDeserialization,
+        public static T Match<T>(this ICreateUserErrors @this, Func<JsonDeserializationError, T> jsonDeserialization,
             Func<CouldNotUpdateBlobBecauseTheETagHasChanged, T> couldNotUpdateBlobBecauseTheETagHasChanged,
             Func<CouldNotCreateBlobBecauseItAlreadyExistsError, T> couldNotCreateBlobBecauseItAlreadyExists, Func<MalformedPassword, T> malformedPassword,
-            Func<GenerateSaltError, T> generateSalt, Func<MalformedCloudStorageConnectionString, T> malformedCloudStorageConnectionString, Func<MalformedETag, T> malformedETag,
+            Func<GeneratePasswordSaltError, T> generateSalt, Func<MalformedCloudStorageConnectionString, T> malformedCloudStorageConnectionString, Func<MalformedETag, T> malformedETag,
             Func<Base64DecodeError, T> base64Decode, Func<GeneralStorageError, T> generalStorage, Func<MalformedEmail, T> malformedEmail, Func<HashPasswordError, T> hashPassword,
             Func<JsonSerializationError, T> jsonSerialization, Func<BearerTokenMissing, T> bearerTokenMissing, Func<MalformedBearerToken, T> malformedBearerToken)
         {
@@ -47,7 +47,7 @@ namespace Web.Functions
                 CouldNotUpdateBlobBecauseTheETagHasChanged e => couldNotUpdateBlobBecauseTheETagHasChanged(e),
                 CouldNotCreateBlobBecauseItAlreadyExistsError e => couldNotCreateBlobBecauseItAlreadyExists(e),
                 MalformedPassword e => malformedPassword(e),
-                GenerateSaltError e => generateSalt(e),
+                GeneratePasswordSaltError e => generateSalt(e),
                 MalformedCloudStorageConnectionString e => malformedCloudStorageConnectionString(e),
                 MalformedETag e => malformedETag(e),
                 Base64DecodeError e => base64Decode(e),
@@ -64,7 +64,7 @@ namespace Web.Functions
         public static T Match<T>(this IUpdateVaultErrors @this, Func<CouldNotCreateBlobBecauseItAlreadyExistsError, T> couldNotCreateBlobBecauseItAlreadyExists,
             Func<MalformedEmail, T> malformedEmail, Func<EmailIncorrectError, T> emailIncorrect, Func<JsonSerializationError, T> jsonSerialization,
             Func<MalformedPassword, T> malformedPassword, Func<MalformedETag, T> malformedETag, Func<HashPasswordError, T> hashPassword,
-            Func<PasswordIncorrectError, T> passwordIncorrect, Func<VaultIndexDoesNotExist, T> vaultIndexDoesNotExist, Func<MalformedUserId, T> malformedUserId,
+            Func<PasswordIncorrectError, T> passwordIncorrect, Func<UserDoesNotExistError, T> userDoesNotExist, Func<MalformedUserId, T> malformedUserId,
             Func<VaultDoesNotExistError, T> vaultDoesNotExist, Func<JsonDeserializationError, T> jsonDeserialization,
             Func<MalformedCloudStorageConnectionString, T> malformedCloudStorageConnectionString, Func<GeneralStorageError, T> generalStorage,
             Func<BearerTokenMissing, T> bearerTokenMissing, Func<Base64DecodeError, T> base64Decode,
@@ -81,7 +81,7 @@ namespace Web.Functions
                 MalformedETag e => malformedETag(e),
                 HashPasswordError e => hashPassword(e),
                 PasswordIncorrectError e => passwordIncorrect(e),
-                VaultIndexDoesNotExist e => vaultIndexDoesNotExist(e),
+                UserDoesNotExistError e => userDoesNotExist(e),
                 MalformedUserId e => malformedUserId(e),
                 VaultDoesNotExistError e => vaultDoesNotExist(e),
                 JsonDeserializationError e => jsonDeserialization(e),

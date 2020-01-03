@@ -13,39 +13,39 @@ namespace Web.Types.Errors
         Exception Exception { get; }
     }
 
-    public interface IUpdateVaultIndexErrors : IUpdateVaultErrors {}
+    public interface IUpdateUserErrors : IUpdateVaultErrors {}
 
-    public interface IGetBlobErrors : IUpdateVaultIndexErrors, ILoadVaultIndexErrors, ISaveNewVaultIndexErrors, ILoadVaultErrors {}
+    public interface IGetBlobErrors : IUpdateUserErrors, ILoadUserErrors, ISaveNewUserErrors, ILoadVaultErrors {}
         
-    public interface IGetBlobTextErrors : ILoadVaultIndexErrors, ILoadVaultErrors {}
+    public interface IGetBlobTextErrors : ILoadUserErrors, ILoadVaultErrors {}
         
-    public interface ISetBlobTextErrors : IUpdateVaultIndexErrors, ISaveNewVaultIndexErrors {}
+    public interface ISetBlobTextErrors : IUpdateUserErrors, ISaveNewUserErrors {}
     
-    public interface ISerializeVaultIndexErrors : IUpdateVaultIndexErrors, ISaveNewVaultIndexErrors {}
+    public interface ISerializeUserErrors : IUpdateUserErrors, ISaveNewUserErrors {}
     
-    public interface IDeserializeVaultIndexErrors : ILoadVaultIndexErrors {}
+    public interface IDeserializeUserErrors : ILoadUserErrors {}
     
     public interface IUpdateVaultRequestToVaultErrors : IUpdateVaultErrors {}
     
-    public interface ISerializeVaultErrors : IUpdateVaultIndexErrors {}
+    public interface ISerializeVaultErrors : IUpdateUserErrors {}
     
     public interface IDeserializeVaultErrors : ILoadVaultErrors {}
     
-    public interface ILoadVaultIndexErrors : IGetVaultErrors, IUpdateVaultErrors {}
+    public interface ILoadUserErrors : IGetVaultErrors, IUpdateVaultErrors {}
     
     public interface ILoadVaultErrors : IGetVaultErrors {}
     
-    public interface ISaveNewVaultIndexErrors : ICreateVaultErrors {}
+    public interface ISaveNewUserErrors : ICreateUserErrors {}
     
     public interface IGetVaultErrors : IError {}
     
-    public interface ICreateVaultErrors : IError {}
+    public interface ICreateUserErrors : IError {}
     
     public interface IUpdateVaultErrors : IError {}
     
     public interface IAssertVaultAccessErrors : IGetVaultErrors, IUpdateVaultErrors {}
     
-    public interface IParseAuthorizationErrors : IGetVaultErrors, ICreateVaultErrors, IUpdateVaultErrors {}
+    public interface IParseAuthorizationErrors : IGetVaultErrors, ICreateUserErrors, IUpdateVaultErrors {}
     
-    public interface ICreateVaultIndexErrors : ICreateVaultErrors {}
+    public interface IBuilderUserErrors : ICreateUserErrors {}
 }

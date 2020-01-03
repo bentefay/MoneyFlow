@@ -1,6 +1,6 @@
 namespace Web.Types.Errors
 {
-    public class MalformedUserId : IError, IDeserializeVaultIndexErrors, IUpdateVaultRequestToVaultErrors
+    public class MalformedUserId : IError, IDeserializeUserErrors, IUpdateVaultRequestToVaultErrors
     {
         private readonly string _userId;
 
