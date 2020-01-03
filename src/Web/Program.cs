@@ -13,14 +13,14 @@ namespace Web
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
                 .CreateLogger();
 
             try
             {
-                CreateWebHostBuilder(args)
+                CreateHostBuilder(args)
                     .Build()
                     .Run();
 
@@ -38,7 +38,7 @@ namespace Web
 
         }
 
-        public static IHostBuilder CreateWebHostBuilder(string[] args) =>
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host
                 .CreateDefaultBuilder(args)
                 .UseSerilog()
