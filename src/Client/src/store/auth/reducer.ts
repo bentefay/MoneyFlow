@@ -17,14 +17,14 @@ export const authReducer = (state = getDefaultState(), action: AuthAction): Auth
                 createAccount: action.payload.createAccount
             };
 
-        case getType(authActions.loginInitiated):
+        case getType(authActions.signInInitiated):
             return {
                 ...state,
                 credentials: action.payload.credentials,
                 isLoading: true
             };
 
-        case getType(authActions.loginErrored):
+        case getType(authActions.signInErrored):
             return { ...state, generalFailure: action.payload, isLoading: false };
 
         default:

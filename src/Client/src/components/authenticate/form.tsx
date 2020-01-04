@@ -4,7 +4,7 @@ import { color6, color7, color4 } from '../styles/palette.style';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import { RootState } from '../../store/store';
-import { AuthState, loginInitiated, minimumPasswordLength, UserCredentials, createAccountToggled, Email, Password, validateEmail, validatePassword } from '../../store/auth';
+import { AuthState, authActions, minimumPasswordLength, UserCredentials, Email, Password, validateEmail, validatePassword } from '../../store/auth';
 import { renderFormField } from './validation';
 import { GeneralFailureView } from './generalFailureView';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -87,11 +87,11 @@ export const c = {
 type Props = AuthState
 
 interface Actions {
-    onLoginInitiated(options: { credentials: UserCredentials, create: boolean }): void;
+    onSignInInitiated(options: { credentials: UserCredentials, create: boolean }): void;
     onCreateAccountToggled(options: { createAccount: boolean }): void;
 }
 
-const PasswordDescription = ({ password, loggingIn }: { password: string | null, loggingIn: boolean }) => {
+const PasswordDescription = ({ password }: { password: string | null }) => {
     if (password === null || password.length == 0)
         return <>Must be <b>12 or more</b> letters, numbers or symbols</>;
 
@@ -103,7 +103,7 @@ const PasswordDescription = ({ password, loggingIn }: { password: string | null,
     if (remainingCharactersRequired == 1)
         return <>Just <b>1</b> more letter, number or symbol!</>;
 
-    return loggingIn ? null : <>Great password!</>;
+    return <>Great password!</>;
 }
 
 type AuthForm = { email: string | null, password: string | null };
@@ -120,11 +120,11 @@ const formValidator : FormStateValidator<AuthForm> = state => {
     };
 };
 
-const form = ({ createAccount, generalFailure, isLoading, onCreateAccountToggled, onLoginInitiated }: Props & Actions) => {
+const form = ({ createAccount, generalFailure, isLoading, onCreateAccountToggled, onSignInInitiated }: Props & Actions) => {
     const  { state, onChange, onSubmit, isValid, reset } = useFormState<AuthForm>(
         () => defaultForm, 
         formValidator,
-        state => onLoginInitiated({ 
+        state => onSignInInitiated({ 
             credentials: { 
                 email: new Email(state.email!), 
                 password: new Password(state.password!) 
@@ -133,33 +133,38 @@ const form = ({ createAccount, generalFailure, isLoading, onCreateAccountToggled
         }));
 
     const { password } = state;
+    const formId = createAccount ? "create-account" : "sign-in";
+    const passwordAutoComplete= createAccount ? "new-password" : "current-password";
+    const passwordId = passwordAutoComplete
 
     return (
-        <form className={`pure-form pure-form-stacked ${c.form}`} noValidate>
+        <form id={formId} className={`pure-form pure-form-stacked ${c.form}`} noValidate onSubmit={event => { onSubmit(); event.preventDefault(); return false; }}>
             <Loading isLoading={isLoading} />
 
             {
                 createAccount ?
                     <>
-                        <div className={c.createAccountHeading}>Create Account</div>
-                        <div className={c.createAccountDescription}>Your account is private. We never see your password, or your data.</div>
+                        <div className={c.createAccountHeading}>Create your account</div>
+                        <div className={c.createAccountDescription}>Your account is private. We never see your data, or your password. So don't forget it.</div>
                     </> :
                     null
             }
 
-            <label className={c.label}>Email</label>
+            <label htmlFor="username" className={c.label}>Email</label>
             {renderFormField(state, "email", onChange, ({ onChange, onBlur, value }) => 
-                <input className={c.input} type="text" value={value || ""} formNoValidate onChange={onChange} onBlur={onBlur} />
+                <input id="username" name="username" autoComplete="username" className={c.input} type="text" value={value ?? ""} formNoValidate 
+                    onChange={onChange} onBlur={onBlur} autoCapitalize="off" spellCheck="false" autoFocus={true} />
             )}
 
-            <label className={c.label}>Password</label>
+            <label htmlFor={passwordId} className={c.label}>Password</label>
             {renderFormField(state, "password", onChange, ({ onChange, onBlur, value }) => 
-                <input className={c.input} type="password" value={value || ""} formNoValidate onChange={onChange} onBlur={onBlur} />
+                <input id={passwordId} name={passwordId} autoComplete={passwordAutoComplete} className={c.input} type="password" value={value ?? ""} formNoValidate 
+                    onChange={onChange} onBlur={onBlur} />
             )}
             {
-                (password.value != null && password.value != "") || createAccount ?
+                createAccount ?
                     <div className={c.inputDescription}>
-                        <PasswordDescription password={password.value} loggingIn={!createAccount} />
+                        <PasswordDescription password={password.value} />
                     </div> :
                     null
             }
@@ -168,16 +173,16 @@ const form = ({ createAccount, generalFailure, isLoading, onCreateAccountToggled
 
             <div className={c.buttonRow}>
                 <a className={`${c.alternateActionButton}`}
-                    onClick={event => { reset(); onCreateAccountToggled({ createAccount: !createAccount }); event.preventDefault(); }}>
+                    onClick={event => { reset("errors"); onCreateAccountToggled({ createAccount: !createAccount }); event.preventDefault(); }}>
                     {
                         createAccount ?
-                            <>Log in to account</> :
+                            <>Sign in to account</> :
                             <>Create account</>
                     }
 
                 </a>
 
-                <button className={`pure-button ${c.submitButton}`} disabled={!isValid} onClick={event => { onSubmit(); event.preventDefault(); }}>
+                <button className={`pure-button ${c.submitButton}`} disabled={!isValid} >
                     {
                         createAccount ?
                             <><FontAwesomeIcon fixedWidth icon="user-plus" size="sm" className={c.submitButtonIcon} /> Create</> :
@@ -193,7 +198,7 @@ const form = ({ createAccount, generalFailure, isLoading, onCreateAccountToggled
 export const Form = connect(
     (state: RootState): Props => state.auth,
     (dispatch): Actions => ({
-        onLoginInitiated: options => dispatch(loginInitiated(options)),
-        onCreateAccountToggled: options => dispatch(createAccountToggled(options))
+        onSignInInitiated: options => dispatch(authActions.signInInitiated(options)),
+        onCreateAccountToggled: options => dispatch(authActions.createAccountToggled(options))
     })
 )(form);

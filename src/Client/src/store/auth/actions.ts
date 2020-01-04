@@ -6,11 +6,11 @@ import { ActionType } from "typesafe-actions";
 
 export const authActions = {
     createAccountToggled: createAction("CREATE_ACCOUNT_TOGGLED")<{ createAccount: boolean }>(),
-    loginInitiated: createAction("LOGIN_INITIATED")<{ credentials: UserCredentials, create: boolean }>(),
-    loginSucceeded: createAction("LOGIN_SUCCEEDED")<NewVaultPlaceholder | EncryptedVault>(),
-    loginErrored: createAction("LOGIN_ERRORED")<GeneralFailure>(),
+    signInInitiated: createAction("SIGN_IN_INITIATED")<{ credentials: UserCredentials, create: boolean }>(),
+    signInSucceeded: createAction("SIGN_IN_SUCCEEDED")<NewVaultPlaceholder | EncryptedVault>(),
+    signInErrored: createAction("SIGN_IN_ERRORED")<GeneralFailure>(),
     requestAborted: createAction("REQUEST_ABORTED")()
 };
 
 export type AuthAction = ActionType<typeof authActions>;
-export type LoginInitiated = ReturnType<typeof authActions.loginInitiated>;
+export type SignInInitiated = ReturnType<typeof authActions.signInInitiated>;

@@ -14,8 +14,8 @@ import { HashedPassword, hashPassword, authHeader } from './crypto';
 import _, { identity } from 'lodash';
 import { EncryptedVault, ETag, UserId, NewVaultPlaceholder } from './model';
 
-export function* login() {
-    yield takeLatest(isActionOf(authActions.loginInitiated), function* ({ payload }) {
+export function* signIn() {
+    yield takeLatest(isActionOf(authActions.signInInitiated), function* ({ payload }) {
         const { credentials: { email, password }, create } = payload;
 
         const task = pipe(
@@ -25,10 +25,10 @@ export function* login() {
                 error => {
                     return error == aborted ?
                         authActions.requestAborted() :
-                        authActions.loginErrored(error);
+                        authActions.signInErrored(error);
                 },
                 vault => {
-                    return identity<AuthAction>(authActions.loginSucceeded(vault));
+                    return identity<AuthAction>(authActions.signInSucceeded(vault));
                 }
             )
         );
