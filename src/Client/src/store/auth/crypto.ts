@@ -27,8 +27,8 @@ function hash(value: string, salt: string, description: string): TaskEither<Gene
         (error: any) => Errors.unexpected(description, error));
 }
 
-export function authHeader(obj: { email: string, password: string }) {
-    return { "Authorization": `Basic ${base64(obj)}` };
+export function authHeader(obj: { email: string, hashedPassword: string }) {
+    return { "Authorization": `Bearer ${base64(obj)}` };
 }
 
 function base64(obj: any) {

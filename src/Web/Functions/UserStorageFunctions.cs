@@ -1,3 +1,4 @@
+using System.Web;
 using LanguageExt;
 using Web.Types;
 using Web.Types.Errors;
@@ -9,7 +10,7 @@ namespace Web.Functions
     public static class UserStorageFunctions
     {
         private const string Container = "users";
-        private static string GetIndexPath(Email email) => email.Value;
+        private static string GetIndexPath(Email email) => HttpUtility.UrlEncode(email.Value);
         
         public static EitherAsync<ISaveNewUserErrors, Unit> CreateUser(User user, StorageConnectionString connectionString)
         {

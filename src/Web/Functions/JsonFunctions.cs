@@ -13,6 +13,10 @@ namespace Web.Functions
             {
                 return JsonConvert.DeserializeObject<T>(json, settings);
             }
+            catch (JsonSerializationException e)
+            {
+                return new JsonDeserializationError(typeof(T), json, e.Path!, e.LineNumber, e.LinePosition, e);
+            }
             catch (JsonReaderException e)
             {
                 return new JsonDeserializationError(typeof(T), json, e.Path!, e.LineNumber, e.LinePosition, e);
@@ -24,6 +28,10 @@ namespace Web.Functions
             try
             {               
                 return JsonConvert.SerializeObject(value, settings);
+            }
+            catch (JsonSerializationException e)
+            {
+                return new JsonSerializationError(typeof(T), value, e.Path!, e);
             }
             catch (JsonWriterException e)
             {

@@ -35,19 +35,19 @@ export function fetchJson(input: Request | string, init: RequestInit, actionDesc
                         parseJsonResponse(response, matchingResponseType.validator, actionDescription),
                         taskEither.chain(matchingResponseType.chain)
                     );
-                }
-
-                return pipe(
-                    parseTextResponse(response, actionDescription),
-                    taskEither.chain(body =>
-                        taskEither.left(
-                            Errors.Internet.unexpectedResponse(actionDescription, {
-                                message: `Response with unexpected status code '${response.status}'`,
-                                body: body
-                            })
+                } else {
+                    return pipe(
+                        parseTextResponse(response, actionDescription),
+                        taskEither.chain(body =>
+                            taskEither.left(
+                                Errors.Internet.unexpectedResponse(actionDescription, {
+                                    message: `Response with unexpected status code '${response.status}'`,
+                                    body: body
+                                })
+                            )
                         )
-                    )
-                );
+                    );
+                }
             }
 
             return pipe(

@@ -10,12 +10,17 @@ export type FormErrors<T> =
     T extends (infer A)[] ? ArrayFormErrors<A> :
     T extends object ? ObjectFormErrors<T> :
     ReadonlyArray<FormError>;
+
 export type ObjectFormErrors<T> = { readonly [P in NonFunctionKeys<T>]?: FormErrors<T[P]> };
+
 export interface ArrayFormErrors<T> extends ReadonlyArray<FormErrors<T>> { };
 
 export type FormStateValidator<T> = (state: FormState<T>) => ObjectFormErrors<T>;
+
 export type FormState<T> = { readonly [P in NonFunctionKeys<T>]: FormField<T[P]> };
+
 export type SetState<T> = (updateState: ((state: T) => T)) => void;
+
 type Writable<T> = {
     -readonly [K in keyof T]: T[K]
 }
@@ -39,24 +44,22 @@ export const useFormState = <TState,>(defaultState: () => FormState<TState>, val
         onSubmit: onFormStateSubmit(setState, validator, onValid),
         isValid: isValid(state),
         state,
-        reset: () => setState(defaultState())
+        reset: (type: "all" | "errors" = "all") => type == "all" ? setState(defaultState()) : setState(clearErrors(state))
     };
 };
 
 const validateState = <TState,>(state: Writable<FormState<TState>>, changeType: "blur" | "change", validator: FormStateValidator<TState>) => {
-    if (validator != undefined) {
-        const stateErrors = validator(state);
-        _.forEach(keys(stateErrors), key => {
-            const revalidate = changeType == "blur" || state[key].errors.length > 0;
-            if (revalidate) {
-                const errors = stateErrors[key];
-                state[key] = {
-                    ...state[key],
-                    errors: errors
-                };
-            }
-        });
-    }
+    const stateErrors = validator(state);
+    _.forEach(keys(stateErrors), key => {
+        const revalidate = changeType == "blur" || state[key].errors.length > 0;
+        if (revalidate) {
+            const errors = stateErrors[key];
+            state[key] = {
+                ...state[key],
+                errors: errors ?? []
+            };
+        }
+    });
 }
 
 export type ChangeType = "blur" | "change";
@@ -89,6 +92,14 @@ export const onFormStateChange = <TState,>(setState: SetState<FormState<TState>>
 export const isValid = <TState,>(state: FormState<TState>) => {
     return _(values(state)).every(field => field.errors.length == 0)
 }
+
+export const clearErrors = <TState,>(formState: FormState<TState>): FormState<TState> => {
+    const newFormState = {} as Writable<FormState<TState>>;
+    _.forEach(keys(formState), key => {
+        newFormState[key] = formField(formState[key].value);
+    });
+    return newFormState;
+};
 
 export const extractState = <TState,>(formState: FormState<TState>): TState => {
     const state = {} as Writable<TState>;

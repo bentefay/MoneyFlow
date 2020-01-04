@@ -4,10 +4,10 @@ import { takeLatest, put } from 'redux-saga/effects'
 import { pipe } from 'fp-ts/lib/pipeable'
 import * as t from 'io-ts';
 import * as taskEither from 'fp-ts/lib/TaskEither';
+import '../shared/taskEither';
 import { TaskEither } from 'fp-ts/lib/TaskEither';
 import { GeneralFailure, Unit, generalFailure, unit } from '../shared/models';
 import { fetchJson, Aborted, aborted } from '../shared/http';
-import { loginErrored, loginSucceeded, requestAborted } from './actions';
 import { apiBaseUrl } from '../../config';
 import { taskAsGenerator } from '../shared/sagas';
 import { HashedPassword, hashPassword, authHeader } from './crypto';
@@ -18,45 +18,43 @@ export function* login() {
     yield takeLatest(isActionOf(authActions.loginInitiated), function* ({ payload }) {
         const { credentials: { email, password }, create } = payload;
 
-        const action = yield* taskAsGenerator(
-            pipe(
-                hashPassword(password),
-                taskEither.chain(hashedPassword =>
-                    create ?
-                        pipe(
-                            createVault(email, hashedPassword),
-                            taskEither.map(x => identity<EncryptedVault | NewVaultPlaceholder>(x))) :
-                        pipe(
-                            getVault(email, hashedPassword),
-                            taskEither.map(x => identity<EncryptedVault | NewVaultPlaceholder>(x)))
-                ),
-                taskEither.fold(
-                    error => {
-                        return error == aborted ?
-                            identity<AuthAction>(requestAborted()) :
-                            identity<AuthAction>(loginErrored(error));
-                    },
-                    vault => {
-                        return identity<AuthAction>(loginSucceeded(vault));
-                    }
-                )
+        const task = pipe(
+            hashPassword(password),
+            taskEither.chain(hashedPassword => getOrCreateVault(create, email, hashedPassword)),
+            taskEither.match(
+                error => {
+                    return error == aborted ?
+                        authActions.requestAborted() :
+                        authActions.loginErrored(error);
+                },
+                vault => {
+                    return identity<AuthAction>(authActions.loginSucceeded(vault));
+                }
             )
         );
 
+        const action = yield* taskAsGenerator(task);
+
         yield put(action);
     });
+}
+
+export function getOrCreateVault(create: boolean, email: Email, hashedPassword: HashedPassword): TaskEither<GeneralFailure | Aborted, EncryptedVault | NewVaultPlaceholder> {
+    return create ?
+        createUser(email, hashedPassword) :
+        getVault(email, hashedPassword);
 }
 
 const CreateVaultResponse = t.type({
     userId: t.string
 });
 
-function createVault(email: Email, hashedPassword: HashedPassword): TaskEither<GeneralFailure | Aborted, NewVaultPlaceholder> {
+function createUser(email: Email, hashedPassword: HashedPassword): TaskEither<GeneralFailure | Aborted, NewVaultPlaceholder> {
     const actionDescription = "Creating your account";
     return fetchJson(
-        `${apiBaseUrl}/api/vault/new`,
+        `${apiBaseUrl}/api/users`,
         {
-            headers: authHeader({ email: email.value, password: hashedPassword.value }),
+            headers: authHeader({ email: email.value, hashedPassword: hashedPassword.value }),
             method: "put"
         },
         actionDescription,
@@ -87,9 +85,9 @@ const GetVaultResponse = t.type({
 function getVault(email: Email, hashedPassword: HashedPassword): TaskEither<GeneralFailure | Aborted, EncryptedVault> {
     const actionDescription = "Retrieving your account data";
     return fetchJson(
-        `${apiBaseUrl}/api/vault`,
+        `${apiBaseUrl}/api/vaults`,
         {
-            headers: authHeader({ email: email.value, password: hashedPassword.value })
+            headers: authHeader({ email: email.value, hashedPassword: hashedPassword.value })
         },
         actionDescription,
         [{
@@ -112,9 +110,9 @@ function getVault(email: Email, hashedPassword: HashedPassword): TaskEither<Gene
 function updateVault(email: Email, hashedPassword: HashedPassword): TaskEither<GeneralFailure | Aborted, Unit> {
     const actionDescription = "Updating your account data";
     return fetchJson(
-        `${apiBaseUrl}/api/vault`,
+        `${apiBaseUrl}/api/vaults`,
         {
-            headers: authHeader({ email: email.value, password: hashedPassword.value }),
+            headers: authHeader({ email: email.value, hashedPassword: hashedPassword.value }),
             method: "put",
             body: JSON.stringify({})
         },

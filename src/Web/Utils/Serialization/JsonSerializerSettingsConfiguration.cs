@@ -7,22 +7,28 @@ namespace Web.Utils.Serialization
 {
     public static class JsonSerializerSettingsConfiguration
     {
-        public static JsonSerializerSettings ConfigureCamelCase(this JsonSerializerSettings settings)
+        public static JsonSerializerSettings ConfigureErrorOnMissingMember(this JsonSerializerSettings @this)
         {
-            settings.ContractResolver = new DefaultContractResolver
+            @this.MissingMemberHandling = MissingMemberHandling.Error;
+            return @this;
+        }
+        
+        public static JsonSerializerSettings ConfigureCamelCase(this JsonSerializerSettings @this)
+        {
+            @this.ContractResolver = new DefaultContractResolver
             {
                 NamingStrategy = new CamelCaseNamingStrategy()
             };
 
-            return settings;
+            return @this;
         }
 
         public static JsonSerializerSettings ConfigureErrorLogger(
-            this JsonSerializerSettings settings,
+            this JsonSerializerSettings @this,
             ILogger logger
         )
         {
-            settings.Error = (sender, args) =>
+            @this.Error = (sender, args) =>
             {
                 var errorContext = args?.ErrorContext;
                 string Nls(int n) => new string('\n', n);
@@ -50,7 +56,7 @@ namespace Web.Utils.Serialization
                     args.ErrorContext.Handled = true;
                 }
             };
-            return settings;
+            return @this;
         }
 
         public static JsonSerializerSettings ConfigureEnumsAsString(this JsonSerializerSettings settings)

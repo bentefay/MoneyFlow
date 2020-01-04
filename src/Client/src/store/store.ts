@@ -1,9 +1,9 @@
 import { createStore, applyMiddleware, compose } from "redux";
 import { StateType } from "typesafe-actions";
 import logger from 'redux-logger';
-import { login } from './auth';
 import { rootReducer } from './reducer';
 import createSagaMiddleware from 'redux-saga'
+import { runSagas } from './sagas';
 
 const sagaMiddleware = createSagaMiddleware()
 const middlewares = [sagaMiddleware, logger];
@@ -12,7 +12,7 @@ const initialState = {};
 
 export const store = createStore(rootReducer, initialState, enhancer);
 
-sagaMiddleware.run(login);
+sagaMiddleware.run(runSagas);
 
 if (module.hot) {
     module.hot.accept("./reducer", () => {

@@ -1,7 +1,5 @@
 using Microsoft.Extensions.Configuration;
-using Web;
 using Web.Functions;
-using Web.Types;
 using Web.Types.Values;
 
 namespace WebTests.Helpers
@@ -10,7 +8,7 @@ namespace WebTests.Helpers
     {
         public static StorageConnectionString GetStorageConnectionString() =>
             new ConfigurationBuilder()
-                .AddUserSecrets<Startup>()
+                .AddUserSecrets<Web.AssemblyData>()
                 .Build()
                 .GetStorageConnectionString();
     }

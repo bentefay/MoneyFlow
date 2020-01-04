@@ -25,7 +25,7 @@ namespace Web.Types.Errors
 
         public string GetDescription() => GetDescription(Type, Path, Json, LineNumber, LinePosition, Exception);
 
-        public static string GetDescription(Type type, string path, string json, int lineNumber, int linePosition, Exception exception)
+        private static string GetDescription(Type type, string path, string json, int lineNumber, int linePosition, Exception exception)
         {
             var annotatedJson = AnnotateJson(json, lineNumber, linePosition);
             return $"Deserialization error for object of type '{type?.Name}' at path '{path}' ({lineNumber},{linePosition}):\n{exception.Message}\n\n{annotatedJson}'";
@@ -42,17 +42,17 @@ namespace Web.Types.Errors
 
             if (linePosition < 1 || linePosition > lineToAnnotate.Length)
             {
-                lines.Insert(linePosition, new string('^', lineToAnnotate.Length));
+                lines.Insert(lineNumber, new string('^', lineToAnnotate.Length));
             }
             else
             {
-                lines.Insert(linePosition, new string(' ', linePosition - 1) + "^");                
+                lines.Insert(lineNumber, new string(' ', linePosition - 1) + "^");                
             }
 
             var contextLines = 20;
             
             return lines
-                .Skip(Math.Max(0, linePosition - contextLines))
+                .Skip(Math.Max(0, lineNumber - contextLines))
                 .Take(2 * contextLines)
                 .Join(Environment.NewLine);
         } 

@@ -13,10 +13,10 @@ namespace Web.Functions
                 switch (logger)
                 {
                     case IErrorWithException e:
-                        logger.Warning(e.Exception, "Error in controller action: {Description}", error.GetDescription());
+                        logger.Warning(e.Exception, "Error {ErrorType} in controller action with description {Description}", error.GetType().Name, error.GetDescription());
                         return;
                     default:
-                        logger.Warning("Error in controller action: {Description}", error.GetDescription());
+                        logger.Warning("Error {ErrorType} in controller action with description {Description}", error.GetType().Name, error.GetDescription());
                         return;
                 }
             };
