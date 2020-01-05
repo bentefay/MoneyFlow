@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Linq;
+using LanguageExt;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -15,6 +18,8 @@ namespace Web
 {
     public class Program
     {
+        const string SeqUrl = "http://localhost:5002";
+        
         public static int Main(string[] args)
         {
             var logger = new LoggerConfiguration()
@@ -22,7 +27,7 @@ namespace Web
                 .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
-                .WriteTo.Seq("http://localhost:5002")
+                .WriteTo.Seq(SeqUrl)
                 .CreateLogger();
 
             Log.Logger = logger;
@@ -68,6 +73,10 @@ namespace Web
                         .Configure((context, app) =>
                         {
                             var env = context.HostingEnvironment;
+                            
+                            if (env.IsDevelopment())
+                                LogServiceUrls(logger, app);
+                            
                             app
                                 .InDevelopment(env, x => x
                                     .UseDeveloperExceptionPage())
@@ -85,5 +94,16 @@ namespace Web
                                     .UseProxyToSpaDevelopmentServer("http://localhost:1234"));
                         });
                 });
+
+        private static void LogServiceUrls(ILogger logger, IApplicationBuilder app)
+        {
+            logger.Information(
+               "\n=================\n" +
+               "Access dependencies at the following locations:\n" +
+               "- MoneyFlow @ {MoneyFlowUrl}\n" +
+               "- Seq       @ {SeqUrl}\n" +
+               "=================", 
+                app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.FirstOrDefault(x => x.StartsWith("http://")), SeqUrl);
+        }
     }
 }

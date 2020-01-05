@@ -11,6 +11,7 @@ using Web.Utils.Extensions;
 namespace Web.Controllers
 {
     [ApiController]
+    [Produces("application/json")]
     public class MainController : ControllerBase
     {
         private readonly ILogger _logger;
@@ -57,6 +58,7 @@ namespace Web.Controllers
 
         [HttpGet("/api/vaults")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -78,15 +80,18 @@ namespace Web.Controllers
                         passwordIncorrect: HandleUnauthorized,
                         userDoesNotExist: HandleUnauthorized,
                         
+                        vaultDoesNotExist: HandleVaultDoesNotExistYet,
+                        
                         generalStorage: HandleServerError,
                         hashPassword: HandleServerError,
                         malformedCloudStorageConnectionString: HandleServerError,
                         malformedETag: HandleServerError,
                         malformedUserId: HandleServerError,
-                        userIdMismatch: HandleServerError,
-                        vaultDoesNotExist: HandleServerError));
+                        userIdMismatch: HandleServerError
+                        ));
 
             ActionResult HandleBadRequest(IError error) => BadRequest(error.GetDescription());
+            ActionResult HandleVaultDoesNotExistYet(VaultDoesNotExistError error) => NotFound(new CreateUserResponse(error.UserId.Value.ToString()));
             ActionResult HandleUnauthorized(IError _) => Unauthorized("Either your email or password are incorrect, or no user exists with that email");
             ActionResult HandleServerError(IError _) => StatusCode(StatusCodes.Status500InternalServerError);
         }

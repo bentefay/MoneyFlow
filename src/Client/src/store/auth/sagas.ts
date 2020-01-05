@@ -6,13 +6,14 @@ import * as t from "io-ts";
 import * as taskEither from "fp-ts/lib/TaskEither";
 import "../shared/taskEither";
 import { TaskEither } from "fp-ts/lib/TaskEither";
-import { GeneralFailure, Unit, generalFailure, unit } from "../shared/models";
+import { GeneralError, Unit, newGeneralError, unit } from "../shared/models";
 import { fetchJson, Aborted, aborted } from "../shared/http";
 import { apiBaseUrl } from "../../config";
 import { taskAsGenerator } from "../shared/sagas";
 import { HashedPassword, hashPassword, authHeader } from "./crypto";
 import _, { identity } from "lodash";
 import { EncryptedVault, ETag, UserId, NewVaultPlaceholder } from "./model";
+import { Errors, CredentialsIncorrectError, AccountAlreadyExistsError } from "./errors";
 
 export function* signIn() {
     yield takeLatest(isActionOf(authActions.signInInitiated), function*({ payload }) {
@@ -44,15 +45,17 @@ export function getOrCreateVault(
     create: boolean,
     email: Email,
     hashedPassword: HashedPassword
-): TaskEither<GeneralFailure | Aborted, EncryptedVault | NewVaultPlaceholder> {
+): TaskEither<CreateUserError | GetVaultError, EncryptedVault | NewVaultPlaceholder> {
     return create ? createUser(email, hashedPassword) : getVault(email, hashedPassword);
 }
 
-const CreateVaultResponse = t.type({
+const CreateUserResponse = t.type({
     userId: t.string
 });
 
-function createUser(email: Email, hashedPassword: HashedPassword): TaskEither<GeneralFailure | Aborted, NewVaultPlaceholder> {
+export type CreateUserError = AccountAlreadyExistsError | GeneralError | Aborted;
+
+function createUser(email: Email, hashedPassword: HashedPassword): TaskEither<CreateUserError, NewVaultPlaceholder> {
     const actionDescription = "Creating your account";
     return fetchJson(
         `${apiBaseUrl}/api/users`,
@@ -67,15 +70,20 @@ function createUser(email: Email, hashedPassword: HashedPassword): TaskEither<Ge
         [
             {
                 match: ({ status }) => status == 201,
-                validator: CreateVaultResponse,
+                validator: CreateUserResponse,
                 chain: ({ userId }) => taskEither.right(new NewVaultPlaceholder(new UserId(userId)))
             },
             {
-                match: ({ status }) => _.includes([400, 401, 409, 500], status),
+                match: ({ status }) => status == 409,
+                validator: t.string,
+                chain: description => taskEither.left(Errors.Auth.accountAlreadyExists(description))
+            },
+            {
+                match: ({ status }) => _.includes([400, 500], status),
                 validator: t.string,
                 chain: reason =>
                     taskEither.left(
-                        generalFailure({
+                        newGeneralError({
                             friendly: {
                                 actionDescription: actionDescription,
                                 reason: reason
@@ -94,7 +102,9 @@ const GetVaultResponse = t.type({
     eTag: t.string
 });
 
-function getVault(email: Email, hashedPassword: HashedPassword): TaskEither<GeneralFailure | Aborted, EncryptedVault> {
+export type GetVaultError = CredentialsIncorrectError | GeneralError | Aborted;
+
+function getVault(email: Email, hashedPassword: HashedPassword): TaskEither<GetVaultError, EncryptedVault | NewVaultPlaceholder> {
     const actionDescription = "Retrieving your account data";
     return fetchJson(
         `${apiBaseUrl}/api/vaults`,
@@ -112,11 +122,21 @@ function getVault(email: Email, hashedPassword: HashedPassword): TaskEither<Gene
                 chain: ({ userId, content, eTag }) => taskEither.right(new EncryptedVault(new UserId(userId), new ETag(eTag), content))
             },
             {
-                match: ({ status }) => _.includes([400, 401, 409, 500], status),
+                match: ({ status }) => status == 404,
+                validator: CreateUserResponse,
+                chain: ({ userId }) => taskEither.right(new NewVaultPlaceholder(new UserId(userId)))
+            },
+            {
+                match: ({ status }) => status == 401,
+                validator: t.string,
+                chain: description => taskEither.left(Errors.Auth.credentialsIncorrect(description))
+            },
+            {
+                match: ({ status }) => _.includes([400, 500], status),
                 validator: t.string,
                 chain: reason =>
                     taskEither.left(
-                        generalFailure({
+                        newGeneralError({
                             friendly: {
                                 actionDescription: actionDescription,
                                 reason: reason
@@ -129,7 +149,7 @@ function getVault(email: Email, hashedPassword: HashedPassword): TaskEither<Gene
     );
 }
 
-function updateVault(email: Email, hashedPassword: HashedPassword): TaskEither<GeneralFailure | Aborted, Unit> {
+function updateVault(email: Email, hashedPassword: HashedPassword): TaskEither<GeneralError | Aborted, Unit> {
     const actionDescription = "Updating your account data";
     return fetchJson(
         `${apiBaseUrl}/api/vaults`,
@@ -153,7 +173,7 @@ function updateVault(email: Email, hashedPassword: HashedPassword): TaskEither<G
                 validator: t.string,
                 chain: reason =>
                     taskEither.left(
-                        generalFailure({
+                        newGeneralError({
                             friendly: {
                                 actionDescription: actionDescription,
                                 reason: reason

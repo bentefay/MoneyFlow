@@ -73,7 +73,7 @@ export const onFormStateChange = <TState>(setState: SetState<FormState<TState>>,
                     [key]: {
                         ...field,
                         value: newValue,
-                        touched: true
+                        touched: field.touched || (newValue != null && (newValue as any) != "")
                     }
                 } as Writable<typeof state>;
 
@@ -83,26 +83,6 @@ export const onFormStateChange = <TState>(setState: SetState<FormState<TState>>,
             });
         };
     };
-};
-
-export const isValid = <TState>(state: FormState<TState>) => {
-    return _(values(state)).every(field => field.errors.length == 0);
-};
-
-export const clearErrors = <TState>(formState: FormState<TState>): FormState<TState> => {
-    const newFormState = {} as Writable<FormState<TState>>;
-    _.forEach(keys(formState), key => {
-        newFormState[key] = formField(formState[key].value);
-    });
-    return newFormState;
-};
-
-export const extractState = <TState>(formState: FormState<TState>): TState => {
-    const state = {} as Writable<TState>;
-    _.forEach(keys(formState), key => {
-        state[key] = formState[key].value;
-    });
-    return state;
 };
 
 export const onFormStateSubmit = <TState>(setState: SetState<FormState<TState>>, validator: FormStateValidator<TState>, onValid: (state: TState) => void) => {
@@ -128,4 +108,24 @@ export const onFormStateSubmit = <TState>(setState: SetState<FormState<TState>>,
             return newState;
         });
     };
+};
+
+export const isValid = <TState>(state: FormState<TState>) => {
+    return _(values(state)).every(field => field.errors.length == 0);
+};
+
+export const clearErrors = <TState>(formState: FormState<TState>): FormState<TState> => {
+    const newFormState = {} as Writable<FormState<TState>>;
+    _.forEach(keys(formState), key => {
+        newFormState[key] = formField(formState[key].value);
+    });
+    return newFormState;
+};
+
+export const extractState = <TState>(formState: FormState<TState>): TState => {
+    const state = {} as Writable<TState>;
+    _.forEach(keys(formState), key => {
+        state[key] = formState[key].value;
+    });
+    return state;
 };

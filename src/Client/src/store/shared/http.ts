@@ -1,4 +1,4 @@
-import { GeneralFailure, generalFailure } from "./models";
+import { GeneralError, newGeneralError } from "./models";
 import * as t from "io-ts";
 import { PathReporter } from "io-ts/lib/PathReporter";
 import * as either from "fp-ts/lib/Either";
@@ -17,24 +17,36 @@ export interface ResponseType<T, L, R> {
     chain: (response: T) => TaskEither<L, R>;
 }
 
+export function fetchJson<T1, L1, R1, T2, L2, R2, T3, L3, R3, T4, L4, R4, T5, L5, R5>(
+    input: Request | string,
+    init: RequestInit,
+    actionDescription: string,
+    responseTypes: [ResponseType<T1, L1, R1>, ResponseType<T2, L2, R2>, ResponseType<T3, L3, R3>, ResponseType<T4, L4, R4>, ResponseType<T5, L5, R5>]
+): TaskEither<Aborted | GeneralError | L1 | L2 | L3 | L4 | R5, R1 | R2 | R3 | R4 | R5>;
+export function fetchJson<T1, L1, R1, T2, L2, R2, T3, L3, R3, T4, L4, R4>(
+    input: Request | string,
+    init: RequestInit,
+    actionDescription: string,
+    responseTypes: [ResponseType<T1, L1, R1>, ResponseType<T2, L2, R2>, ResponseType<T3, L3, R3>, ResponseType<T4, L4, R4>]
+): TaskEither<Aborted | GeneralError | L1 | L2 | L3 | L4, R1 | R2 | R3 | R4>;
 export function fetchJson<T1, L1, R1, T2, L2, R2, T3, L3, R3>(
     input: Request | string,
     init: RequestInit,
     actionDescription: string,
     responseTypes: [ResponseType<T1, L1, R1>, ResponseType<T2, L2, R2>, ResponseType<T3, L3, R3>]
-): TaskEither<Aborted | GeneralFailure | L1 | L2 | L3, R1 | R2 | R3>;
+): TaskEither<Aborted | GeneralError | L1 | L2 | L3, R1 | R2 | R3>;
 export function fetchJson<T1, L1, R1, T2, L2, R2>(
     input: Request | string,
     init: RequestInit,
     actionDescription: string,
     responseTypes: [ResponseType<T1, L1, R1>, ResponseType<T2, L2, R2>]
-): TaskEither<Aborted | GeneralFailure | L1 | L2, R1 | R2>;
+): TaskEither<Aborted | GeneralError | L1 | L2, R1 | R2>;
 export function fetchJson<T1, L1, R1>(
     input: Request | string,
     init: RequestInit,
     actionDescription: string,
     responseTypes: [ResponseType<T1, L1, R1>]
-): TaskEither<Aborted | GeneralFailure | L1, R1>;
+): TaskEither<Aborted | GeneralError | L1, R1>;
 export function fetchJson(
     input: Request | string,
     init: RequestInit,
@@ -47,23 +59,12 @@ export function fetchJson(
             (error: any) => mapFetchError(error, actionDescription)
         ),
         taskEither.chain(response => {
-            const contentType = response.headers.get("content-type");
-            if (contentType === "application/json") {
+            const contentType = response.headers.get("content-type") ?? "";
+
+            if (contentType.startsWith("application/json")) {
                 const matchingResponseType = responseTypes.find(responseType => responseType.match(response));
                 if (matchingResponseType !== undefined) {
                     return pipe(parseJsonResponse(response, matchingResponseType.validator, actionDescription), taskEither.chain(matchingResponseType.chain));
-                } else {
-                    return pipe(
-                        parseTextResponse(response, actionDescription),
-                        taskEither.chain(body =>
-                            taskEither.left(
-                                Errors.Internet.unexpectedResponse(actionDescription, {
-                                    message: `Response with unexpected status code '${response.status}'`,
-                                    body: body
-                                })
-                            )
-                        )
-                    );
                 }
             }
 
@@ -82,7 +83,7 @@ export function fetchJson(
     );
 }
 
-function parseTextResponse(response: Response, actionDescription: string): TaskEither<GeneralFailure, string> {
+function parseTextResponse(response: Response, actionDescription: string): TaskEither<GeneralError, string> {
     return taskEither.tryCatch(
         () => response.text(),
         (error: any) =>
@@ -93,7 +94,7 @@ function parseTextResponse(response: Response, actionDescription: string): TaskE
     );
 }
 
-function parseJsonResponse<T>(response: Response, validator: t.Type<T>, actionDescription: string): TaskEither<GeneralFailure, T> {
+function parseJsonResponse<T>(response: Response, validator: t.Type<T>, actionDescription: string): TaskEither<GeneralError, T> {
     return pipe(
         taskEither.tryCatch(
             () => response.json(),
@@ -107,7 +108,7 @@ function parseJsonResponse<T>(response: Response, validator: t.Type<T>, actionDe
     );
 }
 
-function validateObject<T>(data: any, validator: t.Type<T>, actionDescription: string): Either<GeneralFailure, T> {
+function validateObject<T>(data: any, validator: t.Type<T>, actionDescription: string): Either<GeneralError, T> {
     return pipe(
         validator.decode(data),
         either.mapLeft(validationErrors => {
@@ -121,7 +122,7 @@ function validateObject<T>(data: any, validator: t.Type<T>, actionDescription: s
     );
 }
 
-function mapFetchError(error: unknown, actionDescription: string): GeneralFailure | Aborted {
+function mapFetchError(error: unknown, actionDescription: string): GeneralError | Aborted {
     if (error instanceof TypeError) {
         return Errors.Internet.connectionFailed(actionDescription, error);
     } else if (error instanceof DOMException && error.name === "AbortError") {
@@ -134,7 +135,7 @@ function mapFetchError(error: unknown, actionDescription: string): GeneralFailur
 export module Errors {
     export module Internet {
         export function unexpectedResponse(actionDescription: string, error: unknown) {
-            return generalFailure({
+            return newGeneralError({
                 friendly: {
                     actionDescription: actionDescription,
                     reason: "Our server returned an unexpected response or someone else's server responded (this would be weird)"
@@ -145,7 +146,7 @@ export module Errors {
         }
 
         export function connectionFailed(actionDescription: string, error: unknown) {
-            return generalFailure({
+            return newGeneralError({
                 friendly: {
                     actionDescription: actionDescription,
                     reason: "There is something wrong with your internet connection or our server is down"
@@ -159,7 +160,7 @@ export module Errors {
         }
 
         export function unknown(actionDescription: string, error: unknown) {
-            return generalFailure({
+            return newGeneralError({
                 friendly: {
                     actionDescription: actionDescription,
                     reason: "An unknown error occurred while trying to connect to our server."

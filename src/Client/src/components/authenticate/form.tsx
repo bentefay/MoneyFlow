@@ -1,12 +1,22 @@
 import * as React from "react";
 import { css } from "emotion";
-import { color6, color7, color4 } from "../styles/palette.style";
+import { color6, color7, color4, colorInvalid1 } from "../styles/palette.style";
 import { connect } from "react-redux";
 import _ from "lodash";
 import { RootState } from "../../store/store";
-import { AuthState, authActions, minimumPasswordLength, UserCredentials, Email, Password, validateEmail, validatePassword } from "../../store/auth";
+import {
+    AuthState,
+    authActions,
+    minimumPasswordLength,
+    UserCredentials,
+    Email,
+    Password,
+    validateEmail,
+    validatePassword,
+    AuthStateError
+} from "../../store/auth";
 import { renderFormField } from "./validation";
-import { GeneralFailureView } from "./generalFailureView";
+import { GeneralErrorView } from "./generalErrorView";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { formField, useFormState, FormStateValidator, FormState } from "../../store/shared/models";
 import { Loading } from "./loading";
@@ -86,6 +96,12 @@ export const c = {
         fontSize: "80%",
         marginBottom: "30px",
         color: "#888"
+    }),
+    errorMessage: css({
+        marginTop: "20px",
+        marginBottom: "10px",
+        fontSize: "80%",
+        color: colorInvalid1
     })
 };
 
@@ -137,7 +153,7 @@ const formValidator: FormStateValidator<AuthForm> = state => {
     };
 };
 
-const form = ({ createAccount, generalFailure, isLoading, onCreateAccountToggled, onSignInInitiated }: Props & Actions) => {
+const form = ({ createAccount, error, isLoading, onCreateAccountToggled, onSignInInitiated }: Props & Actions) => {
     const { state, onChange, onSubmit, isValid, reset } = useFormState<AuthForm>(
         () => defaultForm,
         formValidator,
@@ -217,7 +233,7 @@ const form = ({ createAccount, generalFailure, isLoading, onCreateAccountToggled
                 </div>
             ) : null}
 
-            <GeneralFailureView value={generalFailure} />
+            <ErrorView error={error}></ErrorView>
 
             <div className={c.buttonRow}>
                 <a
@@ -253,3 +269,19 @@ export const Form = connect(
         onCreateAccountToggled: options => dispatch(authActions.createAccountToggled(options))
     })
 )(form);
+
+const ErrorView = ({ error }: { error: AuthStateError | undefined }) => {
+    if (error === undefined) return null;
+    switch (error.type) {
+        case "GeneralError":
+            return <GeneralErrorView value={error} />;
+        case "CredentialsIncorrectError":
+            return <div className={c.errorMessage}>Your password was incorrect, or an account does not exist with your email address</div>;
+        case "AccountAlreadyExists":
+            return (
+                <div className={c.errorMessage}>
+                    An account already exists for that email. If you already have an account, try signing in. Otherwise, use a different email.
+                </div>
+            );
+    }
+};

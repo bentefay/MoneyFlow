@@ -1,10 +1,13 @@
-import { GeneralFailure } from "../shared/models";
+import { GeneralError } from "../shared/models";
+import { CredentialsIncorrectError, AccountAlreadyExistsError } from "./errors";
+
+export type AuthStateError = AccountAlreadyExistsError | CredentialsIncorrectError | GeneralError;
 
 export interface AuthState
     extends Readonly<{
         createAccount: boolean;
         credentials?: UserCredentials;
-        generalFailure?: GeneralFailure;
+        error?: AuthStateError;
         isLoading: boolean;
     }> {}
 

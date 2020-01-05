@@ -52,11 +52,11 @@ namespace Web.Functions
             return
                 from password in CryptoFunctions.HashPassword(authorization.Password, user.PasswordSalt).Left(Cast.To<IAssertVaultAccessErrors>())
                 from _ in user.Email == authorization.Email ? 
-                    Prelude.Left<IAssertVaultAccessErrors, Unit>(new EmailIncorrectError(authorization.Email)) : 
-                    Prelude.unit
+                    Prelude.unit :
+                    Prelude.Left<IAssertVaultAccessErrors, Unit>(new EmailIncorrectError(user.Email, authorization.Email)) 
                 from __ in user.Password == password ? 
-                    Prelude.Left<IAssertVaultAccessErrors, Unit>(new PasswordIncorrectError(authorization.Email)) : 
-                    Prelude.unit
+                    Prelude.unit :
+                    Prelude.Left<IAssertVaultAccessErrors, Unit>(new PasswordIncorrectError(authorization.Email)) 
                 select Prelude.unit;
         }
     }

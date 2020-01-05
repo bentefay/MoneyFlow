@@ -1,5 +1,5 @@
 import React from "react";
-import { GeneralFailure } from "../../store/shared/models";
+import { GeneralError } from "../../store/shared/models";
 import { lowerFirst } from "lodash";
 import { css } from "emotion";
 import { colorInvalid1 } from "../styles/palette.style";
@@ -40,6 +40,9 @@ export const c = {
             padding: "0 0 0 15px"
         })
     },
+    moreDetail: css({
+        marginTop: "20px !important"
+    }),
     errorDetail: css({
         maxWidth: "90vw",
         padding: "20px",
@@ -47,7 +50,7 @@ export const c = {
     })
 };
 
-export const GeneralFailureView = ({ value }: { value: GeneralFailure | undefined }) =>
+export const GeneralErrorView = ({ value }: { value: GeneralError | undefined }) =>
     value != undefined ? (
         <div className={c.container}>
             <div className={c.description}>
@@ -88,7 +91,9 @@ const DetailedError = ({ error }: { error: any }): JSX.Element => {
 
     return (
         <>
-            <Button onClick={handleClick}>More detail</Button>
+            <Button variant="outlined" className={c.moreDetail} onClick={handleClick}>
+                More detail
+            </Button>
             <Popper open={state.open} anchorEl={state.anchorElement} placement="top" transition>
                 {({ TransitionProps }) => (
                     <Fade {...TransitionProps} timeout={350}>

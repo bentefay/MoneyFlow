@@ -1,8 +1,8 @@
-import { tagged } from ".";
+import { recordType, RecordType } from ".";
 
-export interface GeneralFailure
-    extends Readonly<{
-        type: "generalFailure";
+export interface GeneralError
+    extends RecordType<{
+        type: "GeneralError";
         friendly: {
             /** A present tense description of the action that failed (e.g. "Logging in", "Retrieving vault")  */
             actionDescription: string;
@@ -12,11 +12,11 @@ export interface GeneralFailure
         error: any;
     }> {}
 
-export const generalFailure = tagged<GeneralFailure>("generalFailure");
+export const newGeneralError = recordType<GeneralError>("GeneralError");
 
 export module Errors {
     export function unexpected(actionDescription: string, error: unknown) {
-        return generalFailure({
+        return newGeneralError({
             friendly: {
                 actionDescription: actionDescription,
                 reason: "An unexpected error occurred"

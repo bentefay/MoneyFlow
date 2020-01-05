@@ -13,7 +13,7 @@ export const authReducer = (state = getDefaultState(), action: AuthAction): Auth
         case getType(authActions.createAccountToggled):
             return {
                 ...state,
-                generalFailure: undefined,
+                error: undefined,
                 createAccount: action.payload.createAccount
             };
 
@@ -25,7 +25,7 @@ export const authReducer = (state = getDefaultState(), action: AuthAction): Auth
             };
 
         case getType(authActions.signInErrored):
-            return { ...state, generalFailure: action.payload, isLoading: false };
+            return { ...state, error: action.payload, isLoading: false };
 
         default:
             return state;
