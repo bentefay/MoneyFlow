@@ -1,11 +1,11 @@
-import { GeneralFailure, generalFailure } from './models';
-import * as t from 'io-ts';
-import { PathReporter } from 'io-ts/lib/PathReporter';
-import * as either from 'fp-ts/lib/Either';
-import { Either } from 'fp-ts/lib/Either';
-import * as taskEither from 'fp-ts/lib/TaskEither';
-import { TaskEither } from 'fp-ts/lib/TaskEither';
-import { pipe } from 'fp-ts/lib/pipeable'
+import { GeneralFailure, generalFailure } from "./models";
+import * as t from "io-ts";
+import { PathReporter } from "io-ts/lib/PathReporter";
+import * as either from "fp-ts/lib/Either";
+import { Either } from "fp-ts/lib/Either";
+import * as taskEither from "fp-ts/lib/TaskEither";
+import { TaskEither } from "fp-ts/lib/TaskEither";
+import { pipe } from "fp-ts/lib/pipeable";
 
 export const aborted = Symbol("Aborted");
 
@@ -17,24 +17,41 @@ export interface ResponseType<T, L, R> {
     chain: (response: T) => TaskEither<L, R>;
 }
 
-export function fetchJson<T1, L1, R1, T2, L2, R2, T3, L3, R3>(input: Request | string, init: RequestInit, actionDescription: string, responseTypes: [ResponseType<T1, L1, R1>, ResponseType<T2, L2, R2>, ResponseType<T3, L3, R3>]): TaskEither<Aborted | GeneralFailure | L1 | L2 | L3, R1 | R2 | R3>;
-export function fetchJson<T1, L1, R1, T2, L2, R2>(input: Request | string, init: RequestInit, actionDescription: string, responseTypes: [ResponseType<T1, L1, R1>, ResponseType<T2, L2, R2>]): TaskEither<Aborted | GeneralFailure | L1 | L2, R1 | R2>;
-export function fetchJson<T1, L1, R1>(input: Request | string, init: RequestInit, actionDescription: string, responseTypes: [ResponseType<T1, L1, R1>]): TaskEither<Aborted | GeneralFailure | L1, R1>;
-export function fetchJson(input: Request | string, init: RequestInit, actionDescription: string, responseTypes: ResponseType<any, any, any>[]): TaskEither<any, any> {
+export function fetchJson<T1, L1, R1, T2, L2, R2, T3, L3, R3>(
+    input: Request | string,
+    init: RequestInit,
+    actionDescription: string,
+    responseTypes: [ResponseType<T1, L1, R1>, ResponseType<T2, L2, R2>, ResponseType<T3, L3, R3>]
+): TaskEither<Aborted | GeneralFailure | L1 | L2 | L3, R1 | R2 | R3>;
+export function fetchJson<T1, L1, R1, T2, L2, R2>(
+    input: Request | string,
+    init: RequestInit,
+    actionDescription: string,
+    responseTypes: [ResponseType<T1, L1, R1>, ResponseType<T2, L2, R2>]
+): TaskEither<Aborted | GeneralFailure | L1 | L2, R1 | R2>;
+export function fetchJson<T1, L1, R1>(
+    input: Request | string,
+    init: RequestInit,
+    actionDescription: string,
+    responseTypes: [ResponseType<T1, L1, R1>]
+): TaskEither<Aborted | GeneralFailure | L1, R1>;
+export function fetchJson(
+    input: Request | string,
+    init: RequestInit,
+    actionDescription: string,
+    responseTypes: ResponseType<any, any, any>[]
+): TaskEither<any, any> {
     return pipe(
         taskEither.tryCatch(
             () => fetch(input, init),
-            (error: any) => mapFetchError(error, actionDescription)),
+            (error: any) => mapFetchError(error, actionDescription)
+        ),
         taskEither.chain(response => {
             const contentType = response.headers.get("content-type");
             if (contentType === "application/json") {
-
                 const matchingResponseType = responseTypes.find(responseType => responseType.match(response));
                 if (matchingResponseType !== undefined) {
-                    return pipe(
-                        parseJsonResponse(response, matchingResponseType.validator, actionDescription),
-                        taskEither.chain(matchingResponseType.chain)
-                    );
+                    return pipe(parseJsonResponse(response, matchingResponseType.validator, actionDescription), taskEither.chain(matchingResponseType.chain));
                 } else {
                     return pipe(
                         parseTextResponse(response, actionDescription),
@@ -72,9 +89,9 @@ function parseTextResponse(response: Response, actionDescription: string): TaskE
             Errors.Internet.unexpectedResponse(actionDescription, {
                 message: `Calling response.text returned an error on response with status code '${response.status}'`,
                 error
-            }));
+            })
+    );
 }
-
 
 function parseJsonResponse<T>(response: Response, validator: t.Type<T>, actionDescription: string): TaskEither<GeneralFailure, T> {
     return pipe(
@@ -84,10 +101,9 @@ function parseJsonResponse<T>(response: Response, validator: t.Type<T>, actionDe
                 Errors.Internet.unexpectedResponse(actionDescription, {
                     message: "Calling response.json returned an error on response with status code '${response.status}'",
                     error
-                })),
-        taskEither.chain(data =>
-            taskEither.fromEither(validateObject(data, validator, actionDescription))
-        )
+                })
+        ),
+        taskEither.chain(data => taskEither.fromEither(validateObject(data, validator, actionDescription)))
     );
 }
 
@@ -95,12 +111,14 @@ function validateObject<T>(data: any, validator: t.Type<T>, actionDescription: s
     return pipe(
         validator.decode(data),
         either.mapLeft(validationErrors => {
-            const errors = PathReporter.report(either.left(validationErrors))
+            const errors = PathReporter.report(either.left(validationErrors));
             return Errors.Internet.unexpectedResponse(actionDescription, {
                 message: "Failed to parse expected type " + validator.name,
-                parseErrors: errors, data: data
+                parseErrors: errors,
+                data: data
             });
-        }));
+        })
+    );
 }
 
 function mapFetchError(error: unknown, actionDescription: string): GeneralFailure | Aborted {
@@ -115,7 +133,6 @@ function mapFetchError(error: unknown, actionDescription: string): GeneralFailur
 
 export module Errors {
     export module Internet {
-
         export function unexpectedResponse(actionDescription: string, error: unknown) {
             return generalFailure({
                 friendly: {

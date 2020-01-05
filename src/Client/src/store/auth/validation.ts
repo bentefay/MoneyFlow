@@ -1,11 +1,10 @@
-import { includes, flatten } from 'lodash';
-import { FormError } from '../shared/models';
+import { includes, flatten } from "lodash";
+import { FormError } from "../shared/models";
 
 export const minimumPasswordLength = 12;
 
 export function validateEmail(value: string | null): FormError[] {
-    if (value == null || value.length == 0)
-        return ["An email is needed to identify your account"];
+    if (value == null || value.length == 0) return ["An email is needed to identify your account"];
 
     const errors = flatten([
         !includes(value, "@") ? [`Emails should contain an @`] : [],
@@ -14,8 +13,7 @@ export function validateEmail(value: string | null): FormError[] {
         !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value) ? ["Emails should look like steve@web.com"] : []
     ]);
 
-    if (errors.length > 0)
-        return [errors[0]];
+    if (errors.length > 0) return [errors[0]];
 
     return [];
 }

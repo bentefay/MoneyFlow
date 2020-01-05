@@ -1,4 +1,4 @@
-import { Omit } from '.';
+import { Omit } from ".";
 
 export type Untagged<T> = Omit<T, "type">;
 

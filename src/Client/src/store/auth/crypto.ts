@@ -1,15 +1,15 @@
 import bcrypt from "bcryptjs";
-import { Password } from '.';
-import { pipe } from 'fp-ts/lib/pipeable'
-import * as taskEither from 'fp-ts/lib/TaskEither';
-import { TaskEither } from 'fp-ts/lib/TaskEither';
-import { Errors, GeneralFailure } from '../shared/models';
+import { Password } from ".";
+import { pipe } from "fp-ts/lib/pipeable";
+import * as taskEither from "fp-ts/lib/TaskEither";
+import { TaskEither } from "fp-ts/lib/TaskEither";
+import { Errors, GeneralFailure } from "../shared/models";
 
 (window as any).bcrypt = bcrypt;
 
 export class HashedPassword {
     public type = HashedPassword;
-    constructor(public readonly value: string) { }
+    constructor(public readonly value: string) {}
 }
 
 const salt = "$2a$10$SweJ37PLcqGyrhjb24gwPu";
@@ -24,13 +24,14 @@ export function hashPassword(password: Password): TaskEither<GeneralFailure, Has
 function hash(value: string, salt: string, description: string): TaskEither<GeneralFailure, string> {
     return taskEither.tryCatch(
         () => bcrypt.hash(value, salt),
-        (error: any) => Errors.unexpected(description, error));
+        (error: any) => Errors.unexpected(description, error)
+    );
 }
 
-export function authHeader(obj: { email: string, hashedPassword: string }) {
-    return { "Authorization": `Bearer ${base64(obj)}` };
+export function authHeader(obj: { email: string; hashedPassword: string }) {
+    return { Authorization: `Bearer ${base64(obj)}` };
 }
 
 function base64(obj: any) {
-    return btoa(JSON.stringify(obj))
+    return btoa(JSON.stringify(obj));
 }

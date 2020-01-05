@@ -1,12 +1,12 @@
 import { getType } from "typesafe-actions";
-import { AuthAction, AuthState, authActions } from '.';
+import { AuthAction, AuthState, authActions } from ".";
 
 const getDefaultState = (): AuthState => {
     return {
         createAccount: false,
         isLoading: false
     };
-}
+};
 
 export const authReducer = (state = getDefaultState(), action: AuthAction): AuthState => {
     switch (action.type) {
@@ -30,4 +30,4 @@ export const authReducer = (state = getDefaultState(), action: AuthAction): Auth
         default:
             return state;
     }
-}
+};
