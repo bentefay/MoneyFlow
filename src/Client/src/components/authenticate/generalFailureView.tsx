@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { GeneralFailure } from "../../store/shared/models";
 import { lowerFirst } from "lodash";
 import { css } from "emotion";
@@ -7,6 +7,7 @@ import Popper from "@material-ui/core/Popper";
 import Button from "@material-ui/core/Button";
 import Fade from "@material-ui/core/Fade";
 import Paper from "@material-ui/core/Paper";
+import { ObjectViewer } from "./objectViewer";
 
 export const c = {
     container: css({
@@ -39,10 +40,9 @@ export const c = {
             padding: "0 0 0 15px"
         })
     },
-    error: css({
+    errorDetail: css({
+        maxWidth: "90vw",
         padding: "20px",
-        display: "block",
-        whiteSpace: "pre-wrap",
         overflowX: "auto"
     })
 };
@@ -72,45 +72,30 @@ export const GeneralFailureView = ({ value }: { value: GeneralFailure | undefine
         </div>
     ) : null;
 
-interface DetailedErrorProps
-    extends Readonly<{
-        error: any;
-    }> {}
-
-interface DetailedErrorState
-    extends Readonly<{
-        anchorElement: Element | null;
-        open: boolean;
-    }> {}
-
-class DetailedError extends React.Component<DetailedErrorProps, DetailedErrorState> {
-    public state = {
+const DetailedError = ({ error }: { error: any }): JSX.Element => {
+    const [state, setState] = React.useState<{ anchorElement: Element | null; open: boolean }>({
         anchorElement: null,
         open: false
-    };
+    });
 
-    handleClick = (event: React.MouseEvent) => {
+    const handleClick = (event: React.MouseEvent) => {
         const { currentTarget } = event;
-        this.setState({
+        setState(state => ({
             anchorElement: currentTarget,
-            open: !this.state.open
-        });
+            open: !state.open
+        }));
     };
 
-    render() {
-        return (
-            <React.Fragment>
-                <Button onClick={this.handleClick}>More detail</Button>
-                <Popper open={this.state.open} anchorEl={this.state.anchorElement} placement="top" transition>
-                    {({ TransitionProps }) => (
-                        <Fade {...TransitionProps} timeout={350}>
-                            <Paper style={{ maxWidth: "90vw" }}>
-                                <code className={c.error}>{JSON.stringify(this.props.error, undefined, 4)}</code>
-                            </Paper>
-                        </Fade>
-                    )}
-                </Popper>
-            </React.Fragment>
-        );
-    }
-}
+    return (
+        <>
+            <Button onClick={handleClick}>More detail</Button>
+            <Popper open={state.open} anchorEl={state.anchorElement} placement="top" transition>
+                {({ TransitionProps }) => (
+                    <Fade {...TransitionProps} timeout={350}>
+                        <Paper className={c.errorDetail}>{<ObjectViewer object={error}></ObjectViewer>}</Paper>
+                    </Fade>
+                )}
+            </Popper>
+        </>
+    );
+};
