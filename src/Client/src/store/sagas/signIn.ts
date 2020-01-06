@@ -1,4 +1,4 @@
-import { authActions, Email, AuthAction } from ".";
+import { authActions, Email, AuthAction } from "../auth";
 import { isActionOf } from "typesafe-actions";
 import { takeLatest, put } from "redux-saga/effects";
 import { pipe } from "fp-ts/lib/pipeable";
@@ -6,14 +6,13 @@ import * as t from "io-ts";
 import * as taskEither from "fp-ts/lib/TaskEither";
 import "../shared/taskEither";
 import { TaskEither } from "fp-ts/lib/TaskEither";
-import { GeneralError, Unit, newGeneralError, unit } from "../shared/models";
+import { GeneralError, Unit, newGeneralError, unit, EncryptedVault, NewVaultPlaceholder, UserId, ETag } from "../shared/models";
 import { fetchJson, Aborted, aborted } from "../shared/http";
 import { apiBaseUrl } from "../../config";
 import { taskAsGenerator } from "../shared/sagas";
-import { HashedPassword, hashPassword, authHeader } from "./crypto";
+import { HashedPassword, hashPassword, authHeader } from "../auth/crypto";
 import _, { identity } from "lodash";
-import { EncryptedVault, ETag, UserId, NewVaultPlaceholder } from "./model";
-import { Errors, CredentialsIncorrectError, AccountAlreadyExistsError } from "./errors";
+import { Errors, CredentialsIncorrectError, AccountAlreadyExistsError } from "../auth/errors";
 
 export function* signIn() {
     yield takeLatest(isActionOf(authActions.signInInitiated), function*({ payload }) {

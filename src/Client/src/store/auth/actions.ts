@@ -1,7 +1,8 @@
 import { createAction } from "typesafe-actions";
 import { UserCredentials } from ".";
-import { EncryptedVault, NewVaultPlaceholder, AuthStateError } from "./model";
+import { AuthStateError } from "./model";
 import { ActionType } from "typesafe-actions";
+import { NewVaultPlaceholder, EncryptedVault } from "../shared/models";
 
 export const authActions = {
     createAccountToggled: createAction("CREATE_ACCOUNT_TOGGLED")<{ createAccount: boolean }>(),
