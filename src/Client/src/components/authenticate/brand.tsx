@@ -1,14 +1,14 @@
 import * as React from "react";
 import { css } from "emotion";
-import { color1, color7 } from '../styles/palette.style';
+import { color1, color7 } from "../styles/palette.style";
 
 export const c = {
     brand: css({
-        fontSize: '70px',
-        marginBottom: '20px',
+        fontSize: "70px",
+        marginBottom: "20px",
         "@media (max-width: 500px)": {
-            marginBottom: '0',
-            fontSize: '60px'
+            marginBottom: "0",
+            fontSize: "60px"
         }
     }),
     money: css({

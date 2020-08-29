@@ -13,14 +13,7 @@ export const c = {
 };
 
 export const Background = () => (
-    <svg
-        className={c.background}
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 100 100"
-        width="100%"
-        height="100%"
-        preserveAspectRatio="none">
-
+    <svg className={c.background} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%" preserveAspectRatio="none">
         <defs>
             <linearGradient id="blue" x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" style={{ stopColor: "#fff", stopOpacity: 0.1 }} />
@@ -33,7 +26,6 @@ export const Background = () => (
                 <stop offset="70%" style={{ stopColor: "#013274", stopOpacity: 1 }} />
                 <stop offset="150%" style={{ stopColor: "#e35760", stopOpacity: 1 }} />
             </radialGradient>
-
         </defs>
 
         <rect width="100%" height="100%" fill="url(#background)" />
@@ -42,15 +34,14 @@ export const Background = () => (
         <path d={path(200, 0, 60, 5)} fill="url(#blue)" />
         <path d={path(200, 0, 60, 50)} fill="url(#blue)" />
         <path d={path(200, 0, 60, 60)} fill="url(#blue)" />
-
     </svg>
 );
 
-function path(
-    period: number,
-    phase: number,
-    amplitude: number,
-    shift: number
-) {
-    return `M${phase} 50 Q ${phase + period / 4} ${80 - amplitude}, ${phase + period / 2} 50 L${phase + period / 2} ${50 - amplitude} L${phase} ${50 + amplitude + shift} `;
+function path(period: number, phase: number, amplitude: number, shift: number) {
+    return (
+        `M${phase} 50 ` +
+        `Q ${phase + period / 4} ${80 - amplitude}, ${phase + period / 2} 50 ` +
+        `L${phase + period / 2} ${50 - amplitude} ` +
+        `L${phase} ${50 + amplitude + shift} `
+    );
 }

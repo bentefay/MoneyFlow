@@ -35,15 +35,17 @@ namespace Make
                     Description = "Build, test and run MoneyFlow",
                     ThrowOnUnexpectedArgument = false
                 }
-                .WithExecutableCommand("client|c", client => ExecuteCommandClient(parcelConfig, client, options))
-                .WithExecutableCommand("build|b", build => Build(config, dotnetConfig, parcelConfig))
+                .WithExecutableCommand("client|c", client => ExecuteCommandClient(parcelConfig, client, options), "Execute any command in client working directory")
+                .WithExecutableCommand("build|b", build => Build(config, dotnetConfig, parcelConfig), "Build zip of app for production deployment (same as CI build)")
                 .WithCommand("run|r", run => run
                     .WithExecutableCommand("client|c", client => RunClient(config, dotnetConfig, parcelConfig, options))
                     .WithExecutableCommand("server|s", server => RunServer(config, dotnetConfig, options))
-                    .WithExecuteShowingHelp())
+                    .WithExecuteShowingHelp(),
+                    "Run client or server in local watch mode")
                 .WithCommand("test|t", test => test
                     .WithExecutableCommand("server|s", server => TestServer(config, dotnetConfig, options))
-                    .WithExecuteShowingHelp())
+                    .WithExecuteShowingHelp(),
+                    "Test client or server in local watch mode")
                 .WithExecuteShowingHelp()
                 .Execute(args);
         }

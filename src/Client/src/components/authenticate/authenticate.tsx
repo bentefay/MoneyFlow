@@ -1,8 +1,8 @@
 import * as React from "react";
 import { Background } from "./background";
-import { Brand } from './brand';
+import { Brand } from "./brand";
 import { css } from "emotion";
-import { Form } from './form';
+import { Form } from "./form";
 
 export const c = {
     account: css({
@@ -12,13 +12,21 @@ export const c = {
         alignItems: "center",
         justifyContent: "center",
         fontSize: "1.2em"
+    }),
+    content: css({
+        display: "flex",
+        flexFlow: "nowrap column",
+        alignItems: "center",
+        justifyContent: "center"
     })
-}
+};
 
 export const Authenticate = () => (
     <div className={c.account}>
         <Background />
-        <Brand />
-        <Form />
+        <div className={c.content}>
+            <Brand />
+            <Form />
+        </div>
     </div>
 );

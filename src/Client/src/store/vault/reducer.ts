@@ -1,23 +1,17 @@
-import { ActionType, getType } from "typesafe-actions";
-import * as actions from "./actions";
-
-export type VaultAction = ActionType<typeof actions>;
-
-export type VaultState = Readonly<{
-  identity: {
-    email: string
-  }
-} | null>;
+import { getType } from "typesafe-actions";
+import { VaultActions, vaultActions } from "./actions";
+import { VaultState } from "./model";
 
 const getDefaultState = (): VaultState => {
-  return null;
-}
+    return {};
+};
 
-export const vaultReducer = (state = getDefaultState(), action: VaultAction): VaultState => {
-  switch (action.type) {
-    case getType(actions.vaultRequested):
-      return state;
-    default:
-      return state;
-  }
+export const vaultReducer = (state = getDefaultState(), action: VaultActions): VaultState => {
+    switch (action.type) {
+        case getType(vaultActions.vaultReceived):
+            return state;
+
+        default:
+            return state;
+    }
 };

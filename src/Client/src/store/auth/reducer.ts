@@ -1,44 +1,33 @@
 import { getType } from "typesafe-actions";
-import { AuthAction, AuthState, authActions } from '.';
-import { withValue } from '../shared/functions';
-import { validatePassword, validateEmail, validate } from './validation';
-import { Email, Password } from './model';
+import { AuthAction, AuthState, authActions } from ".";
 
 const getDefaultState = (): AuthState => {
-  return {
-    value: {
-      email: null,
-      password: null
-    },
-    errors: {}
-  };
-}
+    return {
+        createAccount: false,
+        isLoading: false
+    };
+};
 
 export const authReducer = (state = getDefaultState(), action: AuthAction): AuthState => {
-  switch (action.type) {
-    case getType(authActions.emailUpdated):
-      return withValue(state, {
-        value: { email: action.payload.email },
-        errors: { email: validate(action.payload.email, validateEmail, state.errors.email, action.payload.invalidate) }
-      });
-    case getType(authActions.passwordUpdated):
-      return withValue(state, {
-        value: { password: action.payload.password },
-        errors: { password: validate(action.payload.password, validatePassword, state.errors.password, action.payload.invalidate) }
-      });
-    case getType(authActions.loginErrored):
-      return action.payload.type == "generalFailure" ?
-        withValue(state, { generalFailure: action.payload }) :
-        withValue(state, { errors: action.payload.errors });
-    case getType(authActions.loginInitiated):
-      return withValue(state, {
-        generalFailure: undefined,
-        errors: {
-          email: validateEmail(state.value.email || new Email("")),
-          password: validatePassword(state.value.password || new Password("")),
-        }
-      });
-    default:
-      return state;
-  }
-}
+    switch (action.type) {
+        case getType(authActions.createAccountToggled):
+            return {
+                ...state,
+                error: undefined,
+                createAccount: action.payload.createAccount
+            };
+
+        case getType(authActions.signInInitiated):
+            return {
+                ...state,
+                credentials: action.payload.credentials,
+                isLoading: true
+            };
+
+        case getType(authActions.signInErrored):
+            return { ...state, error: action.payload, isLoading: false };
+
+        default:
+            return state;
+    }
+};

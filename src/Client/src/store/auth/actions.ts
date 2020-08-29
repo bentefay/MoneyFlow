@@ -1,10 +1,16 @@
-import { createStandardAction } from "typesafe-actions";
-import { GeneralFailure, Invalid } from '../shared/models';
-import { Email, Password, EncryptedVault, AuthStateValue } from '.';
+import { createAction } from "typesafe-actions";
+import { UserCredentials } from ".";
+import { AuthStateError } from "./model";
+import { ActionType } from "typesafe-actions";
+import { NewVaultPlaceholder, EncryptedVault } from "../shared/models";
 
-export const emailUpdated = createStandardAction("USERNAME_UPDATED")<{ email: Email, invalidate: boolean }>();
-export const passwordUpdated = createStandardAction("PASSWORD_UPDATED")<{ password: Password, invalidate: boolean }>();
-export const loginInitiated = createStandardAction("LOGIN_INITIATED")();
-export const loginSucceeded = createStandardAction("LOGIN_SUCCEEDED")<EncryptedVault>();
-export const loginErrored = createStandardAction("LOGIN_ERRORED")<GeneralFailure | Invalid<AuthStateValue>>();
-export const userAccountNotFound = createStandardAction("CREATE_ACCOUNT_REQUESTED")<{ email: Email, password: Password }>();
+export const authActions = {
+    createAccountToggled: createAction("CREATE_ACCOUNT_TOGGLED")<{ createAccount: boolean }>(),
+    signInInitiated: createAction("SIGN_IN_INITIATED")<{ credentials: UserCredentials; create: boolean }>(),
+    signInSucceeded: createAction("SIGN_IN_SUCCEEDED")<NewVaultPlaceholder | EncryptedVault>(),
+    signInErrored: createAction("SIGN_IN_ERRORED")<AuthStateError>(),
+    requestAborted: createAction("REQUEST_ABORTED")()
+};
+
+export type AuthAction = ActionType<typeof authActions>;
+export type SignInInitiated = ReturnType<typeof authActions.signInInitiated>;

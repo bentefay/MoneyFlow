@@ -10,12 +10,12 @@ namespace Make.Utility.Extensions
         {
             return either.Bind(value => f(value).ToAsync());
         }
-        
+
         public static EitherAsync<L, Ret> Bind<L, R, Ret>(this EitherAsync<L, R> either, Func<R, Task<Either<L, Ret>>> f)
         {
             return either.Bind(value => f(value).ToAsync());
         }
-        
+
         public static Task<int> ToExitCode(this EitherAsync<Error, Unit> either)
         {
             return either.Match(
@@ -34,7 +34,7 @@ namespace Make.Utility.Extensions
                         Utilities.Log();
                         Utilities.LogError($"Exception: {exception.Message}");
                         Utilities.Log();
-                        Utilities.LogError(exception.StackTrace);
+                        Utilities.LogError(exception.StackTrace ?? "<No StackTrace>");
                     });
                     return 1;
                 });

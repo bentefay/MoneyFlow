@@ -7,7 +7,7 @@ namespace Make.Utility.Commands
     {
         public static EitherAsync<Error, Unit> RunDev(string projectDirectory, string outputDirectory, string cacheDirectory, int logLevel, ExecutionOptions options)
         {
-            return Executable.RunAsEither(options, $"{Exe(projectDirectory)} {projectDirectory}/index.html --out-dir {outputDirectory} --cache-dir {cacheDirectory} --log-level {logLevel} --open --no-autoinstall");
+            return Executable.RunAsEither(options, $"{Exe(projectDirectory)} {projectDirectory}/index.html --out-dir {outputDirectory} --cache-dir {cacheDirectory} --log-level {logLevel} --no-autoinstall"); // --open 
         }
 
         public static EitherAsync<Error, Unit> BuildProd(string projectDirectory, string outputDirectory, string cacheDirectory, int logLevel)

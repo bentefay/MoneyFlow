@@ -10,38 +10,50 @@ namespace Make.Utility.Extensions
         {
             app.OnExecute(() =>
             {
-                app.ShowHelp();
+                app.ShowHelp(usePager: false);
                 return 1;
             });
         }
 
         public static CommandLineApplication WithExecute(this CommandLineApplication app, Func<Task<int>> f)
         {
-            app.OnExecute(f);
+            app.OnExecuteAsync(_ => f());
             return app;
         }
-        
+
         public static CommandLineApplication WithExecuteShowingHelp(this CommandLineApplication app)
         {
             app.OnExecuteShowHelp();
             return app;
-        } 
-        
-        public static CommandLineApplication WithCommand(this CommandLineApplication app, string name, Action<CommandLineApplication> f)
+        }
+
+        public static CommandLineApplication WithCommand(this CommandLineApplication app, string name, Action<CommandLineApplication> f, string? description = null)
         {
-            name
-                .Split('|', StringSplitOptions.RemoveEmptyEntries)
-                .Iter(nameAlias =>
+            var names = name
+                .Split('|', StringSplitOptions.RemoveEmptyEntries);
+
+            names
+                .Iter((i, nameAlias) =>
                 {
                     var command = app.Command(nameAlias, f);
+                    if (i == 0)
+                    {
+                        command.Description = names.Length > 1 ?
+                            $"[{string.Join("|", names)}] {description}" :
+                            description;
+                    }
+                    else
+                    {
+                        command.ShowInHelpText = false;
+                    }
                     command.ThrowOnUnexpectedArgument = false;
                 });
             return app;
         }
-        
-        public static CommandLineApplication WithExecutableCommand(this CommandLineApplication app, string name, Func<CommandLineApplication, Task<int>> f)
+
+        public static CommandLineApplication WithExecutableCommand(this CommandLineApplication app, string name, Func<CommandLineApplication, Task<int>> f, string? description = null)
         {
-            return WithCommand(app, name, application => application.WithExecute(() => f(application)));
+            return WithCommand(app, name, application => application.WithExecute(() => f(application)), description);
         }
 
     }

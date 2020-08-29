@@ -8,13 +8,9 @@ with (import ./nix/packages); stdenv.mkDerivation rec {
 
   buildInputs = if builtins.currentSystem == "x86_64-darwin"
     then [
-        dotnet-sdk
-        mono
         nodejs-10_x
     ]
     else [
-        dotnet-sdk
-        mono
         nodejs-10_x
     ];
 
