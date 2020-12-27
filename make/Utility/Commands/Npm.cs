@@ -1,6 +1,5 @@
 ﻿using LanguageExt;
 using Make.Utility.Commands.Executables;
-using Make.Utility.Extensions;
 
 namespace Make.Utility.Commands
 {

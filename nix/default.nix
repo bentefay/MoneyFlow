@@ -19,6 +19,7 @@ with (nixpkgs); stdenv.mkDerivation rec {
     jq
     niv
     nixpkgs-fmt
+    nodejs-14_x
     ripgrep
     terraform_0_12
     yarn

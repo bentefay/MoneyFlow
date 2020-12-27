@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LanguageExt;
@@ -39,7 +38,7 @@ namespace Make
                 .WithExecutableCommand("ui|c", client => ExecuteCommandClient(parcelConfig, client, options), "Execute any command in client working directory")
                 .WithExecutableCommand("build|b", build => Build(config, dotnetConfig, parcelConfig), "Build zip of app for production deployment (same as CI build)")
                 .WithCommand("run|r", run => run
-                    .WithExecutableCommand("ui|c", client => RunClient(config, dotnetConfig, parcelConfig, options))
+                    .WithExecutableCommand("ui|u", client => RunUi(config, dotnetConfig, parcelConfig, options))
                     .WithExecutableCommand("server|s", server => RunServer(config, dotnetConfig, options))
                     .WithExecuteShowingHelp(),
                     "Run client or server in local watch mode")
@@ -57,10 +56,10 @@ namespace Make
                 .ToExitCode();
         }
 
-        private static Task<int> RunClient(Config c, DotnetConfig d, ParcelConfig p, ExecutionOptions options)
+        private static Task<int> RunUi(Config c, DotnetConfig d, ParcelConfig p, ExecutionOptions options)
         {
             return Do(
-                    () => Npm.Install(p.Project.ProjectDirectory, options),
+                    () => Yarn.Install(p.Project.ProjectDirectory, options),
                     () => Parcel.RunDev(p.Project.ProjectDirectory, $"{d.Project.Dir}/wwwroot", $"{c.BuildDir}/ui/cache", p.Verbosity, options))
                 .ToExitCode();
         }
@@ -98,7 +97,7 @@ namespace Make
                         () => Dotnet.Publish(d.Project.Dir, d.Configuration, d.Verbosity, c.PublishDir)
                     ),
                     () => DoSection("Publish Client",
-                        () => Npm.Ci(p.Project.ProjectDirectory),
+                        () => Yarn.Ci(p.Project.ProjectDirectory),
                         () => Parcel.BuildProd(p.Project.ProjectDirectory, $"{c.PublishDir}/wwwroot", $"{c.BuildDir}/ui/cache", p.Verbosity)
                     ),
                     () => DoSection("Zip",
