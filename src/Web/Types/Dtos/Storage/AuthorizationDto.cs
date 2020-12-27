@@ -1,15 +1,7 @@
 ﻿namespace Web.Types.Dtos.Storage
 {
-    public class AuthorizationDto
-    {
-        public AuthorizationDto(string email, string hashedPassword)
-        {
-            Email = email;
-            HashedPassword = hashedPassword;
-        }
-
-        public string Email { get; }
-        
-        public string HashedPassword { get; }
-    }
+    public record AuthorizationDto(
+        string Email, 
+        string HashedPassword
+    );
 }

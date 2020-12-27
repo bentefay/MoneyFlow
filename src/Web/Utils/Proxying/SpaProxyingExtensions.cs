@@ -83,7 +83,7 @@ namespace Microsoft.AspNetCore.Builder
             var applicationLifetime = appBuilder
                 .ApplicationServices
                 .GetService(typeof(IHostApplicationLifetime));
-            return ((IHostApplicationLifetime)applicationLifetime).ApplicationStopping;
+            return ((IHostApplicationLifetime)applicationLifetime!).ApplicationStopping;
         }
     }
 }

@@ -9,8 +9,6 @@ namespace Web.Functions
 {
     public static class VaultFunctions
     {
-
-        
         public static EitherAsync<IUpdateVaultErrors, Unit> UpdateVault(string authorizationHeader, UpdateVaultRequest request, StorageConnectionString connectionString)
         {
             return

@@ -63,7 +63,7 @@ namespace Make.Utility.Commands
                 UseShellExecute = false,
                 RedirectStandardOutput = options.RedirectStreams,
                 RedirectStandardError = options.RedirectStreams,
-                WorkingDirectory = options.WorkingDirectory
+                WorkingDirectory = options.WorkingDirectory!
             };
 
             var taskCompletionSource = new TaskCompletionSource<Either<Error, ExecutionResult>>();

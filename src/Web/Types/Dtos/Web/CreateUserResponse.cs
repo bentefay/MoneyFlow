@@ -1,12 +1,6 @@
 namespace Web.Types.Dtos.Web
 {
-    public class CreateUserResponse
-    {
-        public string UserId { get; }
-
-        public CreateUserResponse(string userId)
-        {
-            UserId = userId;
-        }
-    }
+    public record CreateUserResponse(
+        string UserId
+    );
 }

@@ -11,7 +11,7 @@ namespace Web.Functions
         {
             try
             {
-                return JsonConvert.DeserializeObject<T>(json, settings);
+                return JsonConvert.DeserializeObject<T>(json, settings)!;
             }
             catch (JsonSerializationException e)
             {

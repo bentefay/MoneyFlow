@@ -13,10 +13,10 @@ namespace Web.Functions
         public static UserDto ToDto(User user)
         {
             return new UserDto(
-                userId: user.UserId.Value.ToString(),
-                email: user.Email.Value,
-                passwordSalt: user.PasswordSalt.Value,
-                password:  user.Password.Value);
+                UserId: user.UserId.Value.ToString(),
+                Email: user.Email.Value,
+                PasswordSalt: user.PasswordSalt.Value,
+                Password:  user.Password.Value);
         }
 
         public static Either<IDeserializeUserErrors, TaggedUser> FromDto(UserDto dto, StorageETag eTag)
@@ -32,14 +32,14 @@ namespace Web.Functions
         public static GetVaultResponse ToDto(TaggedVault vault)
         {
             return new GetVaultResponse(
-                userId: vault.UserId.Value.ToString(),
-                content: vault.Content.Value,
-                eTag: vault.ETag.Value);
+                UserId: vault.UserId.Value.ToString(),
+                Content: vault.Content.Value,
+                ETag: vault.ETag.Value);
         }
 
         public static CreateUserResponse ToDto(UserId userId)
         {
-            return new CreateUserResponse(userId: userId.Value.ToString());
+            return new CreateUserResponse(UserId: userId.Value.ToString());
         }
 
         public static Either<IUpdateVaultRequestToVaultErrors, Vault> FromDto(UpdateVaultRequest request)
