@@ -38,9 +38,9 @@ Clone this repository then:
 - `dotnet user-secrets -p src/Web set "StorageConnectionString" ""`
 
 For dev:
-- `m run server` (watch run server)
-- `m run client` (watch run client)
-- `m test server` (watch test server)
+- `bin/make run server` (watch run server)
+- `bin/make run client` (watch run client)
+- `bin/make test server` (watch test server)
 
 Or if you're using nix shell and tmux:
 - `nix-shell`
@@ -59,8 +59,11 @@ To format the C# files:
   - Output paths to refresh: $FilePath$
   - Advanced options: Untick all
 
-To update outdated .net nuget packages:
+To update outdated nuget packages:
 - `dotnet outdated`
+
+To update outdated npm packages:
+- `bin/make client yarn upgrade-interactive --latest`
 
 ## Resources
 
