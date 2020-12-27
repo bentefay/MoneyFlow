@@ -15,7 +15,6 @@
     <Content Update="Client\**\*" CopyToPublishDirectory="Never" />
   </ItemGroup>
   <ItemGroup>
-    <DotNetCliToolReference Include="dotnet-codegen" Version="0.6.1" />
     <PackageReference Include="CSharpDiscriminatedUnion" Version="2.0.1" />
     <PackageReference Include="LanguageExt.Core" Version="3.4.15" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.1" />

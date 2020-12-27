@@ -6,7 +6,7 @@
     <LangVersion>9.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../../src/Web/Web.csproj" />
+    <ProjectReference Include="../../src/server/Web.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="LanguageExt.UnitTesting" Version="3.3.5" />

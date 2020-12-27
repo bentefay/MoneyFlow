@@ -36,17 +36,17 @@ namespace Make
                 Description = "Build, test and run MoneyFlow",
                 UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.StopParsingAndCollect
             }
-                .WithExecutableCommand("client|c", client => ExecuteCommandClient(parcelConfig, client, options), "Execute any command in client working directory")
+                .WithExecutableCommand("ui|c", client => ExecuteCommandClient(parcelConfig, client, options), "Execute any command in client working directory")
                 .WithExecutableCommand("build|b", build => Build(config, dotnetConfig, parcelConfig), "Build zip of app for production deployment (same as CI build)")
                 .WithCommand("run|r", run => run
-                    .WithExecutableCommand("client|c", client => RunClient(config, dotnetConfig, parcelConfig, options))
+                    .WithExecutableCommand("ui|c", client => RunClient(config, dotnetConfig, parcelConfig, options))
                     .WithExecutableCommand("server|s", server => RunServer(config, dotnetConfig, options))
                     .WithExecuteShowingHelp(),
                     "Run client or server in local watch mode")
                 .WithCommand("test|t", test => test
                     .WithExecutableCommand("server|s", server => TestServer(config, dotnetConfig, options))
                     .WithExecuteShowingHelp(),
-                    "Test client or server in local watch mode")
+                    "Test server in local watch mode")
                 .WithExecuteShowingHelp()
                 .Execute(args);
         }
@@ -61,7 +61,7 @@ namespace Make
         {
             return Do(
                     () => Npm.Install(p.Project.ProjectDirectory, options),
-                    () => Parcel.RunDev(p.Project.ProjectDirectory, $"{d.Project.Dir}/wwwroot", $"{c.BuildDir}/client/cache", p.Verbosity, options))
+                    () => Parcel.RunDev(p.Project.ProjectDirectory, $"{d.Project.Dir}/wwwroot", $"{c.BuildDir}/ui/cache", p.Verbosity, options))
                 .ToExitCode();
         }
 
@@ -99,7 +99,7 @@ namespace Make
                     ),
                     () => DoSection("Publish Client",
                         () => Npm.Ci(p.Project.ProjectDirectory),
-                        () => Parcel.BuildProd(p.Project.ProjectDirectory, $"{c.PublishDir}/wwwroot", $"{c.BuildDir}/client/cache", p.Verbosity)
+                        () => Parcel.BuildProd(p.Project.ProjectDirectory, $"{c.PublishDir}/wwwroot", $"{c.BuildDir}/ui/cache", p.Verbosity)
                     ),
                     () => DoSection("Zip",
                         () => ZipDirectory(c.PublishDir, c.PublishZipPath)
