@@ -43,12 +43,14 @@ For dev:
 - `m test server` (watch test server)
 
 Or if you're using nix shell and tmux:
+- `nix-shell`
 - `tmux source tmux.conf`
 
 To build for production:
 - `m build` (same build that CI runs to prepare for deployment)
 
 To format the C# files:
+- Run `dotnet format`
 - In rider:
   - File type: C# file
   - Scope: Current file
@@ -56,6 +58,9 @@ To format the C# files:
   - Arguments: format $SolutionPath$ --include $FilePathRelativeToProjectRoot$
   - Output paths to refresh: $FilePath$
   - Advanced options: Untick all
+
+To update outdated .net nuget packages:
+- `dotnet outdated`
 
 ## Resources
 
