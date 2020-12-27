@@ -46,7 +46,7 @@ namespace Make.Utility.Extensions
                     {
                         command.ShowInHelpText = false;
                     }
-                    command.ThrowOnUnexpectedArgument = false;
+                    command.UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.StopParsingAndCollect;
                 });
             return app;
         }

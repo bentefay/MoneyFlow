@@ -34,7 +34,7 @@ namespace Make
             {
                 Name = "make",
                 Description = "Build, test and run MoneyFlow",
-                ThrowOnUnexpectedArgument = false
+                UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.StopParsingAndCollect
             }
                 .WithExecutableCommand("client|c", client => ExecuteCommandClient(parcelConfig, client, options), "Execute any command in client working directory")
                 .WithExecutableCommand("build|b", build => Build(config, dotnetConfig, parcelConfig), "Build zip of app for production deployment (same as CI build)")
