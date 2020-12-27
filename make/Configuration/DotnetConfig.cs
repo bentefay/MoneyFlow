@@ -10,10 +10,10 @@ namespace Make.Configuration
         public string Configuration => "release";
 
         public DotnetProject Project => new[] { "Web" }
-            .Select(name => new DotnetProject(name, $"src/{name}"))
+            .Select(name => new DotnetProject(name, $"src/server/{name}"))
             .First();
 
         public IEnumerable<DotnetProject> TestProjects => new[] { "WebTests" }
-            .Select(name => new DotnetProject(name, $"test/{name}"));
+            .Select(name => new DotnetProject(name, $"test/server/{name}"));
     }
 }
