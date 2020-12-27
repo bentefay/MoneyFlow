@@ -1,9 +1,15 @@
 let
-  pkgs = import ./nix/packages;
-  default = import ./default.nix;
+  sources = import ./nix/nix/sources.nix;
+  nixpkgs = import sources.nixpkgs {};
+  default = import ./nix/default.nix sources.nixpkgs;
 in
-pkgs.mkShell {
+nixpkgs.mkShell {
   inputsFrom = [
     default
   ];
+
+  shellHook = ''
+    export NIX_PATH="nixpkgs=${sources.nixpkgs}"
+    alias nix-repl="nix repl '<nixpkgs>'"
+  '';
 }

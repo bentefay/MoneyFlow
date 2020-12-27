@@ -1,3 +1,3 @@
 [
-  (self: super: { dotnet = super.callPackage ../packages/dotnet {}; })
+  (self: super: { dotnet = super.callPackage ./dotnet {}; })
 ]

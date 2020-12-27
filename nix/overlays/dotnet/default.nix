@@ -4,6 +4,10 @@ let
   downloadUrl = version: os: "https://dotnetcli.azureedge.net/dotnet/Sdk/${version}/dotnet-sdk-${version}-${os}-x64.tar.gz";
 
   sha = version: os: {
+    "5.0.100" = {
+      osx = "69ccc7c686ac06f6c658d118f59cf1a0e7284b4570375dd88d3e3043098e311745922301f2650d159624d09c4d39a1f3cbdd5daee0e408eef915de839e3bce8f";
+      linux = "bec37bfb327c45cc01fd843ef93b22b556f753b04724bba501622df124e7e144c303a4d7e931b5dbadbd4f7b39e5adb8f601cb6293e317ad46d8fe7d52aa9a09";
+    };
     "3.1.401" = {
       osx = "5e18bb49ce41856d599e089c881950a3a9397a9866227a24bf9ab1a858fc38545b5b3fd5fa53f245acf5dc79af94d64a477a23b5b11cf87953e9e115501d5c8c";
       linux = "5498add9ef83da44d8f7806ca1ce335ad4193c0d3181a5abda4b65e116c7331aac37a229817ff148e4487e9734ad2438f102a0eef0049e26773a185ceb78aac4";
@@ -86,4 +90,4 @@ let
       '';
     };
 in
-combineVersions (builtins.map mkDerivation [ "3.1.401" "2.1.807" ])
+combineVersions (builtins.map mkDerivation [ "5.0.100" "3.1.401" "2.1.807" ])
