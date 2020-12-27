@@ -48,6 +48,15 @@ Or if you're using nix shell and tmux:
 To build for production:
 - `m build` (same build that CI runs to prepare for deployment)
 
+To format the C# files:
+- In rider:
+  - File type: C# file
+  - Scope: Current file
+  - Program: dotnet
+  - Arguments: format $SolutionPath$ --include $FilePathRelativeToProjectRoot$
+  - Output paths to refresh: $FilePath$
+  - Advanced options: Untick all
+
 ## Resources
 
 - [App](https://moneyflow.azurewebsites.net/)

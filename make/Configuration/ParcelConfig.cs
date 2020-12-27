@@ -8,7 +8,7 @@ namespace Make.Configuration
         public int Verbosity = 3;
 
         public ParcelProject Project =>
-            new[] {"Client"}
+            new[] { "Client" }
                 .Select(name => new ParcelProject(name, $"src/{name}"))
                 .First();
     }

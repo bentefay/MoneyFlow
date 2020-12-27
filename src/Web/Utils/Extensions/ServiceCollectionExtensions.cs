@@ -11,7 +11,7 @@ namespace Web.Utils.Extensions
         {
             return env.IsDevelopment() ? f(@this) : @this;
         }
-        
+
         public static IServiceCollection NotInDevelopment(this IServiceCollection @this, IWebHostEnvironment env, Func<IServiceCollection, IServiceCollection> f)
         {
             return !env.IsDevelopment() ? f(@this) : @this;

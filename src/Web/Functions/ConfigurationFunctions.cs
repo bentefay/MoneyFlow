@@ -7,10 +7,10 @@ namespace Web.Functions
 {
     public static class ConfigurationFunctions
     {
-        public static StorageConnectionString GetStorageConnectionString(this IConfiguration configuration) => 
+        public static StorageConnectionString GetStorageConnectionString(this IConfiguration configuration) =>
             new StorageConnectionString(configuration.GetRequiredValue<string>("StorageConnectionString"));
-        
-        public static T GetRequiredValue<T>(this IConfiguration configuration, string key) where T : class => 
+
+        public static T GetRequiredValue<T>(this IConfiguration configuration, string key) where T : class =>
             configuration.GetValue<T>(key) ?? throw new ConfigurationException($"Configuration is missing required key {key}");
     }
 
@@ -18,7 +18,7 @@ namespace Web.Functions
     {
         public ConfigurationException(string message) : base(message)
         {
-            
+
         }
     }
 }

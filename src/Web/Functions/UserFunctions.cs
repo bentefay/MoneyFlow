@@ -17,7 +17,7 @@ namespace Web.Functions
                 from _ in UserStorageFunctions.CreateUser(user, connectionString).Left(Cast.To<ICreateUserErrors>())
                 select MappingFunctions.ToDto(user.UserId);
         }
-        
+
         private static Either<IBuilderUserErrors, User> BuildUser(Authorization authorization)
         {
             return

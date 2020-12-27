@@ -24,7 +24,7 @@ namespace Web.Functions
                 from user in MappingFunctions.FromDto(dto, eTag)
                 select user;
         }
-        
+
         public static Either<ISerializeVaultErrors, string> SerializeVault(Vault vault)
         {
             return vault.Content.Value;

@@ -24,17 +24,18 @@ namespace Make
             var cancel = new CancellationTokenSource();
             var options = new ExecutionOptions(cancellationToken: cancel.Token);
 
-            Console.CancelKeyPress += (sender, eventArgs) => {
+            Console.CancelKeyPress += (sender, eventArgs) =>
+            {
                 LogSection("PRESSED CTRL+C. EXITING...", ConsoleColor.Red);
                 cancel.Cancel();
             };
 
             return new CommandLineApplication
-                {
-                    Name = "make",
-                    Description = "Build, test and run MoneyFlow",
-                    ThrowOnUnexpectedArgument = false
-                }
+            {
+                Name = "make",
+                Description = "Build, test and run MoneyFlow",
+                ThrowOnUnexpectedArgument = false
+            }
                 .WithExecutableCommand("client|c", client => ExecuteCommandClient(parcelConfig, client, options), "Execute any command in client working directory")
                 .WithExecutableCommand("build|b", build => Build(config, dotnetConfig, parcelConfig), "Build zip of app for production deployment (same as CI build)")
                 .WithCommand("run|r", run => run

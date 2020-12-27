@@ -38,9 +38,9 @@ namespace Web.Controllers
                         malformedEmail: HandleBadRequest,
                         malformedPassword: HandleBadRequest,
                         base64Decode: HandleBadRequest,
-                        
+
                         couldNotCreateBlobBecauseItAlreadyExists: HandleConflict,
-                        
+
                         couldNotUpdateBlobBecauseTheETagHasChanged: HandleServerError,
                         generalStorage: HandleServerError,
                         generateSalt: HandleServerError,
@@ -75,13 +75,13 @@ namespace Web.Controllers
                         malformedPassword: HandleBadRequest,
                         base64Decode: HandleBadRequest,
                         jsonDeserialization: HandleBadRequest,
-                        
+
                         emailIncorrect: HandleUnauthorized,
                         passwordIncorrect: HandleUnauthorized,
                         userDoesNotExist: HandleUnauthorized,
-                        
+
                         vaultDoesNotExist: HandleVaultDoesNotExistYet,
-                        
+
                         generalStorage: HandleServerError,
                         hashPassword: HandleServerError,
                         malformedCloudStorageConnectionString: HandleServerError,
@@ -115,17 +115,17 @@ namespace Web.Controllers
                         malformedETag: HandleBadRequest,
                         malformedPassword: HandleBadRequest,
                         base64Decode: HandleBadRequest,
-                        
+
                         userDoesNotExist: HandleUnauthorized,
                         emailIncorrect: HandleUnauthorized,
                         passwordIncorrect: HandleUnauthorized,
-                        
+
                         couldNotUpdateBlobBecauseTheETagHasChanged: _ =>
                             Conflict("The version sent with your vault was not for the latest saved version of the vault. " + OldVersionOfVaultError()),
-                        
+
                         couldNotCreateBlobBecauseItAlreadyExists: _ =>
                             Conflict("No version was sent with your vault, but the vault already exists. " + OldVersionOfVaultError()),
-                        
+
                         generalStorage: HandleServerError,
                         hashPassword: HandleServerError,
                         jsonDeserialization: HandleServerError,

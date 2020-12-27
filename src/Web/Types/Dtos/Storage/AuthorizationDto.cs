@@ -1,7 +1,7 @@
 ﻿namespace Web.Types.Dtos.Storage
 {
     public record AuthorizationDto(
-        string Email, 
+        string Email,
         string HashedPassword
     );
 }

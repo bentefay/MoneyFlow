@@ -16,7 +16,7 @@ namespace Web.Functions
                 UserId: user.UserId.Value.ToString(),
                 Email: user.Email.Value,
                 PasswordSalt: user.PasswordSalt.Value,
-                Password:  user.Password.Value);
+                Password: user.Password.Value);
         }
 
         public static Either<IDeserializeUserErrors, TaggedUser> FromDto(UserDto dto, StorageETag eTag)
@@ -44,7 +44,7 @@ namespace Web.Functions
 
         public static Either<IUpdateVaultRequestToVaultErrors, Vault> FromDto(UpdateVaultRequest request)
         {
-            return 
+            return
                 from userId in UserId.Create(request.UserId).Left(Cast.To<IUpdateVaultRequestToVaultErrors>())
                 let content = new Base64EncodedEncryptedVault(request.Content)
                 from maybeEtag in Prelude.Optional(request.ETag!)

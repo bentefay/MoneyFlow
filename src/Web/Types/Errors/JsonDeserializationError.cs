@@ -34,7 +34,7 @@ namespace Web.Types.Errors
         private static string AnnotateJson(string json, int lineNumber, int linePosition)
         {
             var lines = json.Split(Environment.NewLine).ToList();
-            
+
             if (lineNumber < 1 || lineNumber > lines.Count)
                 return json;
 
@@ -46,15 +46,15 @@ namespace Web.Types.Errors
             }
             else
             {
-                lines.Insert(lineNumber, new string(' ', linePosition - 1) + "^");                
+                lines.Insert(lineNumber, new string(' ', linePosition - 1) + "^");
             }
 
             var contextLines = 20;
-            
+
             return lines
                 .Skip(Math.Max(0, lineNumber - contextLines))
                 .Take(2 * contextLines)
                 .Join(Environment.NewLine);
-        } 
+        }
     }
 }

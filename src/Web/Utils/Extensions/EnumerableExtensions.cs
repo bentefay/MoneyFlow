@@ -18,7 +18,7 @@ namespace Web.Utils.Extensions
 
         public static string Join<T>(this IEnumerable<T> @this, string separator) =>
             string.Join(separator, @this);
-        
+
         public static (IEnumerable<T> True, IEnumerable<T> False) Partition<T>(this IEnumerable<T> @this, Func<T, bool> predicate)
         {
             var list = @this.ToList();

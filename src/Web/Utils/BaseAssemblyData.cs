@@ -11,11 +11,11 @@ namespace Web.Utils
 
         protected BaseAssemblyData()
         {
-            Assembly = typeof(T).Assembly; 
+            Assembly = typeof(T).Assembly;
             Types = new Lazy<IReadOnlyList<Type>>(Assembly.GetTypes());
         }
     }
-    
+
     public interface IAssemblyData
     {
         Assembly Assembly { get; }

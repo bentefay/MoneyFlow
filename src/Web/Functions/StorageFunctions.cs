@@ -35,7 +35,8 @@ namespace Web.Functions
         public static EitherAsync<IGetBlobTextErrors, Option<StorageText>> GetBlobText(CloudBlockBlob blob)
         {
             return PreludeExt.CreateEitherAsync<IGetBlobTextErrors, Option<StorageText>>(
-                async () => {
+                async () =>
+                {
                     try
                     {
                         var text = await blob.DownloadTextAsync();
@@ -53,11 +54,12 @@ namespace Web.Functions
                     }
                 });
         }
-        
+
         public static EitherAsync<ISetBlobTextErrors, Unit> SetBlobText(CloudBlockBlob blob, string text, StorageETag? eTag = null)
         {
             return PreludeExt.CreateEitherAsync<ISetBlobTextErrors, Unit>(
-                async () => {
+                async () =>
+                {
                     try
                     {
                         var accessCondition = eTag! == null! ?

@@ -20,13 +20,13 @@ namespace Web.Functions
                             Some: Prelude.RightAsync<IUpdateVaultErrors, User>,
                             None: () => Prelude.LeftAsync<IUpdateVaultErrors, User>(new UserDoesNotExistError(authorization.Email))))
                 from _ in AssertVaultAccess(authorization, user).ToAsync().Left(Cast.To<IUpdateVaultErrors>())
-                from __ in user.UserId != vault.UserId ? 
-                    Prelude.LeftAsync<IUpdateVaultErrors, Unit>(new UserIdMismatchError(authorization.Email, vault.UserId, user.UserId)) : 
+                from __ in user.UserId != vault.UserId ?
+                    Prelude.LeftAsync<IUpdateVaultErrors, Unit>(new UserIdMismatchError(authorization.Email, vault.UserId, user.UserId)) :
                     Prelude.unit
                 from ___ in VaultStorageFunctions.UpdateVault(vault, connectionString).Left(Cast.To<IUpdateVaultErrors>())
                 select Prelude.unit;
         }
-        
+
         public static EitherAsync<IGetVaultErrors, GetVaultResponse> GetVault(string authorizationHeader, StorageConnectionString connectionString)
         {
             return
@@ -49,12 +49,12 @@ namespace Web.Functions
         {
             return
                 from password in CryptoFunctions.HashPassword(authorization.Password, user.PasswordSalt).Left(Cast.To<IAssertVaultAccessErrors>())
-                from _ in user.Email == authorization.Email ? 
+                from _ in user.Email == authorization.Email ?
                     Prelude.unit :
-                    Prelude.Left<IAssertVaultAccessErrors, Unit>(new EmailIncorrectError(user.Email, authorization.Email)) 
-                from __ in user.Password == password ? 
+                    Prelude.Left<IAssertVaultAccessErrors, Unit>(new EmailIncorrectError(user.Email, authorization.Email))
+                from __ in user.Password == password ?
                     Prelude.unit :
-                    Prelude.Left<IAssertVaultAccessErrors, Unit>(new PasswordIncorrectError(authorization.Email)) 
+                    Prelude.Left<IAssertVaultAccessErrors, Unit>(new PasswordIncorrectError(authorization.Email))
                 select Prelude.unit;
         }
     }

@@ -12,7 +12,7 @@ namespace Web.Utils.Serialization
             @this.MissingMemberHandling = MissingMemberHandling.Error;
             return @this;
         }
-        
+
         public static JsonSerializerSettings ConfigureCamelCase(this JsonSerializerSettings @this)
         {
             @this.ContractResolver = new DefaultContractResolver

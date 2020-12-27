@@ -11,7 +11,7 @@ namespace Web.Utils.Extensions
                 @this.Substring(0, maxLength) + terminator :
                 @this;
         }
-        
+
         public static string ToCamelCase(this string @this)
         {
             return string.Concat(@this.Select((x, i) => i == 0 ? char.ToLower(x) : x));
@@ -24,7 +24,7 @@ namespace Web.Utils.Extensions
                 .Select(line => string.IsNullOrWhiteSpace(line) ? line : indent + line)
                 .Join("\n");
         }
-        
+
         public static string TrimEnd(this string @this, string end)
         {
             return @this.EndsWith(end) ? @this[..^end.Length] : @this;

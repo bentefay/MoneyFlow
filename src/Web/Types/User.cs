@@ -23,7 +23,7 @@ namespace Web.Types
     {
         public StorageETag ETag { get; }
 
-        public TaggedUser(UserId userId, Email email, PasswordSalt passwordSalt, DoubleHashedPassword password, StorageETag eTag) : 
+        public TaggedUser(UserId userId, Email email, PasswordSalt passwordSalt, DoubleHashedPassword password, StorageETag eTag) :
             base(userId, email, passwordSalt, password)
         {
             ETag = eTag;

@@ -15,7 +15,7 @@ namespace Make.Utility.Extensions
                 Prelude.RightAsync<Error, Unit>(Task.FromResult(Prelude.unit)),
                 (acc, item) => acc.Bind(_ => f(item)));
         }
-        
+
         public static Option<T> FirstOrNone<T>(this IEnumerable<T> source)
         {
             switch (source)
@@ -23,10 +23,10 @@ namespace Make.Utility.Extensions
                 case null:
                     throw new ArgumentNullException(nameof(source));
                 case IList<T> list:
-                    return list.Count > 0 ? (Option<T>) list[0] : Prelude.None;
+                    return list.Count > 0 ? (Option<T>)list[0] : Prelude.None;
                 default:
                     using (var enumerator = source.GetEnumerator())
-                        return enumerator.MoveNext() ? (Option<T>) enumerator.Current : Prelude.None;
+                        return enumerator.MoveNext() ? (Option<T>)enumerator.Current : Prelude.None;
             }
         }
     }

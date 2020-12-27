@@ -15,7 +15,7 @@ namespace Web.Utils.Extensions
                 return x;
             });
         }
-        
+
         public static EitherAsync<TL, TR2> BindEitherAsync<TL, TR, TR2>(this EitherAsync<TL, TR> @this, Func<TR, Task<Either<TL, TR2>>> func)
         {
             return @this.Bind(x => func(x).ToAsync());
@@ -25,7 +25,7 @@ namespace Web.Utils.Extensions
         {
             return @this.MapLeft(left => (TL2)left);
         }
-        
+
         public static EitherAsync<TL2, TR> Left<TL1, TL2, TR>(this EitherAsync<TL1, TR> @this, Cast<TL2> to) where TL1 : TL2
         {
             return @this.MapLeft(left => (TL2)left);

@@ -11,7 +11,7 @@ namespace Web.Types
         }
 
         public Email Email { get; }
-        
+
         public HashedPassword Password { get; }
     }
 }

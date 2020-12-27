@@ -5,11 +5,13 @@ using Web.Types.Errors;
 
 namespace Web.Functions
 {
-    public static class LoggerFunctions {
+    public static class LoggerFunctions
+    {
 
         public static Action<IError> LogControllerError(ILogger logger)
         {
-            return error => {
+            return error =>
+            {
                 switch (logger)
                 {
                     case IErrorWithException e:

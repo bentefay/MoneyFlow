@@ -12,7 +12,7 @@ namespace Web.Types.Errors
             Base64 = base64;
             Exception = error;
         }
-        
+
         public string GetDescription() => $"Could not decode base64 string '{Base64}' as it was invalid: {Exception.Message}";
     }
 }

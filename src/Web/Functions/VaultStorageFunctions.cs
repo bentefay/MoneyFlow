@@ -10,7 +10,7 @@ namespace Web.Functions
     {
         private const string Container = "vaults";
         private static string GetVaultPath(UserId userId) => $"{userId.Value}/vault";
-        
+
         public static EitherAsync<ILoadVaultErrors, Option<TaggedVault>> LoadVault(UserId userId, StorageConnectionString connectionString)
         {
             return
@@ -23,7 +23,7 @@ namespace Web.Functions
                     .Left(Cast.To<ILoadVaultErrors>())
                 select vault;
         }
-        
+
         public static EitherAsync<IUpdateVaultErrors, Unit> UpdateVault(Vault vault, StorageConnectionString connectionString)
         {
             return

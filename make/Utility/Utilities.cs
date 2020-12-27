@@ -14,7 +14,7 @@ namespace Make.Utility
         {
             return functions.Aggregate(RightAsync<Error, Unit>(Task.FromResult(unit)), (acc, f) => acc.Bind(_ => f()));
         }
-        
+
         public static EitherAsync<Error, Unit> DoSection(string title, params Func<EitherAsync<Error, Unit>>[] functions)
         {
             LogSection(title);
@@ -31,16 +31,16 @@ namespace Make.Utility
         }
 
         public static void LogSuccess(string text) => Log(text, ConsoleColor.Green);
-        
+
         public static void LogError(string text) => Log(text, ConsoleColor.Red);
-        
+
         public static void Log(string text = "", ConsoleColor color = ConsoleColor.White)
         {
-            Console.ForegroundColor = color; 
+            Console.ForegroundColor = color;
             Console.WriteLine(text);
             Console.ResetColor();
         }
-        
+
         public static EitherAsync<Error, Unit> DeleteRecursive(string directoryPath)
         {
             try
@@ -69,6 +69,6 @@ namespace Make.Utility
             {
                 return Error.Create($"Failed to zip '{source}' to '{destination}': {e.Message}", e);
             }
-        }        
+        }
     }
 }

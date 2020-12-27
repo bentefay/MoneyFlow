@@ -26,10 +26,10 @@ namespace WebTests
                 .Select(function => MatchStatementMatchesAllVariants(function, allTypes))
                 .Sequence()
                 .Match(
-                    Some: exceptions => 
+                    Some: exceptions =>
                         throw new XunitException(exceptions
                             .Select(e => e.Message)
-                            .Join("\n\n")), 
+                            .Join("\n\n")),
                     None: () => { });
         }
 

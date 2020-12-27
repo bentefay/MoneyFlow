@@ -22,11 +22,11 @@ namespace Web.Functions
                 return new JsonDeserializationError(typeof(T), json, e.Path!, e.LineNumber, e.LinePosition, e);
             }
         }
-        
+
         public static Either<JsonSerializationError, string> Serialize<T>(T value, JsonSerializerSettings settings)
         {
             try
-            {               
+            {
                 return JsonConvert.SerializeObject(value, settings);
             }
             catch (JsonSerializationException e)

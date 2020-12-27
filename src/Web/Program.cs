@@ -19,7 +19,7 @@ namespace Web
     public class Program
     {
         const string SeqUrl = "http://localhost:5002";
-        
+
         public static int Main(string[] args)
         {
             var logger = new LoggerConfiguration()
@@ -73,10 +73,10 @@ namespace Web
                         .Configure((context, app) =>
                         {
                             var env = context.HostingEnvironment;
-                            
+
                             if (env.IsDevelopment())
                                 LogServiceUrls(logger, app);
-                            
+
                             app
                                 .InDevelopment(env, x => x
                                     .UseDeveloperExceptionPage())
@@ -102,7 +102,7 @@ namespace Web
                "Access dependencies at the following locations:\n" +
                "- MoneyFlow @ {MoneyFlowUrl}\n" +
                "- Seq       @ {SeqUrl}\n" +
-               "=================", 
+               "=================",
                 app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.FirstOrDefault(x => x.StartsWith("http://")), SeqUrl);
         }
     }

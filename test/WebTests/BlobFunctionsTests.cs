@@ -16,7 +16,7 @@ namespace WebTests
         public async Task Test()
         {
             var connectionString = TestConfiguration.GetStorageConnectionString();
-            
+
             if (!CloudStorageAccount.TryParse(connectionString.Value, out var account))
                 throw new InvalidOperationException("Connection string not valid");
 
@@ -28,9 +28,9 @@ namespace WebTests
             var secondText = "Second";
             var thirdText = "Third";
             var fourthText = "Fourth";
-            
+
             await cloudBlob.DeleteIfExistsAsync();
-            
+
             try
             {
                 await cloudBlob.DownloadTextAsync(Encoding.UTF8, null, null, null);
@@ -45,7 +45,7 @@ namespace WebTests
             await cloudBlob.UploadTextAsync(firstText, Encoding.UTF8, AccessCondition.GenerateIfNotExistsCondition(), null, null);
 
             var etagFromUpload = cloudBlob.Properties.ETag;
-            
+
             try
             {
                 await cloudBlob.UploadTextAsync(secondText, Encoding.UTF8, AccessCondition.GenerateIfNotExistsCondition(), null, null);
@@ -62,7 +62,7 @@ namespace WebTests
             var etagFromDownload = cloudBlob.Properties.ETag;
 
             Assert.Equal(etagFromDownload, etagFromUpload);
-            
+
             await cloudBlob.UploadTextAsync(thirdText, Encoding.UTF8, AccessCondition.GenerateIfMatchCondition(etagFromUpload), null, null);
 
             try
@@ -75,7 +75,7 @@ namespace WebTests
             {
                 Assert.Equal(StorageErrorCodeStrings.ConditionNotMet, e.RequestInformation.ErrorCode);
             }
-            
+
             var textAgain = await cloudBlob.DownloadTextAsync(Encoding.UTF8, null, null, null);
 
             Assert.Equal(thirdText, textAgain);

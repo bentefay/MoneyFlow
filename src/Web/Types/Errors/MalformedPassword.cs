@@ -5,7 +5,7 @@ namespace Web.Types.Errors
     public class MalformedPassword : IError, IGetBlobTextErrors, IDeserializeUserErrors, IParseAuthorizationErrors
     {
         public string HashedPassword { get; }
-        
+
         public MalformedPassword(string hashedPassword)
         {
             HashedPassword = hashedPassword;

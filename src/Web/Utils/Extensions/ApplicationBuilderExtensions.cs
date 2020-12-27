@@ -11,7 +11,7 @@ namespace Web.Utils.Extensions
         {
             return env.IsDevelopment() ? f(@this) : @this;
         }
-        
+
         public static IApplicationBuilder NotInDevelopment(this IApplicationBuilder @this, IWebHostEnvironment env, Func<IApplicationBuilder, IApplicationBuilder> f)
         {
             return !env.IsDevelopment() ? f(@this) : @this;

@@ -59,15 +59,15 @@ namespace Make.Utility.Commands.Executables
         {
             try
             {
-                var defaultExtensions = GetDefaultExtensions().Concat(new[] {""});
+                var defaultExtensions = GetDefaultExtensions().Concat(new[] { "" });
                 var exePaths = Path.HasExtension(executable)
-                    ? new[] {executable}
+                    ? new[] { executable }
                     : defaultExtensions.Select(extension =>
                         string.IsNullOrEmpty(extension) ? executable : Path.ChangeExtension(executable, extension));
 
                 var basePathsToSearch = Path.IsPathRooted(executable) ?
-                    new[] {""} :
-                    new[] {""}.Concat(GetEnvironmentPaths());
+                    new[] { "" } :
+                    new[] { "" }.Concat(GetEnvironmentPaths());
 
                 var executableAbsolutePaths = basePathsToSearch
                     .SelectMany(basePath => exePaths.Select(exePath => string.IsNullOrEmpty(basePath) ? exePath : Path.Combine(basePath, exePath)))
@@ -100,7 +100,7 @@ namespace Make.Utility.Commands.Executables
 
         private static IReadOnlyList<string> GetDefaultExtensions() =>
             RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-                new[] {".exe", ".cmd"} :
-                new [] { ".sh" };
+                new[] { ".exe", ".cmd" } :
+                new[] { ".sh" };
     }
 }

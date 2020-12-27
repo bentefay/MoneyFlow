@@ -32,7 +32,7 @@ namespace Web.Types.Errors
             return $"Error while {_action}: {message}";
         }
     }
-    
+
     public class GeneralStorageError : StorageError, ISetBlobTextErrors, IGetBlobTextErrors, IGetBlobErrors
     {
         public GeneralStorageError(Exception exception, string action) : base(exception, action)

@@ -17,7 +17,7 @@ namespace Web.Types.Errors
             Exception = exception;
         }
 
-        public string GetDescription() => 
+        public string GetDescription() =>
             $"Serialization error for object of type '{Type?.Name}' at path '{Path}':\n{Exception.Message}";
     }
 }

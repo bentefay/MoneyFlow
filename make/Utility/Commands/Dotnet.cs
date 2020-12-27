@@ -14,17 +14,17 @@ namespace Make.Utility.Commands
         {
             return Executable.RunAsEither($"dotnet test {projectDirectory} --configuration {configuration} --output {outputDirectory} --results-directory {resultDirectory} --verbosity {verbosity} --logger trx;logfilename={resultsFileName}.xml");
         }
-        
+
         public static EitherAsync<Error, Unit> Clean(string projectDirectory, string configuration, string verbosity)
         {
             return Executable.RunAsEither($"dotnet clean {projectDirectory} --configuration {configuration} --verbosity {verbosity}");
         }
-       
+
         public static EitherAsync<Error, Unit> TestWatch(string projectDirectory, ExecutionOptions options)
         {
             return Executable.RunAsEither(options, $"dotnet watch -p {projectDirectory} test");
         }
-        
+
         public static EitherAsync<Error, Unit> RunWatch(string projectDirectory, ExecutionOptions options)
         {
             return Executable.RunAsEither(options, $"dotnet watch -p {projectDirectory} run");

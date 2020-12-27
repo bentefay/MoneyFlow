@@ -11,7 +11,7 @@ namespace Web.Functions
     {
         private const string Container = "users";
         private static string GetIndexPath(Email email) => HttpUtility.UrlEncode(email.Value);
-        
+
         public static EitherAsync<ISaveNewUserErrors, Unit> CreateUser(User user, StorageConnectionString connectionString)
         {
             return
@@ -20,7 +20,7 @@ namespace Web.Functions
                 from _ in StorageFunctions.SetBlobText(blob, json).Left(Cast.To<ISaveNewUserErrors>())
                 select Prelude.unit;
         }
-        
+
         public static EitherAsync<IUpdateUserErrors, Unit> UpdateUser(TaggedUser user, StorageConnectionString connectionString)
         {
             return

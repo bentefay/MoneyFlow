@@ -16,6 +16,6 @@ namespace Web.Types.Errors
 
         public string GetDescription() => $"'{ActualEmail}' was incorrect (expected '{ExpectedEmail}')";
     }
-    
-    
+
+
 }
