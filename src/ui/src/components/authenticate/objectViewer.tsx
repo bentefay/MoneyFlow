@@ -33,7 +33,7 @@ export const ObjectViewer = ({ object }: { object: any }): JSX.Element => {
         return (
             <ul className={c.array}>
                 {_.map(object, (item) => (
-                    <li key={c.arrayItem} className={c.arrayItem}>
+                    <li key={item} className={c.arrayItem}>
                         <ObjectViewer object={item}></ObjectViewer>
                     </li>
                 ))}
@@ -43,7 +43,7 @@ export const ObjectViewer = ({ object }: { object: any }): JSX.Element => {
         return (
             <div className={c.object}>
                 {_.keys(object).map((key) => (
-                    <div key={c.field} className={c.field}>
+                    <div key={key} className={c.field}>
                         <code className={c.fieldKey}>{_.startCase(key)}</code>
                         <div className={c.fieldValue}>
                             <ObjectViewer object={object[key]}></ObjectViewer>
