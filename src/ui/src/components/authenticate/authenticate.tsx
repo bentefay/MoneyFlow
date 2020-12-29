@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Background } from "./background";
-import { Brand } from "./brand";
+import { Logo as Logo } from "./logo";
 import { css } from "@emotion/css";
 import { Form } from "./form";
 
@@ -25,7 +25,7 @@ export const Authenticate = () => (
     <div className={c.account}>
         <Background />
         <div className={c.content}>
-            <Brand />
+            <Logo />
             <Form />
         </div>
     </div>
