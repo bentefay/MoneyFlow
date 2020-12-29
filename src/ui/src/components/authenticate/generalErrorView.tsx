@@ -1,7 +1,7 @@
 import React from "react";
 import { GeneralError } from "../../store/shared/models";
 import { lowerFirst } from "lodash";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import { colorInvalid1 } from "../styles/palette.style";
 import Popper from "@material-ui/core/Popper";
 import Button from "@material-ui/core/Button";
@@ -17,37 +17,37 @@ export const c = {
         border: `1px solid ${colorInvalid1}`,
         padding: "20px",
         margin: "20px 0",
-        fontSize: "80%"
+        fontSize: "80%",
     }),
     description: css({
         fontSize: "110%",
-        color: colorInvalid1
+        color: colorInvalid1,
     }),
     importantPart: css({
-        fontWeight: "bold"
+        fontWeight: "bold",
     }),
     reason: css({
-        marginTop: "20px"
+        marginTop: "20px",
     }),
     solutions: {
         container: css({
-            marginTop: "20px"
+            marginTop: "20px",
         }),
         title: css({
-            fontWeight: "bold"
+            fontWeight: "bold",
         }),
         list: css({
-            padding: "0 0 0 15px"
-        })
+            padding: "0 0 0 15px",
+        }),
     },
     moreDetail: css({
-        marginTop: "20px !important"
+        marginTop: "20px !important",
     }),
     errorDetail: css({
         maxWidth: "90vw",
         padding: "20px",
-        overflowX: "auto"
-    })
+        overflowX: "auto",
+    }),
 };
 
 export const GeneralErrorView = ({ value }: { value: GeneralError | undefined }) =>
@@ -64,7 +64,7 @@ export const GeneralErrorView = ({ value }: { value: GeneralError | undefined })
                 <div className={c.solutions.container}>
                     <div className={c.solutions.title}>Possible Solutions</div>
                     <ul className={c.solutions.list}>
-                        {value.possibleSolutions.map(solution => (
+                        {value.possibleSolutions.map((solution) => (
                             <li key={solution}>{solution}</li>
                         ))}
                     </ul>
@@ -78,14 +78,14 @@ export const GeneralErrorView = ({ value }: { value: GeneralError | undefined })
 const DetailedError = ({ error }: { error: any }): JSX.Element => {
     const [state, setState] = React.useState<{ anchorElement: Element | null; open: boolean }>({
         anchorElement: null,
-        open: false
+        open: false,
     });
 
     const handleClick = (event: React.MouseEvent) => {
         const { currentTarget } = event;
-        setState(state => ({
+        setState((state) => ({
             anchorElement: currentTarget,
-            open: !state.open
+            open: !state.open,
         }));
     };
 

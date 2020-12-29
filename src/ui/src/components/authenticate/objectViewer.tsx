@@ -1,29 +1,29 @@
 import React from "react";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import _ from "lodash";
 
 export const c = {
     object: css({
-        marginBottom: "-20px"
+        marginBottom: "-20px",
     }),
     field: css({
-        marginBottom: "20px"
+        marginBottom: "20px",
     }),
     fieldKey: css({
         fontWeight: "bold",
         display: "block",
         whiteSpace: "pre-wrap",
-        marginBottom: "4px"
+        marginBottom: "4px",
     }),
     fieldValue: css({
-        marginLeft: "20px"
+        marginLeft: "20px",
     }),
     array: css({}),
     arrayItem: css({}),
     leafValue: css({
         display: "block",
-        whiteSpace: "pre-wrap"
-    })
+        whiteSpace: "pre-wrap",
+    }),
 };
 
 export const ObjectViewer = ({ object }: { object: any }): JSX.Element => {
@@ -32,7 +32,7 @@ export const ObjectViewer = ({ object }: { object: any }): JSX.Element => {
     } else if (_.isArrayLike(object)) {
         return (
             <ul className={c.array}>
-                {_.map(object, item => (
+                {_.map(object, (item) => (
                     <li key={c.arrayItem} className={c.arrayItem}>
                         <ObjectViewer object={item}></ObjectViewer>
                     </li>
@@ -42,7 +42,7 @@ export const ObjectViewer = ({ object }: { object: any }): JSX.Element => {
     } else {
         return (
             <div className={c.object}>
-                {_.keys(object).map(key => (
+                {_.keys(object).map((key) => (
                     <div key={c.field} className={c.field}>
                         <code className={c.fieldKey}>{_.startCase(key)}</code>
                         <div className={c.fieldValue}>

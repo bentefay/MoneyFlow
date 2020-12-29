@@ -1,5 +1,5 @@
 import * as React from "react";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import { color1, color7 } from "../styles/palette.style";
 
 export const c = {
@@ -8,19 +8,19 @@ export const c = {
         marginBottom: "20px",
         "@media (max-width: 500px)": {
             marginBottom: "0",
-            fontSize: "60px"
-        }
+            fontSize: "60px",
+        },
     }),
     money: css({
         color: color1,
         fontSize: "75%",
         marginBottom: "-14px",
-        marginLeft: "18px"
+        marginLeft: "18px",
     }),
     flow: css({
         color: color7,
-        fontFamily: "'Sacramento', serif"
-    })
+        fontFamily: "'Sacramento', serif",
+    }),
 };
 
 export const Brand = () => (

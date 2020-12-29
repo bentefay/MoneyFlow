@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Background } from "./background";
 import { Brand } from "./brand";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import { Form } from "./form";
 
 export const c = {
@@ -11,14 +11,14 @@ export const c = {
         flexFlow: "nowrap column",
         alignItems: "center",
         justifyContent: "center",
-        fontSize: "1.2em"
+        fontSize: "1.2em",
     }),
     content: css({
         display: "flex",
         flexFlow: "nowrap column",
         alignItems: "center",
-        justifyContent: "center"
-    })
+        justifyContent: "center",
+    }),
 };
 
 export const Authenticate = () => (

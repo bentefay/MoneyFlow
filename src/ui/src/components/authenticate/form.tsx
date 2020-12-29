@@ -1,5 +1,5 @@
 import * as React from "react";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import { color6, color7, color4, colorInvalid1 } from "../styles/palette.style";
 import { connect } from "react-redux";
 import _ from "lodash";
@@ -13,7 +13,7 @@ import {
     Password,
     validateEmail,
     validatePassword,
-    AuthStateError
+    AuthStateError,
 } from "../../store/auth";
 import { renderFormField } from "./validation";
 import { GeneralErrorView } from "./generalErrorView";
@@ -26,8 +26,8 @@ export const common = {
         marginTop: "20px",
         padding: "12px 0",
         width: "100%",
-        cursor: "pointer"
-    })
+        cursor: "pointer",
+    }),
 };
 
 export const c = {
@@ -43,26 +43,26 @@ export const c = {
         "@media (max-width: 500px)": {
             margin: "0 20px",
             minWidth: "0",
-            width: "auto"
+            width: "auto",
         },
-        transition: "height 2s"
+        transition: "height 2s",
     }),
     label: css({
-        fontWeight: 400
+        fontWeight: 400,
     }),
     inputDescription: css({
         fontSize: "80%",
         margin: "-20px 0 10px 0",
-        color: "#888"
+        color: "#888",
     }),
     input: css({
         fontSize: "18px",
         width: "100%",
         marginTop: "10px !important",
-        marginBottom: "30px !important"
+        marginBottom: "30px !important",
     }),
     buttonRow: css({
-        display: "flex"
+        display: "flex",
     }),
     submitButton: css(
         {
@@ -70,39 +70,39 @@ export const c = {
             backgroundColor: color4,
             fontSize: "80%",
             letterSpacing: "1.2",
-            textTransform: "uppercase"
+            textTransform: "uppercase",
         },
         common.button
     ),
     submitButtonIcon: css({
         marginRight: "0.5em",
-        marginLeft: "-0.5em"
+        marginLeft: "-0.5em",
     }),
     alternateActionButton: css(
         {
             fontSize: "90%",
             backgroundColor: color7,
             textDecorationLine: "underline",
-            color: "#888"
+            color: "#888",
         },
         common.button
     ),
     createAccountHeading: css({
         marginBottom: "20px",
         fontSize: "110%",
-        fontWeight: 500
+        fontWeight: 500,
     }),
     createAccountDescription: css({
         fontSize: "80%",
         marginBottom: "30px",
-        color: "#888"
+        color: "#888",
     }),
     errorMessage: css({
         marginTop: "20px",
         marginBottom: "10px",
         fontSize: "80%",
-        color: colorInvalid1
-    })
+        color: colorInvalid1,
+    }),
 };
 
 type Props = AuthState;
@@ -143,13 +143,13 @@ type AuthForm = { email: string | null; password: string | null };
 
 const defaultForm: FormState<AuthForm> = {
     email: formField(null),
-    password: formField(null)
+    password: formField(null),
 };
 
-const formValidator: FormStateValidator<AuthForm> = state => {
+const formValidator: FormStateValidator<AuthForm> = (state) => {
     return {
         email: state.email.touched ? validateEmail(state.email.value) : undefined,
-        password: state.password.touched ? validatePassword(state.password.value) : undefined
+        password: state.password.touched ? validatePassword(state.password.value) : undefined,
     };
 };
 
@@ -157,13 +157,13 @@ const form = ({ createAccount, error, isLoading, onCreateAccountToggled, onSignI
     const { state, onChange, onSubmit, isValid, reset } = useFormState<AuthForm>(
         () => defaultForm,
         formValidator,
-        state =>
+        (state) =>
             onSignInInitiated({
                 credentials: {
                     email: new Email(state.email!),
-                    password: new Password(state.password!)
+                    password: new Password(state.password!),
                 },
-                create: createAccount
+                create: createAccount,
             })
     );
 
@@ -177,7 +177,7 @@ const form = ({ createAccount, error, isLoading, onCreateAccountToggled, onSignI
             id={formId}
             className={`pure-form pure-form-stacked ${c.form}`}
             noValidate
-            onSubmit={event => {
+            onSubmit={(event) => {
                 onSubmit();
                 event.preventDefault();
                 return false;
@@ -238,7 +238,7 @@ const form = ({ createAccount, error, isLoading, onCreateAccountToggled, onSignI
             <div className={c.buttonRow}>
                 <a
                     className={`${c.alternateActionButton}`}
-                    onClick={event => {
+                    onClick={(event) => {
                         reset("errors");
                         onCreateAccountToggled({ createAccount: !createAccount });
                         event.preventDefault();
@@ -265,8 +265,8 @@ const form = ({ createAccount, error, isLoading, onCreateAccountToggled, onSignI
 export const Form = connect(
     (state: RootState): Props => state.auth,
     (dispatch): Actions => ({
-        onSignInInitiated: options => dispatch(authActions.signInInitiated(options)),
-        onCreateAccountToggled: options => dispatch(authActions.createAccountToggled(options))
+        onSignInInitiated: (options) => dispatch(authActions.signInInitiated(options)),
+        onCreateAccountToggled: (options) => dispatch(authActions.createAccountToggled(options)),
     })
 )(form);
 

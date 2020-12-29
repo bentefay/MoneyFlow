@@ -1,5 +1,5 @@
 import * as React from "react";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 
 export const c = {
     background: css({
@@ -8,8 +8,8 @@ export const c = {
         top: "0",
         left: "0",
         right: "0",
-        bottom: "0"
-    })
+        bottom: "0",
+    }),
 };
 
 export const Background = () => (

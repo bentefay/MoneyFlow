@@ -1,5 +1,5 @@
 import * as React from "react";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import { color1 } from "../styles/palette.style";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import { lighten } from "polished";
@@ -14,14 +14,14 @@ export const c = {
         top: -1,
         left: -1,
         right: -1,
-        bottom: -1
+        bottom: -1,
     }),
     foreground: css({
-        backgroundColor: `${color1} !important`
+        backgroundColor: `${color1} !important`,
     }),
     background: css({
-        backgroundColor: `${lighten(0.5, color1)} !important`
-    })
+        backgroundColor: `${lighten(0.5, color1)} !important`,
+    }),
 };
 
 export const Loading = ({ isLoading }: { isLoading: boolean }) => (

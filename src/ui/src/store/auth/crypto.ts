@@ -17,7 +17,7 @@ const salt = "$2a$10$SweJ37PLcqGyrhjb24gwPu";
 export function hashPassword(password: Password): TaskEither<GeneralError, HashedPassword> {
     return pipe(
         hash(password.value, salt, "Encrypting your password to send to our server"),
-        taskEither.map(hashedPassword => new HashedPassword(hashedPassword))
+        taskEither.map((hashedPassword) => new HashedPassword(hashedPassword))
     );
 }
 
@@ -28,10 +28,10 @@ function hash(value: string, salt: string, description: string): TaskEither<Gene
     );
 }
 
-export function authHeader(obj: { email: string; hashedPassword: string }) {
-    return { Authorization: `Bearer ${base64(obj)}` };
+export function createAuthHeader(obj: { email: string; hashedPassword: string }) {
+    return { Authorization: `Bearer ${base64Encode(obj)}` };
 }
 
-function base64(obj: any) {
+function base64Encode(obj: any) {
     return btoa(JSON.stringify(obj));
 }
