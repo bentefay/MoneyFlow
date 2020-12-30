@@ -4,7 +4,7 @@ import { AuthAction, AuthState, authActions } from ".";
 const getDefaultState = (): AuthState => {
     return {
         createAccount: false,
-        isLoading: false
+        isLoading: false,
     };
 };
 
@@ -14,14 +14,15 @@ export const authReducer = (state = getDefaultState(), action: AuthAction): Auth
             return {
                 ...state,
                 error: undefined,
-                createAccount: action.payload.createAccount
+                createAccount: action.payload.createAccount,
             };
 
         case getType(authActions.signInInitiated):
             return {
                 ...state,
+                error: undefined,
                 credentials: action.payload.credentials,
-                isLoading: true
+                isLoading: true,
             };
 
         case getType(authActions.signInErrored):
