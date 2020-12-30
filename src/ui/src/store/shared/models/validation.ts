@@ -1,5 +1,5 @@
 import { NonFunctionKeys } from ".";
-import { ReactElement, Key } from "react";
+import { ReactElement, Key, useEffect } from "react";
 import _ from "lodash";
 import React from "react";
 
@@ -15,6 +15,7 @@ export interface ArrayFormErrors<T> extends ReadonlyArray<FormErrors<T>> {}
 export type FormStateValidator<T> = (state: FormState<T>) => ObjectFormErrors<T>;
 
 export type FormState<T> = { readonly [P in NonFunctionKeys<T>]: FormField<T[P]> };
+type WrappedFormState<T> = { submissionCount: number; state: FormState<T> };
 
 export type SetState<T> = (updateState: (state: T) => T) => void;
 
@@ -30,29 +31,41 @@ const keys = <T>(object: T) => {
 };
 
 const values = <T>(object: T) => {
-    return keys(object).map(key => object[key]) as ReadonlyArray<T[keyof T]>;
+    return keys(object).map((key) => object[key]) as ReadonlyArray<T[keyof T]>;
 };
 
 export const useFormState = <TState>(defaultState: () => FormState<TState>, validator: FormStateValidator<TState>, onValid: (state: TState) => void) => {
-    const [state, setState] = React.useState(defaultState);
+    const wrappedDefaultState: () => WrappedFormState<TState> = () => ({ submissionCount: 0, state: defaultState() });
+    const [wrappedState, setWrappedState] = React.useState(wrappedDefaultState);
+
+    const isValid = checkIsValid(wrappedState.state);
+
+    // This effect and the associated submissionCount state are required because the onValid callback cannot be called inside
+    // the callback of setWrappedState
+    useEffect(() => {
+        if (isValid && wrappedState.submissionCount > 0) {
+            onValid(extractState(wrappedState.state));
+        }
+    }, [wrappedState.submissionCount]);
+
     return {
-        onChange: onFormStateChange(setState, validator),
-        onSubmit: onFormStateSubmit(setState, validator, onValid),
-        isValid: isValid(state),
-        state,
-        reset: (type: "all" | "errors" = "all") => (type == "all" ? setState(defaultState()) : setState(clearErrors(state)))
+        onChange: onFormStateChange(setWrappedState, validator),
+        onSubmit: onFormStateSubmit(setWrappedState, validator, onValid),
+        isValid: isValid,
+        state: wrappedState.state,
+        reset: (type: "all" | "errors" = "all") => (type == "all" ? setWrappedState(wrappedDefaultState()) : setWrappedState(clearErrors)),
     };
 };
 
 const validateState = <TState>(state: Writable<FormState<TState>>, changeType: "blur" | "change", validator: FormStateValidator<TState>) => {
     const stateErrors = validator(state);
-    _.forEach(keys(stateErrors), key => {
+    _.forEach(keys(stateErrors), (key) => {
         const revalidate = changeType == "blur" || state[key].errors.length > 0;
         if (revalidate) {
             const errors = stateErrors[key];
             state[key] = {
                 ...state[key],
-                errors: errors ?? []
+                errors: errors ?? [],
             };
         }
     });
@@ -62,69 +75,69 @@ export type ChangeType = "blur" | "change";
 export type EventWithValue<TValue> = { currentTarget: { value: TValue } };
 export type OnChange<TState, TKey extends keyof FormState<TState>> = (key: TKey, type: ChangeType) => (event: EventWithValue<TState[TKey]>) => void;
 
-export const onFormStateChange = <TState>(setState: SetState<FormState<TState>>, validator: FormStateValidator<TState>) => {
+const onFormStateChange = <TState>(setWrappedState: SetState<WrappedFormState<TState>>, validator: FormStateValidator<TState>) => {
     return <TKey extends NonFunctionKeys<TState>>(key: TKey, changeType: ChangeType) => {
         return <TValue extends TState[TKey]>(event: EventWithValue<TValue>) => {
             const newValue = event.currentTarget.value;
-            setState(state => {
-                const field = state[key];
+            setWrappedState((wrapper) => {
+                const field = wrapper.state[key];
                 const newState = {
-                    ...state,
+                    ...wrapper.state,
                     [key]: {
                         ...field,
                         value: newValue,
-                        touched: field.touched || (newValue != null && (newValue as any) != "")
-                    }
-                } as Writable<typeof state>;
+                        touched: field.touched || (newValue != null && (newValue as any) != ""),
+                    },
+                } as Writable<typeof wrapper.state>;
 
                 validateState(newState, changeType, validator);
 
-                return newState;
+                return { submissionCount: wrapper.submissionCount, state: newState };
             });
         };
     };
 };
 
-export const onFormStateSubmit = <TState>(setState: SetState<FormState<TState>>, validator: FormStateValidator<TState>, onValid: (state: TState) => void) => {
+const onFormStateSubmit = <TState>(
+    setWrappedState: SetState<WrappedFormState<TState>>,
+    validator: FormStateValidator<TState>,
+    onValid: (state: TState) => void
+) => {
     return () => {
-        setState(state => {
+        setWrappedState((wrappedState) => {
             const newState = {
-                ...state
-            } as Writable<typeof state>;
+                ...wrappedState.state,
+            } as Writable<typeof wrappedState.state>;
 
-            _.forEach(keys(newState), key => {
+            _.forEach(keys(newState), (key) => {
                 newState[key] = {
-                    ...state[key],
-                    touched: true
+                    ...wrappedState.state[key],
+                    touched: true,
                 };
             });
 
             validateState(newState, "blur", validator);
 
-            if (isValid(newState)) {
-                onValid(extractState(newState));
-            }
-
-            return newState;
+            return { submissionCount: wrappedState.submissionCount + 1, state: newState };
         });
     };
 };
 
-export const isValid = <TState>(state: FormState<TState>) => {
-    return _(values(state)).every(field => field.errors.length == 0);
+const checkIsValid = <TState>(state: FormState<TState>) => {
+    return _(values(state)).every((field) => field.errors.length == 0);
 };
 
-export const clearErrors = <TState>(formState: FormState<TState>): FormState<TState> => {
+const clearErrors = <TState>(wrappedState: WrappedFormState<TState>): WrappedFormState<TState> => {
     const newFormState = {} as Writable<FormState<TState>>;
-    _.forEach(keys(formState), key => {
-        newFormState[key] = formField(formState[key].value);
+    _.forEach(keys(wrappedState.state), (key) => {
+        newFormState[key] = formField(wrappedState.state[key].value);
     });
-    return newFormState;
+    return { submissionCount: wrappedState.submissionCount, state: newFormState };
 };
 
-export const extractState = <TState>(formState: FormState<TState>): TState => {
+const extractState = <TState>(formState: FormState<TState>): TState => {
     const state = {} as Writable<TState>;
-    _.forEach(keys(formState), key => {
+    _.forEach(keys(formState), (key) => {
         state[key] = formState[key].value;
     });
     return state;
