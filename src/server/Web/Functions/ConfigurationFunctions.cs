@@ -16,7 +16,7 @@ namespace Web.Functions
         {
             var value = configuration.GetRequiredValue<string>(key);
 
-            if (string.IsNullOrWhiteSpace(value))
+            if (string.IsNullOrWhiteSpace(value) || value == "<REPLACED>")
                 throw new ConfigurationException($"Configuration key {key} has empty or whitespace value");
 
             return value;
